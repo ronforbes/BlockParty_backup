@@ -1,0 +1,26 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+Project("{CC5FD16D-436D-48AD-A40C-5A424C6E3E79}") = "BlockParty", "BlockParty\BlockParty.ccproj", "{99A743B1-92B5-44BB-AF02-E0CB0120DBA9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlockPartyWebRole", "BlockPartyWebRole\BlockPartyWebRole.csproj", "{ACD9C24F-4D74-4EE1-BB90-683F4A08B586}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{99A743B1-92B5-44BB-AF02-E0CB0120DBA9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{99A743B1-92B5-44BB-AF02-E0CB0120DBA9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{99A743B1-92B5-44BB-AF02-E0CB0120DBA9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{99A743B1-92B5-44BB-AF02-E0CB0120DBA9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ACD9C24F-4D74-4EE1-BB90-683F4A08B586}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ACD9C24F-4D74-4EE1-BB90-683F4A08B586}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ACD9C24F-4D74-4EE1-BB90-683F4A08B586}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ACD9C24F-4D74-4EE1-BB90-683F4A08B586}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

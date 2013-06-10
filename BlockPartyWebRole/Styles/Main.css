@@ -1,0 +1,29 @@
+﻿html, body, form, div, canvas {
+    margin: 0;
+    padding: 0;
+    background-color: black;
+}
+
+#wrapper {
+    width: 100%;
+    height: 100%;
+    display: -ms-grid;
+    -ms-grid-columns: 1fr;
+    -ms-grid-rows: 1fr;
+    grid-columns: 1fr;
+    grid-rows: 1fr;
+}
+
+#canvas {
+    -ms-grid-column: 1;
+    -ms-grid-row: 1;
+    -ms-grid-column-align: center;
+    -ms-grid-row-align: center;
+    grid-column: 1;
+    grid-row: 1;
+    grid-column-align: center;
+    grid-row-align: center;
+    width: 100%;
+    height: 100%;
+    position: absolute;
+}
