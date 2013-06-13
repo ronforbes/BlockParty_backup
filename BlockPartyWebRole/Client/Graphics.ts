@@ -4,7 +4,8 @@
 class GraphicsManager {
     public WorldWidth: number = 100;
     public WorldHeight: number = 100;
-    public AspectRatio: number = 4 / 3;
+    //public AspectRatio: number = 4 / 3;
+    public AspectRatio: number = 1;
 
     private canvas: HTMLCanvasElement;
     private canvasContext: CanvasRenderingContext2D;
@@ -93,7 +94,7 @@ class GraphicsManager {
         this.backBufferContext.restore();
     }
 
-    public DrawRectangle(position: Vector2, width: number, height: number, lineWidth: number, color: string, filled: bool) {
+    public DrawRectangle(position: Vector2, width: number, height: number, lineWidth: number, strokeColor: string, fillColor: string) {
         var canvasPosition: Vector2 = this.TransformWorldToCanvas(position);
         var canvasWidth: number = this.TransformWorldToCanvasX(width);
         var canvasHeight: number = this.TransformWorldToCanvasY(height);
@@ -106,13 +107,13 @@ class GraphicsManager {
         //this.backBufferContext.shadowBlur = 30;
         //this.backBufferContext.shadowColor = color;
         this.backBufferContext.lineWidth = lineWidth;
-        if (filled) {
-            this.backBufferContext.fillStyle = color;
-            this.backBufferContext.fillRect(canvasPosition.X, canvasPosition.Y, canvasWidth, canvasHeight);
-        }
-        else {
-            this.backBufferContext.strokeStyle = color;
+        if (strokeColor) {
+            this.backBufferContext.strokeStyle = strokeColor;
             this.backBufferContext.strokeRect(canvasPosition.X, canvasPosition.Y, canvasWidth, canvasHeight);
+        }
+        if (fillColor) {
+            this.backBufferContext.fillStyle = fillColor;
+            this.backBufferContext.fillRect(canvasPosition.X, canvasPosition.Y, canvasWidth, canvasHeight);
         }
 
         this.backBufferContext.restore();
@@ -164,7 +165,7 @@ class GraphicsManager {
         //this.backBufferContext.shadowOffsetY = 0;
         //this.backBufferContext.shadowBlur = 10;
         //this.backBufferContext.shadowColor = color;
-        this.backBufferContext.font = "bold 16px Arial";
+        this.backBufferContext.font = "bold 24px Arial";
         this.backBufferContext.fillStyle = color;
         this.backBufferContext.fillText(text, canvasPosition.X, canvasPosition.Y);
 

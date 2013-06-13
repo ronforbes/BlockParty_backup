@@ -2,7 +2,7 @@ var GraphicsManager = (function () {
     function GraphicsManager(element) {
         this.WorldWidth = 100;
         this.WorldHeight = 100;
-        this.AspectRatio = 4 / 3;
+        this.AspectRatio = 1;
         this.canvas = element[0];
         this.canvasContext = this.canvas.getContext("2d");
         this.backBuffer = document.createElement("canvas");
@@ -57,18 +57,19 @@ var GraphicsManager = (function () {
         this.backBufferContext.stroke();
         this.backBufferContext.restore();
     };
-    GraphicsManager.prototype.DrawRectangle = function (position, width, height, lineWidth, color, filled) {
+    GraphicsManager.prototype.DrawRectangle = function (position, width, height, lineWidth, strokeColor, fillColor) {
         var canvasPosition = this.TransformWorldToCanvas(position);
         var canvasWidth = this.TransformWorldToCanvasX(width);
         var canvasHeight = this.TransformWorldToCanvasY(height);
         this.backBufferContext.save();
         this.backBufferContext.lineWidth = lineWidth;
-        if(filled) {
-            this.backBufferContext.fillStyle = color;
-            this.backBufferContext.fillRect(canvasPosition.X, canvasPosition.Y, canvasWidth, canvasHeight);
-        } else {
-            this.backBufferContext.strokeStyle = color;
+        if(strokeColor) {
+            this.backBufferContext.strokeStyle = strokeColor;
             this.backBufferContext.strokeRect(canvasPosition.X, canvasPosition.Y, canvasWidth, canvasHeight);
+        }
+        if(fillColor) {
+            this.backBufferContext.fillStyle = fillColor;
+            this.backBufferContext.fillRect(canvasPosition.X, canvasPosition.Y, canvasWidth, canvasHeight);
         }
         this.backBufferContext.restore();
     };
@@ -97,7 +98,7 @@ var GraphicsManager = (function () {
     GraphicsManager.prototype.DrawText = function (text, position, color) {
         var canvasPosition = this.TransformWorldToCanvas(position);
         this.backBufferContext.save();
-        this.backBufferContext.font = "bold 16px Arial";
+        this.backBufferContext.font = "bold 24px Arial";
         this.backBufferContext.fillStyle = color;
         this.backBufferContext.fillText(text, canvasPosition.X, canvasPosition.Y);
         this.backBufferContext.restore();

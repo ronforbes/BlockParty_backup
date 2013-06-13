@@ -90,6 +90,13 @@
     <None Include="Scripts\jquery-2.0.2.intellisense.js" />
     <TypeScriptCompile Include="Client\Main.ts" />
     <TypeScriptCompile Include="Client\Game.ts" />
+    <TypeScriptCompile Include="Client\Block.ts" />
+    <Content Include="Client\Block.js">
+      <DependentUpon>Block.ts</DependentUpon>
+    </Content>
+    <Content Include="Client\Block.min.js">
+      <DependentUpon>Block.ts</DependentUpon>
+    </Content>
     <Content Include="Client\Game.js">
       <DependentUpon>Game.ts</DependentUpon>
     </Content>
@@ -110,6 +117,13 @@
       <DependentUpon>Main.ts</DependentUpon>
     </Content>
     <TypeScriptCompile Include="Client\Timer.ts" />
+    <TypeScriptCompile Include="Client\Mouse.ts" />
+    <Content Include="Client\Mouse.js">
+      <DependentUpon>Mouse.ts</DependentUpon>
+    </Content>
+    <Content Include="Client\Mouse.min.js">
+      <DependentUpon>Mouse.ts</DependentUpon>
+    </Content>
     <Content Include="Client\Timer.js">
       <DependentUpon>Timer.ts</DependentUpon>
     </Content>

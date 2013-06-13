@@ -20,7 +20,9 @@
             <script src='<%: ResolveClientUrl("~/signalr/hubs") %>'></script>
             <script src="Client/Vector2.js"></script>
             <script src="Client/Graphics.js"></script>
+            <script src="Client/Mouse.js"></script>
             <script src="Client/Timer.js"></script>
+            <script src="Client/Block.js"></script>
             <script src="Client/Game.js"></script>
             <script src="Client/Main.js"></script>
         </form>
