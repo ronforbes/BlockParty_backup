@@ -7,7 +7,7 @@ $(function () {
     var gameHub = (<any>$).connection.gameHub;
     var game: Game;
     var timer: Timer;
-    var UpdatesPerSecond: number = 60;
+    var updatesPerSecond: number = 60;
 
     function InitializeGame() {
         game = new Game();
@@ -23,7 +23,7 @@ $(function () {
                 (<any>window).oRequestAnimationFrame ||
                 (<any>window).msRequestAnimationFrame ||
                 function (Callback) {
-                    window.setTimeout(Callback, 1000 / UpdatesPerSecond);
+                    window.setTimeout(Callback, 1000 / updatesPerSecond);
                 };
         })();
 

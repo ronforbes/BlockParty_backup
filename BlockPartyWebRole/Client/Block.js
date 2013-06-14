@@ -5,20 +5,24 @@ var BlockState;
     BlockState.Empty = 0;
     BlockState._map[1] = "Idle";
     BlockState.Idle = 1;
-    BlockState._map[2] = "WaitingToFall";
-    BlockState.WaitingToFall = 2;
-    BlockState._map[3] = "Falling";
-    BlockState.Falling = 3;
-    BlockState._map[4] = "Matched";
-    BlockState.Matched = 4;
-    BlockState._map[5] = "Flashing";
-    BlockState.Flashing = 5;
-    BlockState._map[6] = "WaitingToPop";
-    BlockState.WaitingToPop = 6;
-    BlockState._map[7] = "Popping";
-    BlockState.Popping = 7;
-    BlockState._map[8] = "WaitingToEmpty";
-    BlockState.WaitingToEmpty = 8;
+    BlockState._map[2] = "SlidingLeft";
+    BlockState.SlidingLeft = 2;
+    BlockState._map[3] = "SlidingRight";
+    BlockState.SlidingRight = 3;
+    BlockState._map[4] = "WaitingToFall";
+    BlockState.WaitingToFall = 4;
+    BlockState._map[5] = "Falling";
+    BlockState.Falling = 5;
+    BlockState._map[6] = "Matched";
+    BlockState.Matched = 6;
+    BlockState._map[7] = "Flashing";
+    BlockState.Flashing = 7;
+    BlockState._map[8] = "WaitingToPop";
+    BlockState.WaitingToPop = 8;
+    BlockState._map[9] = "Popping";
+    BlockState.Popping = 9;
+    BlockState._map[10] = "WaitingToEmpty";
+    BlockState.WaitingToEmpty = 10;
 })(BlockState || (BlockState = {}));
 var BlockType;
 (function (BlockType) {
@@ -38,14 +42,64 @@ var BlockType;
 })(BlockType || (BlockType = {}));
 var Block = (function () {
     function Block() {
-        this.FallDelayTimer = 0;
         this.FallTimer = 0;
-        this.FlashingTimer = 0;
         this.PopDelayDuration = 0;
-        this.PopDelayTimer = 0;
-        this.PopTimer = 0;
         this.EmptyDelayDuration = 0;
-        this.EmptyDelayTimer = 0;
+        this.FALL_DELAY_DURATION = 250;
+        this.FLASH_DURATION = 1000;
+        this.POP_DURATION = 250;
+        this.fallDelayTimer = 0;
+        this.flashTimer = 0;
+        this.popDelayTimer = 0;
+        this.popTimer = 0;
+        this.emptyDelayTimer = 0;
     }
+    Block.TYPE_COUNT = 6;
+    Block.WIDTH = 10;
+    Block.HEIGHT = 10;
+    Block.FALL_DURATION = 50;
+    Block.POP_DELAY_INTERVAL = 250;
+    Block.EMPTY_DELAY_INTERVAL = 250;
+    Block.prototype.Update = function (elapsedMilliseconds) {
+        switch(this.State) {
+            case BlockState.WaitingToFall:
+                this.fallDelayTimer += elapsedMilliseconds;
+                if(this.fallDelayTimer >= this.FALL_DELAY_DURATION) {
+                    this.fallDelayTimer = 0;
+                    this.State = BlockState.Falling;
+                }
+                break;
+            case BlockState.Flashing:
+                this.flashTimer += elapsedMilliseconds;
+                if(this.flashTimer >= this.FLASH_DURATION) {
+                    this.flashTimer = 0;
+                    this.State = BlockState.WaitingToPop;
+                }
+                break;
+            case BlockState.WaitingToPop:
+                this.popDelayTimer += elapsedMilliseconds;
+                if(this.popDelayTimer >= this.PopDelayDuration) {
+                    this.popDelayTimer = 0;
+                    this.PopDelayDuration = 0;
+                    this.State = BlockState.Popping;
+                }
+                break;
+            case BlockState.Popping:
+                this.popTimer += elapsedMilliseconds;
+                if(this.popTimer >= this.POP_DURATION) {
+                    this.popTimer = 0;
+                    this.State = BlockState.WaitingToEmpty;
+                }
+                break;
+            case BlockState.WaitingToEmpty:
+                this.emptyDelayTimer += elapsedMilliseconds;
+                if(this.emptyDelayTimer >= this.EmptyDelayDuration) {
+                    this.emptyDelayTimer = 0;
+                    this.EmptyDelayDuration = 0;
+                    this.State = BlockState.Empty;
+                }
+                break;
+        }
+    };
     return Block;
 })();

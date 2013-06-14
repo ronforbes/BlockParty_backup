@@ -97,6 +97,13 @@
     <Content Include="Client\Block.min.js">
       <DependentUpon>Block.ts</DependentUpon>
     </Content>
+    <TypeScriptCompile Include="Client\Board.ts" />
+    <Content Include="Client\Board.js">
+      <DependentUpon>Board.ts</DependentUpon>
+    </Content>
+    <Content Include="Client\Board.min.js">
+      <DependentUpon>Board.ts</DependentUpon>
+    </Content>
     <Content Include="Client\Game.js">
       <DependentUpon>Game.ts</DependentUpon>
     </Content>
