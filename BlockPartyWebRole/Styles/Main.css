@@ -2,6 +2,7 @@
     margin: 0;
     padding: 0;
     background-color: black;
+    -ms-touch-action: none; /* Direct pointer events to javascript code */
 }
 
 #wrapper {

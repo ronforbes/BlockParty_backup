@@ -1,8 +1,8 @@
 var GraphicsManager = (function () {
     function GraphicsManager(element) {
-        this.WorldWidth = 100;
-        this.WorldHeight = 100;
-        this.AspectRatio = 1;
+        this.WorldWidth = 90;
+        this.WorldHeight = 160;
+        this.AspectRatio = 9 / 16;
         this.canvas = element[0];
         this.canvasContext = this.canvas.getContext("2d");
         this.backBuffer = document.createElement("canvas");

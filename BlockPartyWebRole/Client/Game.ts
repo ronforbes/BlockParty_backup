@@ -15,7 +15,13 @@ class Game {
         Graphics.Clear();
 
         this.board.Update(elapsedMilliseconds);
-
+        
+        /*var mouseState = Mouse.GetState();
+        
+        if (mouseState.LeftButton) {
+            Graphics.DrawRectangle(new Vector2(mouseState.X - 7.5, mouseState.Y - 7.5), 15, 15, 0, "black", "red");
+        }*/
+        
         Graphics.Draw();
     }
 }

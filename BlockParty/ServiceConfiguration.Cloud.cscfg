@@ -3,7 +3,7 @@
   <Role name="BlockPartyWebRole">
     <Instances count="1" />
     <ConfigurationSettings>
-      <Setting name="Microsoft.WindowsAzure.Plugins.Diagnostics.ConnectionString" value="UseDevelopmentStorage=true" />
+      <Setting name="Microsoft.WindowsAzure.Plugins.Diagnostics.ConnectionString" value="DefaultEndpointsProtocol=https;AccountName=vectorarena;AccountKey=YVeGt3VZpaLor0atFTEHtzkoNR6zzAaxXyMnqdgbce9XPKhoQ7vEVdtlcqJsD5ufBIaXvKaGLE+K3veI93Nflg==" />
     </ConfigurationSettings>
   </Role>
 </ServiceConfiguration>

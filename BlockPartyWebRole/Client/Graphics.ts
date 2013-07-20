@@ -2,10 +2,9 @@
 /// <reference path="../Scripts/typings/jquery/jquery.d.ts" />
 
 class GraphicsManager {
-    public WorldWidth: number = 100;
-    public WorldHeight: number = 100;
-    //public AspectRatio: number = 4 / 3;
-    public AspectRatio: number = 1;
+    public WorldWidth: number = 90;
+    public WorldHeight: number = 160;
+    public AspectRatio: number = 9 / 16;
 
     private canvas: HTMLCanvasElement;
     private canvasContext: CanvasRenderingContext2D;
@@ -105,7 +104,7 @@ class GraphicsManager {
         //this.backBufferContext.shadowOffsetX = 0;
         //this.backBufferContext.shadowOffsetY = 0;
         //this.backBufferContext.shadowBlur = 30;
-        //this.backBufferContext.shadowColor = color;
+        //this.backBufferContext.shadowColor = fillColor;
         this.backBufferContext.lineWidth = lineWidth;
         if (strokeColor) {
             this.backBufferContext.strokeStyle = strokeColor;

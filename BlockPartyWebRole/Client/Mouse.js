@@ -4,6 +4,7 @@ var MouseState = (function () {
 })();
 var MouseManager = (function () {
     function MouseManager(element) {
+        this.DoubleClickDelay = 150;
         this.canvas = element[0];
         var that = this;
         this.canvas.addEventListener('mousemove', function (event) {
@@ -20,6 +21,10 @@ var MouseManager = (function () {
             }
             event.preventDefault();
         });
+        if(window.navigator.msPointerEnabled) {
+            this.canvas.addEventListener('MSPointerDown', function (event) {
+            });
+        }
         this.canvas.addEventListener('mouseup', function (event) {
             if(event.button == 0) {
                 that.leftButton = false;

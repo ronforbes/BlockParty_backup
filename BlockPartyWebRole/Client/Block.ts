@@ -1,3 +1,5 @@
+/// <reference path="Board.ts" />
+
 enum BlockState {
     Empty,
     Idle,
@@ -23,8 +25,8 @@ enum BlockType {
 
 class Block {
     public static TYPE_COUNT: number = 6;
-    public static WIDTH: number = 10;
-    public static HEIGHT: number = 10;
+    public static WIDTH: number = 15;
+    public static HEIGHT: number = 15;
     public static FALL_DURATION: number = 50;
     public static POP_DELAY_INTERVAL: number = 250;
     public static EMPTY_DELAY_INTERVAL: number = 250;
@@ -34,10 +36,13 @@ class Block {
     public FallTimer: number = 0;
     public PopDelayDuration: number = 0;
     public EmptyDelayDuration: number = 0;
+    public JustBecameEmpty: bool = false;
+    public EligibleForChain: bool = false;
 
     private FALL_DELAY_DURATION: number = 250;
     private FLASH_DURATION: number = 1000;
     private POP_DURATION: number = 250;
+    private POP_SCORE: number = 10;
 
     private fallDelayTimer: number = 0;
     private flashTimer: number = 0;
@@ -45,7 +50,7 @@ class Block {
     private popTimer: number = 0;
     private emptyDelayTimer: number = 0;    
 
-    public Update(elapsedMilliseconds: number) {
+    public Update(elapsedMilliseconds: number, board: Board) {
         switch (this.State) {
             case BlockState.WaitingToFall:
                 this.fallDelayTimer += elapsedMilliseconds;
@@ -86,6 +91,7 @@ class Block {
                 if (this.popTimer >= this.POP_DURATION) {
                     this.popTimer = 0;
                     this.State = BlockState.WaitingToEmpty;
+                    board.Score += this.POP_SCORE;
                 }
                 break;
 
@@ -97,6 +103,7 @@ class Block {
                     this.emptyDelayTimer = 0;
                     this.EmptyDelayDuration = 0;
                     this.State = BlockState.Empty;
+                    this.JustBecameEmpty = true;
                 }
                 break;
         }

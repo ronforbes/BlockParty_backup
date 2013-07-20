@@ -45,9 +45,12 @@ var Block = (function () {
         this.FallTimer = 0;
         this.PopDelayDuration = 0;
         this.EmptyDelayDuration = 0;
+        this.JustBecameEmpty = false;
+        this.EligibleForChain = false;
         this.FALL_DELAY_DURATION = 250;
         this.FLASH_DURATION = 1000;
         this.POP_DURATION = 250;
+        this.POP_SCORE = 10;
         this.fallDelayTimer = 0;
         this.flashTimer = 0;
         this.popDelayTimer = 0;
@@ -55,12 +58,12 @@ var Block = (function () {
         this.emptyDelayTimer = 0;
     }
     Block.TYPE_COUNT = 6;
-    Block.WIDTH = 10;
-    Block.HEIGHT = 10;
+    Block.WIDTH = 15;
+    Block.HEIGHT = 15;
     Block.FALL_DURATION = 50;
     Block.POP_DELAY_INTERVAL = 250;
     Block.EMPTY_DELAY_INTERVAL = 250;
-    Block.prototype.Update = function (elapsedMilliseconds) {
+    Block.prototype.Update = function (elapsedMilliseconds, board) {
         switch(this.State) {
             case BlockState.WaitingToFall:
                 this.fallDelayTimer += elapsedMilliseconds;
@@ -89,6 +92,7 @@ var Block = (function () {
                 if(this.popTimer >= this.POP_DURATION) {
                     this.popTimer = 0;
                     this.State = BlockState.WaitingToEmpty;
+                    board.Score += this.POP_SCORE;
                 }
                 break;
             case BlockState.WaitingToEmpty:
@@ -97,6 +101,7 @@ var Block = (function () {
                     this.emptyDelayTimer = 0;
                     this.EmptyDelayDuration = 0;
                     this.State = BlockState.Empty;
+                    this.JustBecameEmpty = true;
                 }
                 break;
         }

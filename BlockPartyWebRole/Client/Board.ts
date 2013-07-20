@@ -2,18 +2,31 @@
 /// <reference path="Block.ts" />
 
 class Board {
+    public Score: number = 0;
+
     private board: Block[][];
+    private newRow: Block[];
     private slideInProgress: bool = false;
     private slideDirection: number = 0;
     private slideTimer: number = 0;
     private slideDuration: number = 50;
+    private chainCount: number = 1;
+    private raiseStack: bool = false;
+    private riseTimer: number = 0;
+    private riseDuration: number = 10000;
+    private riseForcedRate: number = 15;
+    private loseTimer: number = 0;
+    private loseDuration: number = 10000;
+    private lost: bool = false;
     private previousMouseState: MouseState;
+    private previousClickTime: number;
     private selectedRow: number = -1;
     private selectedColumn: number = -1;
 
     private ROWS: number = 10;
-    private COLUMNS: number = 10;
-    private STARTING_ROW: number = 0;
+    private COLUMNS: number = 6;
+    private STARTING_ROW: number = 5;
+    private SCORE_FORCED_RISE: number = 1;
 
     constructor() {
         // Initialize the board
@@ -32,20 +45,40 @@ class Board {
             }
         }
 
+        // Initialize the new row of blocks
+        this.newRow = new Block[];
+        for (var column = 0; column < this.COLUMNS; column++) {
+            this.newRow[column] = new Block();
+            this.newRow[column].State = BlockState.Idle;
+            this.newRow[column].Type = Math.floor(Math.random() * Block.TYPE_COUNT);
+        }
+
         // Initialze mouse state
         this.previousMouseState = Mouse.GetState();
     }
 
-    private HandleInput() {
+    private HandleInput(elapsedMilliseconds: number) {
         // Determine which block is being hovered over
         var mouseState: MouseState = Mouse.GetState();
-        var row: number = Math.floor(mouseState.Y / Block.HEIGHT);
+        var row: number = Math.floor(((Block.HEIGHT * this.riseTimer / this.riseDuration) + mouseState.Y) / Block.HEIGHT);
         var column: number = Math.floor(mouseState.X / Block.WIDTH);
 
         // If the mouse is hovering over a valid block, select or slide it
         if (row >= 0 && row < this.ROWS && column >= 0 && column < this.COLUMNS) {
             // If the mouse has been clicked, select the block that the mouse is hovering over
             if (mouseState.LeftButton == true && this.previousMouseState.LeftButton == false) {
+                var delta = Date.now() - this.previousClickTime;
+                if (delta <= Mouse.DoubleClickDelay) {
+                    if (Math.sqrt(Math.pow(Math.abs(mouseState.X - this.previousMouseState.X), 2) + Math.pow(Math.abs(mouseState.Y - this.previousMouseState.Y), 2)) < 10) {
+                        this.raiseStack = true;
+                    }        
+                }
+                else {
+                    this.raiseStack = false;
+                }
+                
+                this.previousClickTime = Date.now();
+                
                 if (this.board[row][column].State == BlockState.Idle) {
                     this.selectedRow = row;
                     this.selectedColumn = column;
@@ -59,6 +92,7 @@ class Board {
                     this.board[this.selectedRow][this.selectedColumn].State == BlockState.Idle &&
                     (this.board[this.selectedRow][this.selectedColumn - 1].State == BlockState.Idle ||
                     this.board[this.selectedRow][this.selectedColumn - 1].State == BlockState.Empty)) {
+                    
                     // Swap the selected block with the one to its left
                     this.slideInProgress = true;
                     this.slideDirection = -1;
@@ -68,6 +102,7 @@ class Board {
                     this.board[this.selectedRow][this.selectedColumn].State == BlockState.Idle &&
                     (this.board[this.selectedRow][this.selectedColumn + 1].State == BlockState.Idle ||
                     this.board[this.selectedRow][this.selectedColumn + 1].State == BlockState.Empty)) {
+                    
                     // Swap the selected block with the one to its right
                     this.slideInProgress = true;
                     this.slideDirection = 1;
@@ -79,6 +114,15 @@ class Board {
         if (mouseState.LeftButton == false) {
             this.selectedRow = -1;
             this.selectedColumn = -1;
+        }
+
+        if(this.raiseStack) {
+            this.riseTimer += elapsedMilliseconds * this.riseForcedRate;
+            this.Score += this.SCORE_FORCED_RISE;
+
+            if (this.riseTimer >= this.riseDuration && !mouseState.LeftButton) {
+                this.raiseStack = false;
+            }
         }
 
         this.previousMouseState = mouseState;
@@ -103,6 +147,8 @@ class Board {
     }
 
     private DetectMatches() {
+        var incrementChain: bool = false;
+
         // Look for horizontal matches
         for (var row = 0; row < this.ROWS; row++) {
             var horizontallyMatchingBlocks = 0;
@@ -123,6 +169,9 @@ class Board {
                     if (horizontallyMatchingBlocks >= 2) {
                         for (var matchingColumn = horizontallyMatchingBlocks; matchingColumn >= 0; matchingColumn--) {
                             this.board[row][column - matchingColumn].State = BlockState.Matched;
+                            if (this.board[row][column - matchingColumn].EligibleForChain == true) {
+                                incrementChain = true;
+                            }
                         }
                     }
 
@@ -152,6 +201,9 @@ class Board {
                     if (verticallyMatchingBlocks >= 2) {
                         for (var matchingRow = verticallyMatchingBlocks; matchingRow >= 0; matchingRow--) {
                             this.board[row - matchingRow][column].State = BlockState.Matched;
+                            if (this.board[row - matchingRow][column].EligibleForChain == true) {
+                                incrementChain = true;
+                            }
                         }
                     }
 
@@ -160,10 +212,15 @@ class Board {
                 }
             }
         }
+
+        if (incrementChain == true) {
+            this.chainCount++;
+        }
     }
 
     private ProcessMatchedBlocks() {
         var matchedBlocks: number = 0;
+        var incrementChain: bool = false;
 
         for (var row = 0; row < this.ROWS; row++) {
             for (var column = 0; column < this.COLUMNS; column++) {
@@ -175,6 +232,11 @@ class Board {
 
         var delayCounter = matchedBlocks;
 
+        // Score combos
+        if (matchedBlocks > 3) {
+            this.Score += matchedBlocks * 100;
+        }
+
         for (var row = 0; row < this.ROWS; row++) {
             for (var column = 0; column < this.COLUMNS; column++) {
                 if (this.board[row][column].State == BlockState.Matched) {
@@ -184,6 +246,43 @@ class Board {
                     delayCounter--;
                 }
             }
+        }
+    }
+
+    private DetectChains() {
+        for (var column = 0; column < this.COLUMNS; column++) {
+            for (var row = this.ROWS - 1; row >= 0; row--) {
+                if (this.board[row][column].JustBecameEmpty == true) {
+                    for (var chainEligibleRow = row - 1; chainEligibleRow >= 0; chainEligibleRow--) {
+                        if (this.board[chainEligibleRow][column].State == BlockState.Idle) {
+                            this.board[chainEligibleRow][column].EligibleForChain = true;
+                        }
+                    }
+                }
+
+                this.board[row][column].JustBecameEmpty = false;
+            }
+        }
+    }
+
+    private DetectChainStop() {
+        var stopChain: bool = true;
+        for (var row = 0; row < this.ROWS; row++) {
+            for (var column = 0; column < this.COLUMNS; column++) {
+                if (this.board[row][column].State != BlockState.Idle && this.board[row][column].State != BlockState.Empty) {
+                    stopChain = false;
+                }
+            }
+        }
+
+        if (stopChain == true) {
+            for (var row = 0; row < this.ROWS; row++) {
+                for (var column = 0; column < this.COLUMNS; column++) {
+                    this.board[row][column].EligibleForChain = false;
+                }
+            }
+
+            this.chainCount = 1;
         }
     }
 
@@ -207,7 +306,9 @@ class Board {
                             this.board[row][column].FallTimer = 0;
                             this.board[row + 1][column].Type = this.board[row][column].Type;
                             this.board[row + 1][column].State = BlockState.Falling;
+                            this.board[row + 1][column].EligibleForChain = this.board[row][column].EligibleForChain;
                             this.board[row][column].State = BlockState.Empty;
+                            this.board[row][column].EligibleForChain = false;
                         }
                         else {
                             this.board[row][column].FallTimer += elapsedMilliseconds;
@@ -221,16 +322,78 @@ class Board {
         }
     }
 
+    private RaiseBoard(elapsedMilliseconds: number) {
+        // Determine whether the board should raise by searching for blocks are in a non-idle/empty state
+        var raiseBoard: bool = true;
+        var losing: bool = false;
+        for (var row = 0; row < this.ROWS; row++) {
+            for (var column = 0; column < this.COLUMNS; column++) {
+                if (row == 0) {
+                    // If there are any idle blocks in the top row, stop raising the board and start the losing condition timer
+                    if (this.board[row][column].State == BlockState.Idle) {
+                        raiseBoard = false;
+                        losing = true;
+                    }
+                }
+
+                // If there are any non-idle / non-empty blocks, don't raise the board
+                if (this.board[row][column].State != BlockState.Empty &&
+                    this.board[row][column].State != BlockState.Idle) {
+                    raiseBoard = false;
+                }
+            }
+        }
+
+        // If the board should rise, increment the rising timer and check whether it's met its duration
+        if (raiseBoard) {
+            this.riseTimer += elapsedMilliseconds;
+
+            if (this.riseTimer >= this.riseDuration) {
+                this.riseTimer = 0;
+
+                for (var row = 0; row < this.ROWS - 1; row++) {
+                    for (var column = 0; column < this.COLUMNS; column++) {
+                        this.board[row][column].State = this.board[row + 1][column].State;
+                        this.board[row][column].Type = this.board[row + 1][column].Type;
+                    }
+                }
+
+                for (var column = 0; column < this.COLUMNS; column++) {
+                    this.board[this.ROWS - 1][column].State = this.newRow[column].State;
+                    this.board[this.ROWS - 1][column].Type = this.newRow[column].Type;
+
+                    this.newRow[column].Type = Math.floor(Math.random() * Block.TYPE_COUNT);
+                }
+            }
+        }
+
+        if (losing) {
+            this.loseTimer += elapsedMilliseconds;
+
+            // If the losing timer has met its duration, end the game
+            if (this.loseTimer >= this.loseDuration) {
+                this.lost = true;
+            }
+        }
+        else {
+            this.loseTimer = 0;
+        }
+    }
+
     private UpdateBlocks(elapsedMilliseconds: number) {
         for (var row = 0; row < this.ROWS; row++) {
             for (var column = 0; column < this.COLUMNS; column++) {
-                this.board[row][column].Update(elapsedMilliseconds);
+                this.board[row][column].Update(elapsedMilliseconds, this);
             }
         }
     }
 
     private Draw(elapsedMilliseconds: number) {
         // Draw the board
+
+        // Draw the background
+        Graphics.DrawFullscreenRectangle("#222222");
+
         for (var row = 0; row < this.ROWS; row++) {
             for (var column = 0; column < this.COLUMNS; column++) {
                 var color: string;
@@ -248,20 +411,26 @@ class Board {
                 }
 
                 switch (this.board[row][column].State) {
-                    case BlockState.Empty: color = "#000000"; text = "E"; continue; break;
-                    case BlockState.Idle: text = "I"; break;
-                    case BlockState.WaitingToFall: text = "WF"; break;
-                    case BlockState.Falling: text = "Fall"; y = this.board[row][column].FallTimer * Block.HEIGHT / Block.FALL_DURATION; break;
-                    case BlockState.Matched: text = "M"; break;
+                    case BlockState.Empty: color = "#000000"; break;
+                    case BlockState.Idle: break;
+                    case BlockState.WaitingToFall: break;
+                    case BlockState.Falling: y = this.board[row][column].FallTimer * Block.HEIGHT / Block.FALL_DURATION; break;
+                    case BlockState.Matched: break;
                     case BlockState.Flashing:
                         if (Date.now() % 100 > 50) {
                             color = "white";
                         }
-                        text = "Flash";
                         break;
-                    case BlockState.WaitingToPop: text = "WP"; break;
-                    case BlockState.Popping: text = "P"; break;
-                    case BlockState.WaitingToEmpty: color = "black"; text = "WE"; break;
+                    case BlockState.WaitingToPop: break;
+                    case BlockState.Popping: break;
+                    case BlockState.WaitingToEmpty: color = "black"; break;
+                }
+
+                if (this.board[row][column].EligibleForChain == true) {
+                    text = "E";
+                }
+                else {
+                    text = "";
                 }
 
                 if (this.slideInProgress == true &&
@@ -274,18 +443,49 @@ class Board {
                     }
                 }
 
-                Graphics.DrawRectangle(new Vector2(column * Block.WIDTH + x, row * Block.HEIGHT + y), Block.WIDTH, Block.HEIGHT, 1, "black", color);
+                y -= Block.HEIGHT * this.riseTimer / this.riseDuration;
+
+                Graphics.DrawRectangle(new Vector2(column * Block.WIDTH + x /*+ (Graphics.WorldWidth / 2 - Block.WIDTH * this.COLUMNS / 2)*/, row * Block.HEIGHT + y), Block.WIDTH, Block.HEIGHT, 1, "black", color);
                 //Graphics.DrawText(text, new Vector2(column * Block.WIDTH + Block.WIDTH / 2 + x, row * Block.HEIGHT + Block.HEIGHT / 2 + y), "white");
             }
+        }
+
+        // Draw the new row of blocks
+        for (var column = 0; column < this.COLUMNS; column++) {
+            var color: string;
+            var text: string;
+            var x: number = 0;
+            var y: number = 0;
+
+            switch (this.newRow[column].Type) {
+                case BlockType.A: color = "#880000"; break;
+                case BlockType.B: color = "#008800"; break;
+                case BlockType.C: color = "#000088"; break;
+                case BlockType.D: color = "#008888"; break;
+                case BlockType.E: color = "#880088"; break;
+                case BlockType.F: color = "#888800"; break;
+            }
+
+            //Graphics.DrawRectangle(new Vector2(column * Block.WIDTH /*+ (Graphics.WorldWidth / 2 - Block.WIDTH * this.COLUMNS / 2)*/, this.ROWS * Block.HEIGHT - (Block.HEIGHT * this.riseTimer / this.riseDuration)), Block.WIDTH, Block.HEIGHT, 1, "black", color);
+        }
+
+        //Graphics.DrawText("Score: " + this.Score.toString(), new Vector2(70, 10), "white");
+        //Graphics.DrawText("Chain Count: " + this.chainCount.toString(), new Vector2(70, 15), "white");
+
+        if (this.lost) {
+            //Graphics.DrawText("You lose... LOSER!!!", new Vector2(50, 50), "white");
         }
     }
 
     public Update(elapsedMilliseconds: number) {
-        this.HandleInput();
+        this.HandleInput(elapsedMilliseconds);
         this.HandleSlidingBlocks(elapsedMilliseconds);
         this.DetectMatches();
         this.ProcessMatchedBlocks();
+        this.DetectChains();
+        this.DetectChainStop();
         this.ApplyGravity(elapsedMilliseconds);
+        this.RaiseBoard(elapsedMilliseconds);
         this.UpdateBlocks(elapsedMilliseconds);
         this.Draw(elapsedMilliseconds);
     }

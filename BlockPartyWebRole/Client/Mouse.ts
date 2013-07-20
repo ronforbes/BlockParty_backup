@@ -10,6 +10,8 @@ class MouseState {
 }
 
 class MouseManager {
+    public DoubleClickDelay: number = 150;
+
     private canvas: HTMLCanvasElement;
     private x: number;
     private y: number;
@@ -38,6 +40,12 @@ class MouseManager {
             event.preventDefault();
         });
 
+        if (window.navigator.msPointerEnabled) {
+            this.canvas.addEventListener('MSPointerDown', function (event: MSPointerEvent) {
+                
+            });
+        }
+        
         this.canvas.addEventListener('mouseup', function (event: MouseEvent) {
             if (event.button == 0) {
                 that.leftButton = false;
