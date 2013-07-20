@@ -136,6 +136,7 @@
       <SubType>Designer</SubType>
     </AppxManifest>
     <None Include="BlockPartyWindowsStore_TemporaryKey.pfx" />
+    <Content Include="Content\SpriteFont.xnb" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Assets\Logo.png" />

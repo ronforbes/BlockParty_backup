@@ -1,21 +1,35 @@
-﻿using Microsoft.Xna.Framework;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Audio;
+using Microsoft.Xna.Framework.Content;
+using Microsoft.Xna.Framework.GamerServices;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
+using Microsoft.Xna.Framework.Input.Touch;
+using Microsoft.Xna.Framework.Media;
 
-namespace BlockPartyWindowsStore
+namespace BlockPartyContent
 {
     /// <summary>
     /// This is the main type for your game
     /// </summary>
-    public class Game : Microsoft.Xna.Framework.Game
+    public class Game1 : Microsoft.Xna.Framework.Game
     {
-        GraphicsDeviceManager _graphics;
-        SpriteBatch _spriteBatch;
-        SpriteFont spriteFont;
+        GraphicsDeviceManager graphics;
+        SpriteBatch spriteBatch;
 
-        public Game()
+        public Game1()
         {
-            _graphics = new GraphicsDeviceManager(this);
+            graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
+
+            // Frame rate is 30 fps by default for Windows Phone.
+            TargetElapsedTime = TimeSpan.FromTicks(333333);
+
+            // Extend battery life under lock.
+            InactiveSleepTime = TimeSpan.FromSeconds(1);
         }
 
         /// <summary>
@@ -38,9 +52,9 @@ namespace BlockPartyWindowsStore
         protected override void LoadContent()
         {
             // Create a new SpriteBatch, which can be used to draw textures.
-            _spriteBatch = new SpriteBatch(GraphicsDevice);
+            spriteBatch = new SpriteBatch(GraphicsDevice);
 
-            spriteFont = Content.Load<SpriteFont>("SpriteFont");
+            // TODO: use this.Content to load your game content here
         }
 
         /// <summary>
@@ -59,6 +73,10 @@ namespace BlockPartyWindowsStore
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
+            // Allows the game to exit
+            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
+                this.Exit();
+
             // TODO: Add your update logic here
 
             base.Update(gameTime);
@@ -72,9 +90,7 @@ namespace BlockPartyWindowsStore
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
-            _spriteBatch.Begin();
-            _spriteBatch.DrawString(spriteFont, "text", new Vector2(0, 0), Color.White);
-            _spriteBatch.End();
+            // TODO: Add your drawing code here
 
             base.Draw(gameTime);
         }
