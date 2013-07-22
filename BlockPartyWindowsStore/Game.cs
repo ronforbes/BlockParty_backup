@@ -8,13 +8,17 @@ namespace BlockPartyWindowsStore
     /// </summary>
     public class Game : Microsoft.Xna.Framework.Game
     {
-        GraphicsDeviceManager _graphics;
-        SpriteBatch _spriteBatch;
-        SpriteFont spriteFont;
+        public int WorldWidth = 1600;
+        public int WorldHeight = 900;
+        GraphicsDeviceManager graphicsDeviceManager;
+        GraphicsManager graphicsManager;
+        ScreenManager screenManager;
+        MouseManager mouseManager;
+        Board board;
 
         public Game()
         {
-            _graphics = new GraphicsDeviceManager(this);
+            graphicsDeviceManager = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
         }
 
@@ -26,8 +30,11 @@ namespace BlockPartyWindowsStore
         /// </summary>
         protected override void Initialize()
         {
-            // TODO: Add your initialization logic here
-
+            graphicsManager = new GraphicsManager();
+            screenManager = new ScreenManager(GraphicsDevice);
+            mouseManager = new MouseManager(screenManager);
+            board = new Board(GraphicsDevice);
+            IsMouseVisible = true;
             base.Initialize();
         }
 
@@ -37,10 +44,7 @@ namespace BlockPartyWindowsStore
         /// </summary>
         protected override void LoadContent()
         {
-            // Create a new SpriteBatch, which can be used to draw textures.
-            _spriteBatch = new SpriteBatch(GraphicsDevice);
-
-            spriteFont = Content.Load<SpriteFont>("SpriteFont");
+            graphicsManager.LoadContent(GraphicsDevice, Content);
         }
 
         /// <summary>
@@ -49,7 +53,7 @@ namespace BlockPartyWindowsStore
         /// </summary>
         protected override void UnloadContent()
         {
-            // TODO: Unload any non ContentManager content here
+            graphicsManager.UnloadContent();
         }
 
         /// <summary>
@@ -59,8 +63,10 @@ namespace BlockPartyWindowsStore
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
-            // TODO: Add your update logic here
-
+            screenManager.Update();
+            mouseManager.Update(screenManager);
+            board.Update(gameTime, mouseManager);
+            
             base.Update(gameTime);
         }
 
@@ -72,9 +78,11 @@ namespace BlockPartyWindowsStore
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
-            _spriteBatch.Begin();
-            _spriteBatch.DrawString(spriteFont, "text", new Vector2(0, 0), Color.White);
-            _spriteBatch.End();
+            graphicsManager.Begin();
+
+            board.Draw(gameTime, graphicsManager);
+
+            graphicsManager.End();
 
             base.Draw(gameTime);
         }
