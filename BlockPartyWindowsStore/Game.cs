@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using System;
 
 namespace BlockPartyWindowsStore
 {
@@ -14,6 +15,7 @@ namespace BlockPartyWindowsStore
         GraphicsManager graphicsManager;
         ScreenManager screenManager;
         MouseManager mouseManager;
+        SoundManager soundManager;
         Board board;
 
         public Game()
@@ -33,7 +35,8 @@ namespace BlockPartyWindowsStore
             graphicsManager = new GraphicsManager();
             screenManager = new ScreenManager(GraphicsDevice);
             mouseManager = new MouseManager(screenManager);
-            board = new Board(GraphicsDevice);
+            soundManager = new SoundManager();
+            board = new Board(GraphicsDevice, soundManager);
             IsMouseVisible = true;
             base.Initialize();
         }
@@ -45,6 +48,7 @@ namespace BlockPartyWindowsStore
         protected override void LoadContent()
         {
             graphicsManager.LoadContent(GraphicsDevice, Content);
+            soundManager.LoadContent(Content);
         }
 
         /// <summary>
@@ -65,11 +69,17 @@ namespace BlockPartyWindowsStore
         {
             screenManager.Update();
             mouseManager.Update(screenManager);
-            board.Update(gameTime, mouseManager);
+
+            // Add a bit of a delay until there's a menu in front of this
+            if (gameTime.TotalGameTime.TotalSeconds > 1)
+            {
+                board.Update(gameTime, mouseManager, soundManager);
+            }
             
             base.Update(gameTime);
         }
 
+        double scale = 1;
         /// <summary>
         /// This is called when the game should draw itself.
         /// </summary>

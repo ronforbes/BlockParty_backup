@@ -47,12 +47,12 @@ namespace BlockPartyWindowsStore
         /// <summary>
         /// Width of a block, relative to aspect ratio
         /// </summary>
-        public const int Width = 90;
+        public const int Width = 30;
 
         /// <summary>
         /// Height of a block, relative to aspect ratio
         /// </summary>
-        public const int Height = 90;
+        public const int Height = 30;
 
         /// <summary>
         /// Current state of the block
@@ -200,9 +200,31 @@ namespace BlockPartyWindowsStore
         /// </summary>
         double emptyDelayDuration;
 
+        /// <summary>
+        /// Scale at which the block is rendered
+        /// </summary>
+        float scale = 1.0f;
+
+        /// <summary>
+        /// Color with which the block is rendered
+        /// </summary>
+        Color color;
+
+        /// <summary>
+        /// Reference to the parent board
+        /// </summary>
+        Board board;
+
+        /// <summary>
+        /// Reference to the sound manager for playing block sound effects
+        /// </summary>
+        SoundManager soundManager;
+
         // Construct the block
-        public Block(GraphicsDevice graphicsDevice)
+        public Block(Board board, SoundManager soundManager)
         {
+            this.board = board;
+            this.soundManager = soundManager;
             State = BlockState.Empty;
             Type = -1;
         }
@@ -242,6 +264,13 @@ namespace BlockPartyWindowsStore
             fallTimeElapsed = 0;
         }
 
+        public void Land()
+        {
+            State = BlockState.Idle;
+            scale = 1.25f;
+            color = new Color(color.R + 0.5f, color.G + 0.5f, color.B + 0.5f, color.A + 0.5f);
+        }
+
         public void Match()
         {
             State = BlockState.Matched;
@@ -267,6 +296,8 @@ namespace BlockPartyWindowsStore
         {
             State = BlockState.Popping;
             popTimeElapsed = 0;
+            board.Score += Board.ScoreBlockPop;
+            soundManager.Play("BlockPop");
         }
 
         public void WaitToEmpty()
@@ -322,11 +353,13 @@ namespace BlockPartyWindowsStore
 
                     if (fallTimeElapsed >= fallDuration)
                     {
+                        FallTarget.State = BlockState.Falling;
                         FallTarget.Type = Type;
                         FallTarget.ChainEligible = ChainEligible;
                         FallTarget.JustFell = true;
                         
                         State = BlockState.Empty;
+                        Type = -1;
                         ChainEligible = false;
                     }
                     break;
@@ -371,44 +404,119 @@ namespace BlockPartyWindowsStore
             }
         }
 
-        public void Draw(GameTime gameTime, GraphicsManager graphicsManager, int row, int column)
+        public void Draw(GameTime gameTime, GraphicsManager graphicsManager, int row, int column, Vector2 boardPosition, bool nextRow)
         {
-            Color color = Color.Black;
+            Vector2 position = new Vector2();
 
             switch (Type)
             {
-                case 0: color = Color.Red; break;
-                case 1: color = Color.Green; break;
-                case 2: color = Color.Blue; break;
-                case 3: color = Color.Cyan; break;
-                case 4: color = Color.Magenta; break;
-                case 5: color = Color.Yellow; break;
+                default: color = new Color(0.0f, 0.0f, 0.0f, 0.0f); break;
+                case 0: color = new Color(1.0f, 0.0f, 0.0f, 1.0f); break;
+                case 1: color = new Color(0.0f, 1.0f, 0.0f, 1.0f); break;
+                case 2: color = new Color(0.0f, 0.0f, 1.0f, 1.0f); break;
+                case 3: color = new Color(0.0f, 1.0f, 1.0f, 1.0f); break;
+                case 4: color = new Color(1.0f, 1.0f, 0.0f, 1.0f); break;
+                case 5: color = new Color(1.0f, 0.0f, 1.0f, 1.0f); break;
             }
 
             switch (State)
             {
-                case BlockState.Empty: color = Color.Black; break;
-                case BlockState.Idle: break;
+                case BlockState.Empty: break;
+                
+                case BlockState.Idle:
+                    break;
+                
+                case BlockState.Sliding:
+                    int direction = slideDirection == BlockSlideDirection.Left ? -1 : 1;
+                    position.X = (float)Tween.Linear(slideTimeElapsed, 0, direction * Width, slideDuration);
+                    break;
+                
                 case BlockState.WaitingToFall: break;
-                case BlockState.Falling: break;
+                
+                case BlockState.Falling:
+                    position.Y += (float)Tween.Linear(fallTimeElapsed, 0, Height, fallDuration);
+                    break;
+                
                 case BlockState.Matched: break;
+                
                 case BlockState.Flashing:
                     if (gameTime.TotalGameTime.TotalMilliseconds % flashFrequency > flashFrequency / 2)
                     {
                         color = Color.White;
                     }
                     break;
+                
                 case BlockState.WaitingToPop: break;
-                case BlockState.Popping: break;
-                case BlockState.WaitingToEmpty: color = Color.Black; break;
+                
+                case BlockState.Popping:
+                    scale = (float)Tween.Linear(popTimeElapsed, 1.0, 1.0, popDuration);
+                    color.R = (byte)Tween.Linear(popTimeElapsed, color.R, -1 * color.R, popDuration);
+                    color.G = (byte)Tween.Linear(popTimeElapsed, color.G, -1 * color.G, popDuration);
+                    color.B = (byte)Tween.Linear(popTimeElapsed, color.B, -1 * color.B, popDuration);
+                    color.A = (byte)Tween.Linear(popTimeElapsed, color.A, -1 * color.A, popDuration);
+                    break;
+                
+                case BlockState.WaitingToEmpty:
+                    scale = 1.0f;
+                    color = Color.Black; 
+                    break;
             }
 
-            if(Selected)
+            if(Selected && State == BlockState.Idle)
             {
+                scale = 1.25f;
                 color = new Color(color.ToVector3() + new Vector3(0.5f, 0.5f, 0.5f));
             }
 
-            graphicsManager.DrawRectangle(new Rectangle(column * Width, row * Height, Width, Height), color);
+            if (nextRow)
+            {
+                color = new Color(color.ToVector3() - new Vector3(0.5f, 0.5f, 0.5f));
+            }
+
+            // Apply dampening
+            scale += (1.0f - scale) * 0.15f;
+            if (Math.Abs(scale - 1.0f) < 0.01)
+                scale = 1.0f;
+
+            // dampen color
+            switch (Type)
+            {
+                case 0:
+                    color.R += (byte)((Color.Red.R - color.R) * 0.15f);
+                    color.G += (byte)((Color.Red.G - color.G) * 0.15f);
+                    color.B += (byte)((Color.Red.B - color.B) * 0.15f);
+                    break;
+                case 1:
+                    color.R += (byte)((Color.Green.R - color.R) * 0.15f);
+                    color.G += (byte)((Color.Green.G - color.G) * 0.15f);
+                    color.B += (byte)((Color.Green.B - color.B) * 0.15f);
+                    break;
+                case 2:
+                    color.R += (byte)((Color.Blue.R - color.R) * 0.15f);
+                    color.G += (byte)((Color.Blue.G - color.G) * 0.15f);
+                    color.B += (byte)((Color.Blue.B - color.B) * 0.15f);
+                    break;
+                case 3:
+                    color.R += (byte)((Color.Cyan.R - color.R) * 0.15f);
+                    color.G += (byte)((Color.Cyan.G - color.G) * 0.15f);
+                    color.B += (byte)((Color.Cyan.B - color.B) * 0.15f);
+                    break;
+                case 4:
+                    color.R += (byte)((Color.Magenta.R - color.R) * 0.15f);
+                    color.G += (byte)((Color.Magenta.G - color.G) * 0.15f);
+                    color.B += (byte)((Color.Magenta.B - color.B) * 0.15f);
+                    break;
+                case 5:
+                    color.R += (byte)((Color.Yellow.R - color.R) * 0.15f);
+                    color.G += (byte)((Color.Yellow.G - color.G) * 0.15f);
+                    color.B += (byte)((Color.Yellow.B - color.B) * 0.15f);
+                    break;
+            }
+            
+            if (State != BlockState.Empty)
+            {
+                graphicsManager.DrawRectangle("Blank", new Rectangle((int)boardPosition.X + column * Width + Width / 2 + (int)position.X, row * Height + Height / 2 + (int)position.Y + (int)boardPosition.Y, (int)(Width * 0.95), (int)(Height * 0.95)), color, 0.0f, scale);
+            }
         }
     }
 }

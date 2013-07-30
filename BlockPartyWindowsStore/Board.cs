@@ -11,6 +11,16 @@ namespace BlockPartyWindowsStore
 {
     class Board
     {
+        enum BoardState
+        {
+            Populating,
+            CountingDown,
+            Playing,
+            GameOver
+        }
+
+        BoardState state;
+
         /// <summary>
         /// Number of rows on the board
         /// </summary>
@@ -24,7 +34,7 @@ namespace BlockPartyWindowsStore
         /// <summary>
         /// Specifies how many rows of the board are empty at initial state
         /// </summary>
-        const int initialEmptyRows = 0;
+        const int initialEmptyRows = 5;
 
         /// <summary>
         /// The matrix of blocks
@@ -72,23 +82,111 @@ namespace BlockPartyWindowsStore
         double gameOverDelayTimeElapsed;
 
         /// <summary>
-        /// Duration of time that game over is delayed
+        /// Duration of time that game over is delayed (in milliseconds)
         /// </summary>
         const double gameOverDelayDuration = 10000;
 
         /// <summary>
-        /// Determines whether game over conditions have been met
+        /// Amount of time that the board has been populating (in milliseconds)
         /// </summary>
-        bool gameOver = false;
+        double populatingTimeElapsed;
+
+        /// <summary>
+        /// Duration of time to populate the board (in milliseconds)
+        /// </summary>
+        const double populatingDuration = 1000;
+
+        /// <summary>
+        /// Amount of time to delay each block's population on the board (in milliseconds)
+        /// </summary>
+        int[,] populatingDelays;
+
+        /// <summary>
+        /// Maximum delay applied to blocks populating the board (in milliseconds)
+        /// </summary>
+        const int populatingMaxDelay = 250;
+        
+        /// <summary>
+        /// Amount of time that has been counted down before gameplay (in milliseconds)
+        /// </summary>
+        double countdownTimeElapsed;
+
+        /// <summary>
+        /// Duration of time to count down before gameplay (in milliseconds)
+        /// </summary>
+        const double countdownDuration = 3000;
+
+        /// <summary>
+        /// The player's score
+        /// </summary>
+        public int Score;
+
+        public const int ScoreBlockPop = 10;
+        const int scoreBlockComboInterval = 50;
+        const int scoreBlockChainInterval = 100;
+
+        double scoreDisplay;
+
+        /// <summary>
+        /// Reference to the sound manager, used to play board sound effects
+        /// </summary>
+        SoundManager soundManager;
+
+        /// <summary>
+        /// Timestamp of the most recent mouse press, used to detect double presses
+        /// </summary>
+        double previousClickTime;
+
+        /// <summary>
+        /// X position of the previous mouse click
+        /// </summary>
+        int previousClickX;
+
+        /// <summary>
+        /// Y position of the previous mouse click
+        /// </summary>
+        int previousClickY;
+
+        /// <summary>
+        /// Maximum amount of time in between clicks to constitute a double click (in milliseconds)
+        /// </summary>
+        const double doubleClickDuration = 1000;
+
+        /// <summary>
+        /// Maximum distance between clicks to constitute a double click
+        /// </summary>
+        const float doubleClickDistance = 5;
+
+        /// <summary>
+        /// Determines whether the board should be raised at the accelerated rate
+        /// </summary>
+        bool raiseRateAccelerated;
+
+        /// <summary>
+        /// Rate at which board should raise after a double click
+        /// </summary>
+        const double raiseRateAcceleration = 15;
 
         /// <summary>
         /// Construct the board
         /// </summary>
         /// <param name="graphicsDevice"></param>
-        public Board(GraphicsDevice graphicsDevice)
+        public Board(GraphicsDevice graphicsDevice, SoundManager soundManager)
         {
             // Create the random number generator
             random = new Random();
+
+            // Start the board in the populating state
+            state = BoardState.Populating;
+            populatingTimeElapsed = 0;
+            populatingDelays = new int[rows, columns];
+            for (int row = 0; row < rows; row++)
+            {
+                for (int column = 0; column < columns; column++)
+                {
+                    populatingDelays[row, column] = random.Next(0, populatingMaxDelay);
+                }
+            }
 
             // Create the board
             blocks = new Block[rows, columns];
@@ -96,7 +194,7 @@ namespace BlockPartyWindowsStore
             {
                 for (int column = 0; column < columns; column++)
                 {
-                    blocks[row, column] = new Block(graphicsDevice);
+                    blocks[row, column] = new Block(this, soundManager);
 
                     // Only fill the first bottom rows
                     if (row < initialEmptyRows)
@@ -114,23 +212,26 @@ namespace BlockPartyWindowsStore
             nextRowBlocks = new Block[columns];
             for (int column = 0; column < columns; column++)
             {
-                nextRowBlocks[column] = new Block(graphicsDevice);
+                nextRowBlocks[column] = new Block(this, soundManager);
                 nextRowBlocks[column].Create();
             }
+
+            // Save the sound manager
+            this.soundManager = soundManager;
         }
 
         /// <summary>
         /// Process user input
         /// </summary>
         /// <param name="mouseManager"></param>
-        public void HandleInput(MouseManager mouseManager)
+        public void HandleInput(GameTime gameTime, MouseManager mouseManager)
         {
             // If the mouse has been pressed over a valid block, select the block that it's hovering over
             if (mouseManager.LeftButtonPressed)
             {
                 // Determine which block the mouse is hovering over
-                int row = mouseManager.Y / Block.Height;
-                int column = mouseManager.X / Block.Width;
+                int row = (mouseManager.Y + (int)(Block.Height * raiseTimeElapsed / raiseDuration)) / Block.Height;
+                int column = (mouseManager.X - (ScreenManager.WorldWidth / 2 - columns * Block.Width / 2)) / Block.Width;
 
                 if (row >= 0 && row < rows && column >= 0 && column < columns)
                 {
@@ -141,13 +242,26 @@ namespace BlockPartyWindowsStore
                         blocks[selectedRow, selectedColumn].Selected = true;
                     }
                 }
+
+                // Determine if the mouse was double pressed
+                if (gameTime.TotalGameTime.TotalMilliseconds - previousClickTime < doubleClickDuration)
+                {
+                    if (Vector2.Distance(new Vector2(mouseManager.X, mouseManager.Y), new Vector2(previousClickX, previousClickY)) < doubleClickDistance)
+                    {
+                        raiseRateAccelerated = true;
+                    }
+                }
+
+                previousClickTime = gameTime.TotalGameTime.TotalMilliseconds;
+                previousClickX = mouseManager.X;
+                previousClickY = mouseManager.Y;
             }
 
             // If a block is selected, swap it based on the mouse's position
             if (selectedRow != -1 && selectedColumn != -1)
             {
                 // Swap the blocks if the mouse has moved to a different column
-                if (mouseManager.X < selectedColumn * Block.Width &&
+                if (mouseManager.X - (ScreenManager.WorldWidth / 2 - columns * Block.Width / 2) < selectedColumn * Block.Width &&
                     selectedColumn - 1 >= 0 &&
                     blocks[selectedRow, selectedColumn].State == BlockState.Idle &&
                     (blocks[selectedRow, selectedColumn - 1].State == BlockState.Idle ||
@@ -159,11 +273,12 @@ namespace BlockPartyWindowsStore
 
                     blocks[selectedRow, selectedColumn].Slide();
                     blocks[selectedRow, selectedColumn - 1].Slide();
+                    soundManager.Play("BlockSlide");
 
                     selectedColumn--;
                 }
 
-                if (mouseManager.X > (selectedColumn + 1) * Block.Width &&
+                if (mouseManager.X - (ScreenManager.WorldWidth / 2 - columns * Block.Width / 2) > (selectedColumn + 1) * Block.Width &&
                     selectedColumn + 1 < columns &&
                     blocks[selectedRow, selectedColumn].State == BlockState.Idle &&
                     (blocks[selectedRow, selectedColumn + 1].State == BlockState.Idle ||
@@ -175,6 +290,7 @@ namespace BlockPartyWindowsStore
 
                     blocks[selectedRow, selectedColumn].Slide();
                     blocks[selectedRow, selectedColumn + 1].Slide();
+                    soundManager.Play("BlockSlide");
 
                     selectedColumn++;
                 }
@@ -284,13 +400,14 @@ namespace BlockPartyWindowsStore
             // Handle combos
             if (matchingBlockCount > 3)
             {
-                // TODO: handle combos
+                Score += matchingBlockCount * scoreBlockComboInterval;
             }
 
             // Handle chain continuation
             if (incrementChain)
             {
                 chainCount++;
+                Score += chainCount * scoreBlockChainInterval;
             }
 
             // Setup matching blocks to pop
@@ -314,6 +431,8 @@ namespace BlockPartyWindowsStore
         /// </summary>
         private void DetectChain()
         {
+            bool stopChain = true;
+
             // Detect blocks that are eligible to participate in chains
             for (int column = 0; column < columns; column++)
             {
@@ -326,10 +445,9 @@ namespace BlockPartyWindowsStore
                             if (blocks[chainEligibleRow, column].State == BlockState.Idle)
                             {
                                 blocks[chainEligibleRow, column].ChainEligible = true;
+                                stopChain = false;
                             }
                         }
-
-                        break;
                     }
 
                     blocks[row, column].JustEmptied = false;
@@ -337,12 +455,11 @@ namespace BlockPartyWindowsStore
             }
 
             // Stop the current chain if all of the blocks are idle or empty
-            bool stopChain = true;
             for (int row = 0; row < rows; row++)
             {
                 for (int column = 0; column < columns; column++)
                 {
-                    if (blocks[row, column].State != BlockState.Idle && blocks[row, column].State != BlockState.Empty)
+                    if (blocks[row, column].State != BlockState.Idle && blocks[row, column].State != BlockState.Empty && blocks[row, column].State != BlockState.Sliding)
                     {
                         stopChain = false;
                     }
@@ -369,6 +486,7 @@ namespace BlockPartyWindowsStore
         /// <param name="gameTime"></param>
         private void ApplyGravity(GameTime gameTime)
         {
+            bool playLandSound = false;
             for (int column = 0; column < columns; column++)
             {
                 bool emptyBlockDetected = false;
@@ -396,12 +514,18 @@ namespace BlockPartyWindowsStore
                         }
                         else
                         {
-                            blocks[row, column].State = BlockState.Idle;
+                            blocks[row, column].Land();
+                            playLandSound = true;
                         }
 
                         blocks[row, column].JustFell = false;
                     }
                 }
+            }
+
+            if (playLandSound)
+            {
+                soundManager.Play("BlockLand");
             }
         }
 
@@ -425,11 +549,19 @@ namespace BlockPartyWindowsStore
             // add the new row to the bottom
             if (raiseBoard)
             {
-                raiseTimeElapsed += gameTime.ElapsedGameTime.TotalMilliseconds;
+                if (raiseRateAccelerated)
+                {
+                    raiseTimeElapsed += gameTime.ElapsedGameTime.TotalMilliseconds * raiseRateAcceleration;
+                }
+                else
+                {
+                    raiseTimeElapsed += gameTime.ElapsedGameTime.TotalMilliseconds;
+                }
 
                 if (raiseTimeElapsed >= raiseDuration)
                 {
                     raiseTimeElapsed = 0;
+                    raiseRateAccelerated = false;
 
                     for (int row = 0; row < rows - 1; row++)
                     {
@@ -484,7 +616,7 @@ namespace BlockPartyWindowsStore
 
                 if (gameOverDelayTimeElapsed >= gameOverDelayDuration)
                 {
-                    gameOver = true;
+                    state = BoardState.GameOver;
                 }
             }
             else
@@ -498,31 +630,56 @@ namespace BlockPartyWindowsStore
         /// </summary>
         /// <param name="gameTime"></param>
         /// <param name="mouseManager"></param>
-        public void Update(GameTime gameTime, MouseManager mouseManager)
+        public void Update(GameTime gameTime, MouseManager mouseManager, SoundManager soundManager)
         {
-            if (!gameOver)
+            switch (state)
             {
-                HandleInput(mouseManager);
+                case BoardState.Populating:
+                    populatingTimeElapsed += gameTime.ElapsedGameTime.TotalMilliseconds;
 
-                DetectMatchingBlocks();
-
-                DetectChain();
-
-                ApplyGravity(gameTime);
-
-                Raise(gameTime);
-
-                DetectGameOver(gameTime);
-
-                // Updating blocks from the bottom up to account for falling logic
-                for (int row = rows - 1; row >= 0; row--)
-                {
-                    for (int column = 0; column < columns; column++)
+                    if (populatingTimeElapsed >= populatingDuration)
                     {
-                        blocks[row, column].Update(gameTime);
+                        state = BoardState.CountingDown;
+                        countdownTimeElapsed = 0;
                     }
-                }
+                    break;
+                
+                case BoardState.CountingDown:
+                    countdownTimeElapsed += gameTime.ElapsedGameTime.TotalMilliseconds;
+
+                    if (countdownTimeElapsed >= countdownDuration)
+                    {
+                        state = BoardState.Playing;
+                    }
+                    break;
+                
+                case BoardState.Playing:
+                    DetectMatchingBlocks();
+
+                    DetectChain();
+
+                    ApplyGravity(gameTime);
+
+                    HandleInput(gameTime, mouseManager);
+
+                    Raise(gameTime);
+
+                    DetectGameOver(gameTime);
+
+                    // Updating blocks from the bottom up to account for falling logic
+                    for (int row = rows - 1; row >= 0; row--)
+                    {
+                        for (int column = 0; column < columns; column++)
+                        {
+                            blocks[row, column].Update(gameTime);
+                        }
+                    }
+                    break;
+                
+                case BoardState.GameOver: break;
             }
+
+            
         }
 
         /// <summary>
@@ -532,19 +689,74 @@ namespace BlockPartyWindowsStore
         /// <param name="graphicsManager"></param>
         public void Draw(GameTime gameTime, GraphicsManager graphicsManager)
         {
-            // Draw the matrix of blocks
-            for (int row = 0; row < rows; row++)
+            switch (state)
             {
-                for (int column = 0; column < columns; column++)
-                {
-                    blocks[row, column].Draw(gameTime, graphicsManager, row, column);
-                }
+                case BoardState.Populating:
+                    // Draw a black background
+                    graphicsManager.DrawRectangle("Blank", new Rectangle(ScreenManager.WorldWidth / 2, ScreenManager.WorldHeight / 2, columns * Block.Width, rows * Block.Height), Color.Black, 0.0f, 1.0f);
+
+                    // Draw the blocks populating the board
+                    int yOffset = 0;
+                    for (int row = 0; row < rows; row++)
+                    {
+                        for (int column = 0; column < columns; column++)
+                        {
+                            yOffset = (int)Tween.ElasticEaseOut(Math.Max(populatingTimeElapsed - populatingDelays[row, column], 0), -1 * rows * Block.Height, rows * Block.Height, populatingDuration);
+                            blocks[row, column].Draw(gameTime, graphicsManager, row, column, new Vector2(ScreenManager.WorldWidth / 2 - columns * Block.Width / 2, yOffset), false);
+                        }
+                    }
+                    break;
+                
+                case BoardState.CountingDown:
+                    // Draw a black background
+                    graphicsManager.DrawRectangle("Blank", new Rectangle(ScreenManager.WorldWidth / 2, ScreenManager.WorldHeight / 2, columns * Block.Width, rows * Block.Height), Color.Black, 0.0f, 1.0f);
+
+                    // Draw the matrix of blocks
+                    for (int row = 0; row < rows; row++)
+                    {
+                        for (int column = 0; column < columns; column++)
+                        {
+                            blocks[row, column].Draw(gameTime, graphicsManager, row, column, new Vector2(ScreenManager.WorldWidth / 2 - columns * Block.Width / 2, (int)(-1 * Block.Height * raiseTimeElapsed / raiseDuration)), false);
+                        }
+                    }
+
+                    graphicsManager.DrawText(Math.Ceiling(3 - countdownTimeElapsed / 1000).ToString(), new Vector2(ScreenManager.WorldWidth / 2, ScreenManager.WorldHeight / 2), Color.White, true);
+                    break;
+                
+                case BoardState.Playing:
+                    // Draw a black background
+                    graphicsManager.DrawRectangle("Blank", new Rectangle(ScreenManager.WorldWidth / 2, ScreenManager.WorldHeight / 2, columns * Block.Width, rows * Block.Height), Color.Black, 0.0f, 1.0f);
+
+                    // Draw the matrix of blocks
+                    for (int row = 0; row < rows; row++)
+                    {
+                        for (int column = 0; column < columns; column++)
+                        {
+                            blocks[row, column].Draw(gameTime, graphicsManager, row, column, new Vector2(ScreenManager.WorldWidth / 2 - columns * Block.Width / 2, (int)(-1 * Block.Height * raiseTimeElapsed / raiseDuration)), false);
+                        }
+                    }
+
+                    // Draw the next row of blocks
+                    for (int column = 0; column < columns; column++)
+                    {
+                        nextRowBlocks[column].Draw(gameTime, graphicsManager, rows, column, new Vector2(ScreenManager.WorldWidth / 2 - columns * Block.Width / 2, (int)(-1 * Block.Height * raiseTimeElapsed / raiseDuration)), true);
+                    }
+
+                    // Draw the score display
+                    scoreDisplay += (Score - scoreDisplay) * 0.1;
+                    if (Math.Abs(Score - scoreDisplay) < 1)
+                        scoreDisplay = Score;
+                    graphicsManager.DrawText(Math.Floor(scoreDisplay).ToString(), new Vector2(50, 50), Color.White, false);
+                    break;
+                
+                case BoardState.GameOver:
+                    graphicsManager.DrawText("GAME OVER", new Vector2(ScreenManager.WorldWidth / 2, ScreenManager.WorldHeight / 2), Color.White, true);
+                    break;
             }
 
-            if (gameOver)
-            {
-                graphicsManager.DrawText("GAME OVER", Vector2.Zero, Color.White);
-            }
+            
+
+            
         }
     }
 }

@@ -135,6 +135,8 @@
     <Compile Include="Game.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ScreenManager.cs" />
+    <Compile Include="SoundManager.cs" />
+    <Compile Include="Tween.cs" />
   </ItemGroup>
   <ItemGroup>
     <AppxManifest Include="Package.appxmanifest">
@@ -142,6 +144,14 @@
     </AppxManifest>
     <None Include="BlockPartyWindowsStore_TemporaryKey.pfx" />
     <Content Include="Content\SpriteFont.xnb" />
+    <Content Include="Content\Circle.xnb" />
+    <Content Include="Content\Diamond.xnb" />
+    <Content Include="Content\Heart.xnb" />
+    <Content Include="Content\Star.xnb" />
+    <Content Include="Content\Triangle.xnb" />
+    <Content Include="Content\BlockSlide.xnb" />
+    <Content Include="Content\BlockPop.xnb" />
+    <Content Include="Content\BlockLand.xnb" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Assets\Logo.png" />

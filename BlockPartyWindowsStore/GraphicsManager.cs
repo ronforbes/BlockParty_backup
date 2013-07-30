@@ -18,7 +18,16 @@ namespace BlockPartyWindowsStore
         SpriteBatch spriteBatch;
 
         // Texture used to render sprites
-        Texture2D texture;
+        Texture2D blankTexture;
+
+        /// <summary>
+        /// Block textures
+        /// </summary>
+        Texture2D circleTexture;
+        Texture2D diamondTexture;
+        Texture2D heartTexture;
+        Texture2D starTexture;
+        Texture2D triangleTexture;
 
         // Sprite font used to render text
         SpriteFont spriteFont;
@@ -32,8 +41,15 @@ namespace BlockPartyWindowsStore
             spriteBatch = new SpriteBatch(graphicsDevice);
 
             // Create the texture
-            texture = new Texture2D(graphicsDevice, 1, 1);
-            texture.SetData(new Color[1] { Color.White });
+            blankTexture = new Texture2D(graphicsDevice, 1, 1);
+            blankTexture.SetData(new Color[1] { Color.White });
+
+            // Load the block textures
+            circleTexture = contentManager.Load<Texture2D>("Circle");
+            diamondTexture = contentManager.Load<Texture2D>("Diamond");
+            heartTexture = contentManager.Load<Texture2D>("Heart");
+            starTexture = contentManager.Load<Texture2D>("Star");
+            triangleTexture = contentManager.Load<Texture2D>("Triangle");
 
             // Create the sprite font
             spriteFont = contentManager.Load<SpriteFont>("SpriteFont");
@@ -42,7 +58,7 @@ namespace BlockPartyWindowsStore
         public void UnloadContent()
         {
             spriteBatch.Dispose();
-            texture.Dispose();
+            blankTexture.Dispose();
         }
 
         public void Begin()
@@ -52,14 +68,28 @@ namespace BlockPartyWindowsStore
             spriteBatch.Begin(SpriteSortMode.Immediate, null, null, null, null, null, scaleMatrix);
         }
 
-        public void DrawRectangle(Rectangle rectangle, Color color)
+        public void DrawRectangle(string textureId, Rectangle rectangle, Color color, float rotation, float scale)
         {
-            spriteBatch.Draw(texture, rectangle, color);
+            // Select the appropriate texture
+            Texture2D texture = null;
+            switch (textureId)
+            {
+                default: texture = blankTexture; break;
+                case "Blank": texture = blankTexture; break;
+                case "Circle": texture = circleTexture; break;
+                case "Diamond": texture = diamondTexture; break;
+                case "Heart": texture = heartTexture; break;
+                case "Star": texture = starTexture; break;
+                case "Triangle": texture = triangleTexture; break;
+            }
+
+            spriteBatch.Draw(texture, new Rectangle(rectangle.X, rectangle.Y, (int)(rectangle.Width * scale), (int)(rectangle.Height * scale)), null, color, rotation, new Vector2(texture.Width / 2.0f, texture.Height / 2.0f), SpriteEffects.None, 1.0f);
         }
 
-        public void DrawText(string text, Vector2 position, Color color)
+        public void DrawText(string text, Vector2 position, Color color, bool centered)
         {
-            spriteBatch.DrawString(spriteFont, text, position, color);
+            Vector2 size = spriteFont.MeasureString(text);
+            spriteBatch.DrawString(spriteFont, text, position - size / 2, color);
         }
 
         public void End()

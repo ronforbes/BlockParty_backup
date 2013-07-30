@@ -10,10 +10,10 @@ namespace BlockPartyWindowsStore
     class ScreenManager
     {
         // Width of the virtual world in which coordinates are specified
-        public const int WorldWidth = 1600;
+        public const int WorldWidth = 400;
 
         // Height of the virtual world in which coorinates are specified
-        public const int WorldHeight = 900;
+        public const int WorldHeight = 300;
 
         // Aspect ratio of the virtual world
         public const float WorldAspectRatio = 16 / 9;

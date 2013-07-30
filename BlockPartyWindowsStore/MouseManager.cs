@@ -52,7 +52,7 @@ namespace BlockPartyWindowsStore
 
             // Determine whether the buttons are currently pressed
             LeftButton = mouseState.LeftButton == ButtonState.Pressed;
-            RightButtonReleased = mouseState.RightButton == ButtonState.Pressed;
+            RightButton = mouseState.RightButton == ButtonState.Pressed;
 
             // Determine whether buttons were just pressed
             LeftButtonPressed = (mouseState.LeftButton == ButtonState.Pressed && previousMouseState.LeftButton == ButtonState.Released) ? true : false;
