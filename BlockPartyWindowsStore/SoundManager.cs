@@ -22,11 +22,12 @@ namespace BlockPartyWindowsStore
             soundEffects.Add("BlockSlide", contentManager.Load<SoundEffect>("BlockSlide"));
             soundEffects.Add("BlockPop", contentManager.Load<SoundEffect>("BlockPop"));
             soundEffects.Add("BlockLand", contentManager.Load<SoundEffect>("BlockLand"));
+            soundEffects.Add("Celebration", contentManager.Load<SoundEffect>("Celebration"));
         }
 
-        public void Play(string key)
+        public void Play(string key, float volume, float pitch, float pan)
         {
-            soundEffects[key].Play();
+            soundEffects[key].Play(volume, pitch, pan);
         }
     }
 }

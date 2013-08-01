@@ -210,6 +210,8 @@ namespace BlockPartyWindowsStore
         /// </summary>
         Color color;
 
+        Color eyeColor;
+
         /// <summary>
         /// Reference to the parent board
         /// </summary>
@@ -297,7 +299,7 @@ namespace BlockPartyWindowsStore
             State = BlockState.Popping;
             popTimeElapsed = 0;
             board.Score += Board.ScoreBlockPop;
-            soundManager.Play("BlockPop");
+            soundManager.Play("BlockPop", 1.0f, 0.0f, 0.0f);
         }
 
         public void WaitToEmpty()
@@ -419,6 +421,8 @@ namespace BlockPartyWindowsStore
                 case 5: color = new Color(1.0f, 0.0f, 1.0f, 1.0f); break;
             }
 
+            eyeColor = Color.White;
+
             switch (State)
             {
                 case BlockState.Empty: break;
@@ -454,11 +458,16 @@ namespace BlockPartyWindowsStore
                     color.G = (byte)Tween.Linear(popTimeElapsed, color.G, -1 * color.G, popDuration);
                     color.B = (byte)Tween.Linear(popTimeElapsed, color.B, -1 * color.B, popDuration);
                     color.A = (byte)Tween.Linear(popTimeElapsed, color.A, -1 * color.A, popDuration);
+                    eyeColor.R = (byte)Tween.Linear(popTimeElapsed, Color.White.R, -1 * Color.White.R, popDuration);
+                    eyeColor.G = (byte)Tween.Linear(popTimeElapsed, Color.White.G, -1 * Color.White.G, popDuration);
+                    eyeColor.B = (byte)Tween.Linear(popTimeElapsed, Color.White.B, -1 * Color.White.B, popDuration);
+                    eyeColor.A = (byte)Tween.Linear(popTimeElapsed, Color.White.A, -1 * Color.White.A, popDuration);
                     break;
                 
                 case BlockState.WaitingToEmpty:
                     scale = 1.0f;
-                    color = Color.Black; 
+                    color = Color.Black;
+                    eyeColor = Color.Black;
                     break;
             }
 
@@ -516,6 +525,12 @@ namespace BlockPartyWindowsStore
             if (State != BlockState.Empty)
             {
                 graphicsManager.DrawRectangle("Blank", new Rectangle((int)boardPosition.X + column * Width + Width / 2 + (int)position.X, row * Height + Height / 2 + (int)position.Y + (int)boardPosition.Y, (int)(Width * 0.95), (int)(Height * 0.95)), color, 0.0f, scale);
+
+                // Draw eyes
+                graphicsManager.DrawRectangle("Circle", new Rectangle((int)boardPosition.X + column * Width + Width / 2 + (int)position.X - Width / 4, row * Height + Height / 2 + (int)position.Y + (int)boardPosition.Y, (int)(Width * 0.30), (int)(Height * 0.20)), eyeColor, 0.0f, scale);
+                graphicsManager.DrawRectangle("Circle", new Rectangle((int)boardPosition.X + column * Width + Width / 2 + (int)position.X - Width / 4, row * Height + Height / 2 + (int)position.Y + (int)boardPosition.Y, (int)(Width * 0.20), (int)(Height * 0.20)), Color.Black, 0.0f, scale);
+                graphicsManager.DrawRectangle("Circle", new Rectangle((int)boardPosition.X + column * Width + Width / 2 + (int)position.X + Width / 4, row * Height + Height / 2 + (int)position.Y + (int)boardPosition.Y, (int)(Width * 0.30), (int)(Height * 0.20)), eyeColor, 0.0f, scale);
+                graphicsManager.DrawRectangle("Circle", new Rectangle((int)boardPosition.X + column * Width + Width / 2 + (int)position.X + Width / 4, row * Height + Height / 2 + (int)position.Y + (int)boardPosition.Y, (int)(Width * 0.20), (int)(Height * 0.20)), Color.Black, 0.0f, scale);
             }
         }
     }

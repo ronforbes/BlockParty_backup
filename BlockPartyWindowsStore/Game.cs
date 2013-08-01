@@ -79,7 +79,6 @@ namespace BlockPartyWindowsStore
             base.Update(gameTime);
         }
 
-        double scale = 1;
         /// <summary>
         /// This is called when the game should draw itself.
         /// </summary>

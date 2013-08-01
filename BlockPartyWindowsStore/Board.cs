@@ -167,6 +167,10 @@ namespace BlockPartyWindowsStore
         /// </summary>
         const double raiseRateAcceleration = 15;
 
+        List<Celebration> celebrations;
+
+        List<ParticleEmitter> particleEmitters;
+
         /// <summary>
         /// Construct the board
         /// </summary>
@@ -218,6 +222,11 @@ namespace BlockPartyWindowsStore
 
             // Save the sound manager
             this.soundManager = soundManager;
+
+            // Initialize celebrations
+            celebrations = new List<Celebration>();
+
+            particleEmitters = new List<ParticleEmitter>();
         }
 
         /// <summary>
@@ -273,7 +282,7 @@ namespace BlockPartyWindowsStore
 
                     blocks[selectedRow, selectedColumn].Slide();
                     blocks[selectedRow, selectedColumn - 1].Slide();
-                    soundManager.Play("BlockSlide");
+                    soundManager.Play("BlockSlide", 1.0f, 0.0f, 0.0f);
 
                     selectedColumn--;
                 }
@@ -290,7 +299,7 @@ namespace BlockPartyWindowsStore
 
                     blocks[selectedRow, selectedColumn].Slide();
                     blocks[selectedRow, selectedColumn + 1].Slide();
-                    soundManager.Play("BlockSlide");
+                    soundManager.Play("BlockSlide", 1.0f, 0.0f, 0.0f);
 
                     selectedColumn++;
                 }
@@ -312,6 +321,10 @@ namespace BlockPartyWindowsStore
         {
             int matchingBlockCount = 0;
             bool incrementChain = false;
+            int comboCelebrationRow = 0;
+            int comboCelebrationColumn = 0;
+            int chainCelebrationRow = 0;
+            int chainCelebrationColumn = 0;
 
             // First look for horizontal matches
             for (int row = 0; row < rows; row++)
@@ -342,9 +355,13 @@ namespace BlockPartyWindowsStore
                             {
                                 blocks[row, column - matchingColumn].Match();
                                 matchingBlockCount++;
+                                comboCelebrationRow = row;
+                                comboCelebrationColumn = column - matchingColumn;
                                 if (blocks[row, column - matchingColumn].ChainEligible)
                                 {
                                     incrementChain = true;
+                                    chainCelebrationRow = row;
+                                    chainCelebrationColumn = column - matchingColumn;
                                 }
                             }
                         }
@@ -384,9 +401,13 @@ namespace BlockPartyWindowsStore
                             {
                                 blocks[row - matchingRow, column].State = BlockState.Matched;
                                 matchingBlockCount++;
+                                comboCelebrationRow = row - matchingRow;
+                                comboCelebrationColumn = column;
                                 if (blocks[row - matchingRow, column].ChainEligible)
                                 {
                                     incrementChain = true;
+                                    chainCelebrationRow = row - matchingRow;
+                                    chainCelebrationColumn = column;
                                 }
                             }
                         }
@@ -401,6 +422,15 @@ namespace BlockPartyWindowsStore
             if (matchingBlockCount > 3)
             {
                 Score += matchingBlockCount * scoreBlockComboInterval;
+                celebrations.Add(new Celebration(matchingBlockCount.ToString(), comboCelebrationRow, comboCelebrationColumn));
+                particleEmitters.Add(new ParticleEmitter(50, new Vector2(ScreenManager.WorldWidth / 2 - columns * Block.Width / 2, (int)(-1 * Block.Height * raiseTimeElapsed / raiseDuration)) + new Vector2(comboCelebrationColumn * Block.Width, comboCelebrationRow * Block.Width), new Vector2(-0.2f, -0.2f), new Vector2(0.2f, 0.2f), Vector2.Zero, new Color((float)random.NextDouble(), (float)random.NextDouble(), (float)random.NextDouble(), (float)random.NextDouble()), 10, 1000));
+                float pitch = 0.1f * (matchingBlockCount - 3);
+                
+                // Only play the combo sound if a chain sound isn't going to play (avoid cacophany!)
+                if (!incrementChain)
+                {
+                    soundManager.Play("Celebration", 1.0f, pitch, 0.0f);
+                }
             }
 
             // Handle chain continuation
@@ -408,6 +438,10 @@ namespace BlockPartyWindowsStore
             {
                 chainCount++;
                 Score += chainCount * scoreBlockChainInterval;
+                celebrations.Add(new Celebration(chainCount.ToString() + "x", chainCelebrationRow, chainCelebrationColumn));
+                particleEmitters.Add(new ParticleEmitter(50, new Vector2(ScreenManager.WorldWidth / 2 - columns * Block.Width / 2, (int)(-1 * Block.Height * raiseTimeElapsed / raiseDuration)) + new Vector2(chainCelebrationColumn * Block.Width, chainCelebrationRow * Block.Width), new Vector2(-0.2f, -0.2f), new Vector2(0.2f, 0.2f), Vector2.Zero, new Color((float)random.NextDouble(), (float)random.NextDouble(), (float)random.NextDouble(), (float)random.NextDouble()), 10, 1000));
+                float pitch = 0.1f * chainCount;
+                soundManager.Play("Celebration", 1.0f, pitch, 0.0f);
             }
 
             // Setup matching blocks to pop
@@ -516,6 +550,8 @@ namespace BlockPartyWindowsStore
                         {
                             blocks[row, column].Land();
                             playLandSound = true;
+                            particleEmitters.Add(new ParticleEmitter(5, new Vector2(ScreenManager.WorldWidth / 2 - columns * Block.Width / 2, (int)(-1 * Block.Height * raiseTimeElapsed / raiseDuration)) + new Vector2(column * Block.Width, row * Block.Height + Block.Height), new Vector2(-0.1f, -0.1f), new Vector2(0.0f, 0.0f), Vector2.Zero, Color.White, 5, 1000));
+                            particleEmitters.Add(new ParticleEmitter(5, new Vector2(ScreenManager.WorldWidth / 2 - columns * Block.Width / 2, (int)(-1 * Block.Height * raiseTimeElapsed / raiseDuration)) + new Vector2(column * Block.Width + Block.Width, row * Block.Height + Block.Height), new Vector2(0.0f, -0.1f), new Vector2(0.1f, 0.0f), Vector2.Zero, Color.White, 5, 1000));
                         }
 
                         blocks[row, column].JustFell = false;
@@ -525,7 +561,7 @@ namespace BlockPartyWindowsStore
 
             if (playLandSound)
             {
-                soundManager.Play("BlockLand");
+                soundManager.Play("BlockLand", 1.0f, 0.0f, 0.0f);
             }
         }
 
@@ -674,6 +710,18 @@ namespace BlockPartyWindowsStore
                             blocks[row, column].Update(gameTime);
                         }
                     }
+
+                    // Update celebrations
+                    foreach (Celebration celebration in celebrations)
+                    {
+                        celebration.Update(gameTime);
+                    }
+
+                    // Update particle emitters
+                    foreach (ParticleEmitter pe in particleEmitters)
+                    {
+                        pe.Update(gameTime);
+                    }
                     break;
                 
                 case BoardState.GameOver: break;
@@ -747,16 +795,24 @@ namespace BlockPartyWindowsStore
                     if (Math.Abs(Score - scoreDisplay) < 1)
                         scoreDisplay = Score;
                     graphicsManager.DrawText(Math.Floor(scoreDisplay).ToString(), new Vector2(50, 50), Color.White, false);
+
+                    // Draw celebrations
+                    foreach (Celebration celebration in celebrations)
+                    {
+                        celebration.Draw(gameTime, graphicsManager, new Vector2(ScreenManager.WorldWidth / 2 - columns * Block.Width / 2, (int)(-1 * Block.Height * raiseTimeElapsed / raiseDuration)));
+                    }
+
+                    // Draw particles
+                    foreach (ParticleEmitter pe in particleEmitters)
+                    {
+                        pe.Draw(gameTime, graphicsManager);
+                    }
                     break;
                 
                 case BoardState.GameOver:
                     graphicsManager.DrawText("GAME OVER", new Vector2(ScreenManager.WorldWidth / 2, ScreenManager.WorldHeight / 2), Color.White, true);
                     break;
             }
-
-            
-
-            
         }
     }
 }

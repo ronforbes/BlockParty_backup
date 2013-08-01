@@ -46,10 +46,10 @@ namespace BlockPartyWindowsStore
 
             // Load the block textures
             circleTexture = contentManager.Load<Texture2D>("Circle");
-            diamondTexture = contentManager.Load<Texture2D>("Diamond");
-            heartTexture = contentManager.Load<Texture2D>("Heart");
-            starTexture = contentManager.Load<Texture2D>("Star");
-            triangleTexture = contentManager.Load<Texture2D>("Triangle");
+            //diamondTexture = contentManager.Load<Texture2D>("Diamond");
+            //heartTexture = contentManager.Load<Texture2D>("Heart");
+            //starTexture = contentManager.Load<Texture2D>("Star");
+            //triangleTexture = contentManager.Load<Texture2D>("Triangle");
 
             // Create the sprite font
             spriteFont = contentManager.Load<SpriteFont>("SpriteFont");
@@ -77,10 +77,11 @@ namespace BlockPartyWindowsStore
                 default: texture = blankTexture; break;
                 case "Blank": texture = blankTexture; break;
                 case "Circle": texture = circleTexture; break;
-                case "Diamond": texture = diamondTexture; break;
-                case "Heart": texture = heartTexture; break;
-                case "Star": texture = starTexture; break;
-                case "Triangle": texture = triangleTexture; break;
+                //case "Circle": texture = circleTexture; break;
+                //case "Diamond": texture = diamondTexture; break;
+                //case "Heart": texture = heartTexture; break;
+                //case "Star": texture = starTexture; break;
+                //case "Triangle": texture = triangleTexture; break;
             }
 
             spriteBatch.Draw(texture, new Rectangle(rectangle.X, rectangle.Y, (int)(rectangle.Width * scale), (int)(rectangle.Height * scale)), null, color, rotation, new Vector2(texture.Width / 2.0f, texture.Height / 2.0f), SpriteEffects.None, 1.0f);

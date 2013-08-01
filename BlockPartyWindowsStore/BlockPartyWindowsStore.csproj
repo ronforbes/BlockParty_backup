@@ -129,8 +129,11 @@
   <ItemGroup>
     <Compile Include="Block.cs" />
     <Compile Include="Board.cs" />
+    <Compile Include="Celebration.cs" />
     <Compile Include="GraphicsManager.cs" />
     <Compile Include="MouseManager.cs" />
+    <Compile Include="Particle.cs" />
+    <Compile Include="ParticleEmitter.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Game.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -152,6 +155,7 @@
     <Content Include="Content\BlockSlide.xnb" />
     <Content Include="Content\BlockPop.xnb" />
     <Content Include="Content\BlockLand.xnb" />
+    <Content Include="Content\Celebration.xnb" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Assets\Logo.png" />
