@@ -42,8 +42,8 @@ var Board = (function () {
     }
     Board.prototype.HandleInput = function (elapsedMilliseconds) {
         var mouseState = Mouse.GetState();
-        var row = Math.floor(((Block.HEIGHT * this.riseTimer / this.riseDuration) + mouseState.Y) / Block.HEIGHT);
-        var column = Math.floor(mouseState.X / Block.WIDTH);
+        var row = Math.floor(((BlockRenderer.Height * this.riseTimer / this.riseDuration) + mouseState.Y) / BlockRenderer.Height);
+        var column = Math.floor(mouseState.X / BlockRenderer.Width);
         if(row >= 0 && row < this.ROWS && column >= 0 && column < this.COLUMNS) {
             if(mouseState.LeftButton == true && this.previousMouseState.LeftButton == false) {
                 var delta = Date.now() - this.previousClickTime;
@@ -318,7 +318,7 @@ var Board = (function () {
                     case BlockState.WaitingToFall:
                         break;
                     case BlockState.Falling:
-                        y = this.board[row][column].FallTimer * Block.HEIGHT / Block.FALL_DURATION;
+                        y = this.board[row][column].FallTimer * BlockRenderer.Height / Block.FALL_DURATION;
                         break;
                     case BlockState.Matched:
                         break;
@@ -342,14 +342,14 @@ var Board = (function () {
                 }
                 if(this.slideInProgress == true && row == this.selectedRow) {
                     if(column == this.selectedColumn) {
-                        x = this.slideTimer * Block.WIDTH / this.slideDuration * this.slideDirection;
+                        x = this.slideTimer * BlockRenderer.Width / this.slideDuration * this.slideDirection;
                     }
                     if(column == this.selectedColumn + this.slideDirection) {
-                        x = -1 * this.slideTimer * Block.WIDTH / this.slideDuration * this.slideDirection;
+                        x = -1 * this.slideTimer * BlockRenderer.Width / this.slideDuration * this.slideDirection;
                     }
                 }
-                y -= Block.HEIGHT * this.riseTimer / this.riseDuration;
-                Graphics.DrawRectangle(new Vector2(column * Block.WIDTH + x, row * Block.HEIGHT + y), Block.WIDTH, Block.HEIGHT, 1, "black", color);
+                y -= BlockRenderer.Height * this.riseTimer / this.riseDuration;
+                Graphics.DrawRectangle(new Vector2(column * BlockRenderer.Width + x, row * BlockRenderer.Height + y), BlockRenderer.Width, BlockRenderer.Height, 1, "black", color);
             }
         }
         for(var column = 0; column < this.COLUMNS; column++) {

@@ -60,8 +60,8 @@ class Board {
     private HandleInput(elapsedMilliseconds: number) {
         // Determine which block is being hovered over
         var mouseState: MouseState = Mouse.GetState();
-        var row: number = Math.floor(((Block.HEIGHT * this.riseTimer / this.riseDuration) + mouseState.Y) / Block.HEIGHT);
-        var column: number = Math.floor(mouseState.X / Block.WIDTH);
+        var row: number = Math.floor(((BlockRenderer.Height * this.riseTimer / this.riseDuration) + mouseState.Y) / BlockRenderer.Height);
+        var column: number = Math.floor(mouseState.X / BlockRenderer.Width);
 
         // If the mouse is hovering over a valid block, select or slide it
         if (row >= 0 && row < this.ROWS && column >= 0 && column < this.COLUMNS) {
@@ -414,7 +414,7 @@ class Board {
                     case BlockState.Empty: color = "#000000"; break;
                     case BlockState.Idle: break;
                     case BlockState.WaitingToFall: break;
-                    case BlockState.Falling: y = this.board[row][column].FallTimer * Block.HEIGHT / Block.FALL_DURATION; break;
+                    case BlockState.Falling: y = this.board[row][column].FallTimer * BlockRenderer.Height / Block.FALL_DURATION; break;
                     case BlockState.Matched: break;
                     case BlockState.Flashing:
                         if (Date.now() % 100 > 50) {
@@ -436,17 +436,17 @@ class Board {
                 if (this.slideInProgress == true &&
                     row == this.selectedRow) {
                     if (column == this.selectedColumn) {
-                        x = this.slideTimer * Block.WIDTH / this.slideDuration * this.slideDirection;
+                        x = this.slideTimer * BlockRenderer.Width / this.slideDuration * this.slideDirection;
                     }
                     if (column == this.selectedColumn + this.slideDirection) {
-                        x = -1 * this.slideTimer * Block.WIDTH / this.slideDuration * this.slideDirection;
+                        x = -1 * this.slideTimer * BlockRenderer.Width / this.slideDuration * this.slideDirection;
                     }
                 }
 
-                y -= Block.HEIGHT * this.riseTimer / this.riseDuration;
+                y -= BlockRenderer.Height * this.riseTimer / this.riseDuration;
 
-                Graphics.DrawRectangle(new Vector2(column * Block.WIDTH + x /*+ (Graphics.WorldWidth / 2 - Block.WIDTH * this.COLUMNS / 2)*/, row * Block.HEIGHT + y), Block.WIDTH, Block.HEIGHT, 1, "black", color);
-                //Graphics.DrawText(text, new Vector2(column * Block.WIDTH + Block.WIDTH / 2 + x, row * Block.HEIGHT + Block.HEIGHT / 2 + y), "white");
+                Graphics.DrawRectangle(new Vector2(column * BlockRenderer.Width + x /*+ (Graphics.WorldWidth / 2 - BlockRenderer.Width * this.COLUMNS / 2)*/, row * BlockRenderer.Height + y), BlockRenderer.Width, BlockRenderer.Height, 1, "black", color);
+                //Graphics.DrawText(text, new Vector2(column * BlockRenderer.Width + BlockRenderer.Width / 2 + x, row * BlockRenderer.Height + BlockRenderer.Height / 2 + y), "white");
             }
         }
 
@@ -466,7 +466,7 @@ class Board {
                 case BlockType.F: color = "#888800"; break;
             }
 
-            //Graphics.DrawRectangle(new Vector2(column * Block.WIDTH /*+ (Graphics.WorldWidth / 2 - Block.WIDTH * this.COLUMNS / 2)*/, this.ROWS * Block.HEIGHT - (Block.HEIGHT * this.riseTimer / this.riseDuration)), Block.WIDTH, Block.HEIGHT, 1, "black", color);
+            //Graphics.DrawRectangle(new Vector2(column * BlockRenderer.Width /*+ (Graphics.WorldWidth / 2 - BlockRenderer.Width * this.COLUMNS / 2)*/, this.ROWS * BlockRenderer.Height - (BlockRenderer.Height * this.riseTimer / this.riseDuration)), BlockRenderer.Width, BlockRenderer.Height, 1, "black", color);
         }
 
         //Graphics.DrawText("Score: " + this.Score.toString(), new Vector2(70, 10), "white");

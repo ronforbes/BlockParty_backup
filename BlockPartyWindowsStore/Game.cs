@@ -9,14 +9,8 @@ namespace BlockPartyWindowsStore
     /// </summary>
     public class Game : Microsoft.Xna.Framework.Game
     {
-        public int WorldWidth = 1600;
-        public int WorldHeight = 900;
         GraphicsDeviceManager graphicsDeviceManager;
-        GraphicsManager graphicsManager;
         ScreenManager screenManager;
-        MouseManager mouseManager;
-        SoundManager soundManager;
-        Board board;
 
         public Game()
         {
@@ -32,12 +26,9 @@ namespace BlockPartyWindowsStore
         /// </summary>
         protected override void Initialize()
         {
-            graphicsManager = new GraphicsManager();
-            screenManager = new ScreenManager(GraphicsDevice);
-            mouseManager = new MouseManager(screenManager);
-            soundManager = new SoundManager();
-            board = new Board(GraphicsDevice, soundManager);
+            screenManager = new ScreenManager(this);
             IsMouseVisible = true;
+
             base.Initialize();
         }
 
@@ -47,8 +38,9 @@ namespace BlockPartyWindowsStore
         /// </summary>
         protected override void LoadContent()
         {
-            graphicsManager.LoadContent(GraphicsDevice, Content);
-            soundManager.LoadContent(Content);
+            screenManager.LoadContent();
+
+            screenManager.AddScreen(new SplashScreen(screenManager));
         }
 
         /// <summary>
@@ -57,7 +49,7 @@ namespace BlockPartyWindowsStore
         /// </summary>
         protected override void UnloadContent()
         {
-            graphicsManager.UnloadContent();
+            Content.Unload();
         }
 
         /// <summary>
@@ -67,14 +59,7 @@ namespace BlockPartyWindowsStore
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
-            screenManager.Update();
-            mouseManager.Update(screenManager);
-
-            // Add a bit of a delay until there's a menu in front of this
-            if (gameTime.TotalGameTime.TotalSeconds > 1)
-            {
-                board.Update(gameTime, mouseManager, soundManager);
-            }
+            screenManager.Update(gameTime);
             
             base.Update(gameTime);
         }
@@ -87,11 +72,7 @@ namespace BlockPartyWindowsStore
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
-            graphicsManager.Begin();
-
-            board.Draw(gameTime, graphicsManager);
-
-            graphicsManager.End();
+            screenManager.Draw(gameTime);
 
             base.Draw(gameTime);
         }
