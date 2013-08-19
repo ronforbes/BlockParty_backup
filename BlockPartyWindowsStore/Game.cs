@@ -40,7 +40,7 @@ namespace BlockPartyWindowsStore
         {
             screenManager.LoadContent();
 
-            screenManager.AddScreen(new SplashScreen(screenManager));
+            screenManager.AddScreen(new MainMenuScreen(screenManager));
         }
 
         /// <summary>

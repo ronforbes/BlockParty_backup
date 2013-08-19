@@ -36,7 +36,7 @@ namespace BlockPartyWindowsStore
 
         public void Play(string key, float volume, float pitch, float pan)
         {
-            //soundEffects[key].Play(volume, pitch, pan);
+            soundEffects[key].Play(volume, pitch, pan);
         }
     }
 }

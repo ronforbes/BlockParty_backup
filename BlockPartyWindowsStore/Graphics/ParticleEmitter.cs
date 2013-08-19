@@ -9,11 +9,7 @@ namespace BlockPartyWindowsStore
 {
     class ParticleEmitter
     {
-        Screen screen;
-        public Screen Screen
-        {
-            get { return screen; }
-        }
+        public Screen Screen;
 
         List<Particle> particles;
 
@@ -21,7 +17,7 @@ namespace BlockPartyWindowsStore
 
         public ParticleEmitter(Screen screen, int particleCount, Rectangle rectangle, Vector2 minVelocity, Vector2 maxVelocity, Vector2 acceleration, Color color, TimeSpan duration)
         {
-            this.screen = screen;
+            Screen = screen;
             particles = new List<Particle>();
 
             for (int p = 0; p < particleCount; p++)

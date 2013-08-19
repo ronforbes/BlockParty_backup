@@ -11,22 +11,14 @@ namespace BlockPartyWindowsStore
     class BoardRenderer
     {
         Board board;
-        Rectangle rectangle;
-        const int rectangleHorizontalMargin = 25;
-
-        public Rectangle Rectangle
-        {
-            get { return rectangle; }
-        }
-
-        double scoreDisplay;
+        public Rectangle Rectangle;
 
         Texture2D backgroundTexture;
 
         public BoardRenderer(Board board)
         {
             this.board = board;
-            rectangle = new Rectangle(board.Screen.ScreenManager.World.Width - board.Columns * board.Blocks[0, 0].Renderer.Width - rectangleHorizontalMargin, board.Screen.ScreenManager.World.Height / 2 - board.Rows * board.Blocks[0, 0].Renderer.Height / 2, board.Columns * board.Blocks[0, 0].Renderer.Width, board.Rows * board.Blocks[0, 0].Renderer.Height);
+            Rectangle = new Rectangle(board.Screen.ScreenManager.World.Width / 2 - board.Columns * board.Blocks[0, 0].Renderer.Width / 2, board.Screen.ScreenManager.World.Height / 2 - board.Rows * board.Blocks[0, 0].Renderer.Height / 2, board.Columns * board.Blocks[0, 0].Renderer.Width, board.Rows * board.Blocks[0, 0].Renderer.Height);
         }
 
         public void LoadContent()
@@ -46,7 +38,8 @@ namespace BlockPartyWindowsStore
 
                 case Board.BoardState.CountingDown:
                     DrawBlocks(gameTime);
-                    board.Screen.ScreenManager.GraphicsManager.DrawText(Math.Ceiling(3 - board.CountdownTimeElapsed.TotalMilliseconds / 1000).ToString(), new Vector2(board.Screen.ScreenManager.World.Width / 2, board.Screen.ScreenManager.World.Height / 2), Color.White, true);
+                    Vector2 origin = board.Screen.ScreenManager.GraphicsManager.SpriteFont.MeasureString(Math.Ceiling(3 - board.CountdownTimeElapsed.TotalMilliseconds / 1000).ToString()) / 2;
+                    board.Screen.ScreenManager.GraphicsManager.SpriteBatch.DrawString(board.Screen.ScreenManager.GraphicsManager.SpriteFont, Math.Ceiling(3 - board.CountdownTimeElapsed.TotalMilliseconds / 1000).ToString(), new Vector2(board.Screen.ScreenManager.World.Width / 2, board.Screen.ScreenManager.World.Height / 2), Color.White, 0f, origin, Vector2.One, SpriteEffects.None, 0f);
                     break;
 
                 case Board.BoardState.Playing:
@@ -55,40 +48,45 @@ namespace BlockPartyWindowsStore
                     // Draw the next row of blocks
                     for (int column = 0; column < board.Columns; column++)
                     {
-                        //nextRowBlocks[column].Draw(gameTime, rows, column, new Vector2(screen.ScreenManager.WorldViewport.Width - columns * BlockRenderer.Width - 25, (int)(-1 * BlockRenderer.Height * raiseTimeElapsed.TotalMilliseconds / raiseDuration.TotalMilliseconds)));
+                        board.NextBlocks[column].Draw(gameTime);
                     }
 
-                    // Draw the score display
-                    scoreDisplay += (board.Score - scoreDisplay) * 0.1;
-                    if (Math.Abs(board.Score - scoreDisplay) < 1)
-                        scoreDisplay = board.Score;
-                    board.Screen.ScreenManager.GraphicsManager.DrawText("Score: " + Math.Floor(scoreDisplay).ToString(), new Vector2(50, 200), Color.Orange, false);
-
-                    // Draw the level display
-                    board.Screen.ScreenManager.GraphicsManager.DrawText("Level: " + board.Level.ToString(), new Vector2(50, 250), Color.Orange, false);
-
                     // Draw celebrations
-                    //foreach (Celebration celebration in celebrations)
-                    //{
-                    //    celebration.Draw(gameTime, new Vector2(screen.ScreenManager.WorldViewport.Width - columns * BlockRenderer.Width / 2, (int)(-1 * BlockRenderer.Height * raiseTimeElapsed.TotalMilliseconds / raiseDuration.TotalMilliseconds)));
-                    //}
+                    foreach (Celebration celebration in board.Celebrations)
+                    {
+                        celebration.Draw(gameTime);
+                    }
 
                     // Draw particles
                     foreach (ParticleEmitter pe in board.ParticleEmitters)
                     {
                         pe.Draw(gameTime);
                     }
+
+                    if (board.GoTimeElapsed < board.GoDuration)
+                    {
+                        origin = board.Screen.ScreenManager.GraphicsManager.SpriteFont.MeasureString("Go!") / 2;
+                        board.Screen.ScreenManager.GraphicsManager.SpriteBatch.DrawString(board.Screen.ScreenManager.GraphicsManager.SpriteFont, "Go!", new Vector2(board.Screen.ScreenManager.World.Width / 2, board.Screen.ScreenManager.World.Height / 2), Color.White, 0f, origin, Vector2.One, SpriteEffects.None, 0f);
+                    }
+
+                    if (board.GameOverDelayDuration - board.GameOverDelayTimeElapsed <= TimeSpan.FromSeconds(3))
+                    {
+                        origin = board.Screen.ScreenManager.GraphicsManager.SpriteFont.MeasureString(Math.Ceiling((board.GameOverDelayDuration - board.GameOverDelayTimeElapsed).TotalSeconds).ToString()) / 2;
+                        board.Screen.ScreenManager.GraphicsManager.SpriteBatch.DrawString(board.Screen.ScreenManager.GraphicsManager.SpriteFont, Math.Ceiling((board.GameOverDelayDuration - board.GameOverDelayTimeElapsed).TotalSeconds).ToString(), new Vector2(board.Screen.ScreenManager.World.Width / 2, board.Screen.ScreenManager.World.Height / 2), Color.White, 0f, origin, Vector2.One, SpriteEffects.None, 0f);
+                    }
                     break;
 
                 case Board.BoardState.GameOver:
-                    board.Screen.ScreenManager.GraphicsManager.DrawText("GAME OVER", new Vector2(board.Screen.ScreenManager.World.Width / 2, board.Screen.ScreenManager.World.Height / 2), Color.White, true);
+                    DrawBlocks(gameTime);
+                    origin = board.Screen.ScreenManager.GraphicsManager.SpriteFont.MeasureString("Game Over!") / 2;
+                    board.Screen.ScreenManager.GraphicsManager.SpriteBatch.DrawString(board.Screen.ScreenManager.GraphicsManager.SpriteFont, "Game Over!", new Vector2(board.Screen.ScreenManager.World.Width / 2, board.Screen.ScreenManager.World.Height / 2), Color.White, 0f, origin, Vector2.One, SpriteEffects.None, 0f);
                     break;
             }
         }
 
         void DrawBackground()
         {
-            board.Screen.ScreenManager.GraphicsManager.SpriteBatch.Draw(backgroundTexture, rectangle, null, Color.White, 0.0f, Vector2.Zero, SpriteEffects.None, 0.0f);
+            board.Screen.ScreenManager.GraphicsManager.SpriteBatch.Draw(backgroundTexture, Rectangle, null, Color.White, 0.0f, Vector2.Zero, SpriteEffects.None, 0f);
         }
 
         void DrawBlocks(GameTime gameTime)

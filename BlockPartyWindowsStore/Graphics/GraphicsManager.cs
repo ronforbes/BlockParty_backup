@@ -18,7 +18,7 @@ namespace BlockPartyWindowsStore
         public Texture2D BlankTexture;
         public Texture2D ParticleTexture;
 
-        SpriteFont spriteFont;
+        public SpriteFont SpriteFont;
 
         public GraphicsManager(ScreenManager screenManager)
         {
@@ -38,7 +38,7 @@ namespace BlockPartyWindowsStore
             ParticleTexture = screenManager.Game.Content.Load<Texture2D>("Particle");
 
             // Create the sprite font
-            spriteFont = screenManager.Game.Content.Load<SpriteFont>("SpriteFont");
+            SpriteFont = screenManager.Game.Content.Load<SpriteFont>("SpriteFont");
         }
 
         public void UnloadContent()
@@ -56,12 +56,6 @@ namespace BlockPartyWindowsStore
         public void DrawFullscreenSprite(Texture2D texture, Color color)
         {
             SpriteBatch.Draw(texture, screenManager.World.Bounds, color);
-        }
-
-        public void DrawText(string text, Vector2 position, Color color, bool centered)
-        {
-            Vector2 size = spriteFont.MeasureString(text);
-            SpriteBatch.DrawString(spriteFont, text, position - size / 2, color);
         }
 
         public void End()

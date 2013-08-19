@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,21 +12,21 @@ namespace BlockPartyWindowsStore
     {
         Board board;
         string text; // Text to display in the celebration
-        Vector2 position;
-        double timeElapsed; // Amount of time the celebration has been active
-        const double duration = 1000; // Duration of the celebration
+        Rectangle position;
+        TimeSpan timeElapsed; // Amount of time the celebration has been active
+        readonly TimeSpan duration = TimeSpan.FromSeconds(1); // Duration of the celebration
         bool expired;
 
         public Celebration(Board board, string text, int row, int column)
         {
             this.board = board;
             this.text = text;
-            position = new Vector2(column * board.Blocks[0, 0].Renderer.Width + board.Blocks[0, 0].Renderer.Width / 2, row * board.Blocks[0, 0].Renderer.Height + board.Blocks[0, 0].Renderer.Height / 2 - board.Blocks[0, 0].Renderer.Height / 2);
+            position = new Rectangle(column * board.Blocks[0, 0].Renderer.Width, row * board.Blocks[0, 0].Renderer.Height, board.Blocks[0, 0].Renderer.Width, board.Blocks[0, 0].Renderer.Height);
         }
 
         public void Update(GameTime gameTime)
         {
-            timeElapsed += gameTime.ElapsedGameTime.TotalMilliseconds;
+            timeElapsed += gameTime.ElapsedGameTime;
 
             if (timeElapsed >= duration)
             {
@@ -33,22 +34,27 @@ namespace BlockPartyWindowsStore
             }
         }
 
-        public void Draw(GameTime gameTime, Vector2 boardPosition)
+        public void Draw(GameTime gameTime)
         {
             if (!expired)
             {
-                int y = (int)Tween.Linear(timeElapsed, position.Y, -1 * board.Blocks[0, 0].Renderer.Height, duration);
-                byte rectangleR = (byte)Tween.Linear(timeElapsed, Color.Orange.R, -1 * Color.Orange.R, duration);
-                byte rectangleG = (byte)Tween.Linear(timeElapsed, Color.Orange.G, -1 * Color.Orange.G, duration);
-                byte rectangleB = (byte)Tween.Linear(timeElapsed, Color.Orange.B, -1 * Color.Orange.B, duration);
-                byte rectangleA = (byte)Tween.Linear(timeElapsed, Color.Orange.A, -1 * Color.Orange.A, duration);
-                byte textR = (byte)Tween.Linear(timeElapsed, Color.White.R, -1 * Color.White.R, duration);
-                byte textG = (byte)Tween.Linear(timeElapsed, Color.White.G, -1 * Color.White.G, duration);
-                byte textB = (byte)Tween.Linear(timeElapsed, Color.White.B, -1 * Color.White.B, duration);
-                byte textA = (byte)Tween.Linear(timeElapsed, Color.White.A, -1 * Color.White.A, duration);
+                int y = (int)Tween.Linear(timeElapsed.TotalMilliseconds, 0, (-1 * board.Blocks[0, 0].Renderer.Height), duration.TotalMilliseconds);
+                byte rectangleR = (byte)Tween.Linear(timeElapsed.TotalMilliseconds, Color.Orange.R, -1 * Color.Orange.R, duration.TotalMilliseconds);
+                byte rectangleG = (byte)Tween.Linear(timeElapsed.TotalMilliseconds, Color.Orange.G, -1 * Color.Orange.G, duration.TotalMilliseconds);
+                byte rectangleB = (byte)Tween.Linear(timeElapsed.TotalMilliseconds, Color.Orange.B, -1 * Color.Orange.B, duration.TotalMilliseconds);
+                byte rectangleA = (byte)Tween.Linear(timeElapsed.TotalMilliseconds, Color.Orange.A, -1 * Color.Orange.A, duration.TotalMilliseconds);
+                byte textR = (byte)Tween.Linear(timeElapsed.TotalMilliseconds, Color.White.R, -1 * Color.White.R, duration.TotalMilliseconds);
+                byte textG = (byte)Tween.Linear(timeElapsed.TotalMilliseconds, Color.White.G, -1 * Color.White.G, duration.TotalMilliseconds);
+                byte textB = (byte)Tween.Linear(timeElapsed.TotalMilliseconds, Color.White.B, -1 * Color.White.B, duration.TotalMilliseconds);
+                byte textA = (byte)Tween.Linear(timeElapsed.TotalMilliseconds, Color.White.A, -1 * Color.White.A, duration.TotalMilliseconds);
 
-                //board.Screen.ScreenManager.GraphicsManager.DrawRectangle(board.Screen.ScreenManager.GraphicsManager.BlankTexture, new Rectangle((int)(boardPosition.X + position.X), (int)(boardPosition.Y + y), (int)(board.Blocks[0, 0].Renderer.Width * 0.95), (int)(board.Blocks[0, 0].Renderer.Height * 0.95)), new Color(rectangleR, rectangleG, rectangleB, rectangleA), 0.0f, 1.0f);
-                board.Screen.ScreenManager.GraphicsManager.DrawText(text, new Vector2(boardPosition.X + position.X, boardPosition.Y + y), new Color(textR, textG, textB, textA), true);
+                // Adjust vertical position based on the board's raising state
+                y -= (int)Tween.Linear(board.RaiseTimeElapsed.TotalMilliseconds, 0, board.Blocks[0, 0].Renderer.Height, board.RaiseDuration.TotalMilliseconds);
+
+                board.Screen.ScreenManager.GraphicsManager.SpriteBatch.Draw(board.Screen.ScreenManager.GraphicsManager.BlankTexture, new Rectangle(board.Renderer.Rectangle.X + position.X, board.Renderer.Rectangle.Y + position.Y + y, position.Width, position.Height), null, new Color(rectangleR, rectangleG, rectangleB, rectangleA), 0f, Vector2.Zero, SpriteEffects.None, 0f);
+
+                Vector2 origin = board.Screen.ScreenManager.GraphicsManager.SpriteFont.MeasureString(text) / 2;
+                board.Screen.ScreenManager.GraphicsManager.SpriteBatch.DrawString(board.Screen.ScreenManager.GraphicsManager.SpriteFont, text, new Vector2(board.Renderer.Rectangle.X + position.X + board.Blocks[0, 0].Renderer.Width / 2, board.Renderer.Rectangle.Y + position.Y + board.Blocks[0, 0].Renderer.Height / 2 + y), new Color(textR, textG, textB, textA), 0f, origin, Vector2.One, SpriteEffects.None, 0f);
             }
         }
     }

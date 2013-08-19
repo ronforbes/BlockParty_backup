@@ -32,16 +32,8 @@ namespace BlockPartyWindowsStore
         public int Type = -1;
         public const int TypeCount = 6;
 
-        public bool Selected;           // Determines whether the block is currently selected
-
         public bool ChainEligible;      // Determines whether the block is capable of participating in a chain
-
-        public Block FallTarget;        // Next block down that will receive this block's state once falling completes
-
-        public bool JustEmptied;        // Determines whether the block just popped and became empty, indicating that blocks above it are eligible to participate in a chain
-
-        public bool JustFell;           // Determines whether the block just fell and needs to be checked for its next state
-
+        
         static Random random = new Random();
 
         public enum BlockSlideDirection
@@ -52,14 +44,17 @@ namespace BlockPartyWindowsStore
         public BlockSlideDirection SlideDirection;
         BlockState slideTargetState;
         int slideTargetType;
-        bool slideTargetSelected;
+        Vector2 slideTargetRendererScale;
+        BlockRenderer.BlockAnimationState slideTargetRendererAnimationState;
         public TimeSpan SlideTimeElapsed;
         readonly public TimeSpan SlideDuration = TimeSpan.FromMilliseconds(50);
 
+        public Block FallTarget;        // Next block down that will receive this block's state once falling completes
         TimeSpan fallDelayTimeElapsed;
         readonly TimeSpan fallDelayDuration = TimeSpan.FromSeconds(0.25);
         public TimeSpan FallTimeElapsed;
         readonly public TimeSpan FallDuration = TimeSpan.FromMilliseconds(50);
+        public bool JustFell;           // Determines whether the block just fell and needs to be checked for its next state
 
         TimeSpan flashTimeElapsed;
         readonly TimeSpan flashDuration = TimeSpan.FromSeconds(1);
@@ -71,6 +66,7 @@ namespace BlockPartyWindowsStore
         public TimeSpan PopTimeElapsed;
         readonly public TimeSpan PopDuration = TimeSpan.FromSeconds(0.25);
 
+        public bool JustEmptied;        // Determines whether the block just popped and became empty, indicating that blocks above it are eligible to participate in a chain
         TimeSpan emptyDelayTimeElapsed;
         readonly TimeSpan emptyDelayInterval = TimeSpan.FromSeconds(0.25);
         TimeSpan emptyDelayDuration;
@@ -105,7 +101,8 @@ namespace BlockPartyWindowsStore
             SlideDirection = direction;
             slideTargetState = targetBlock.State;
             slideTargetType = targetBlock.Type;
-            slideTargetSelected = targetBlock.Selected;
+            slideTargetRendererScale = targetBlock.Renderer.Scale;
+            slideTargetRendererAnimationState = targetBlock.Renderer.AnimationState;
         }
 
         // Start sliding
@@ -119,7 +116,6 @@ namespace BlockPartyWindowsStore
         {
             State = BlockState.WaitingToFall;
             fallDelayTimeElapsed = TimeSpan.Zero;
-            Selected = false;
         }
 
         public void Fall()
@@ -131,15 +127,11 @@ namespace BlockPartyWindowsStore
         public void Land()
         {
             State = BlockState.Idle;
-            
-            //scale = 1.25f;
-            //color = new Color(color.R + 0.5f, color.G + 0.5f, color.B + 0.5f, color.A + 0.5f);
         }
 
         public void Match()
         {
             State = BlockState.Matched;
-            Selected = false;
         }
 
         // Start flashing
@@ -195,13 +187,14 @@ namespace BlockPartyWindowsStore
                 case BlockState.Idle: break;
 
                 case BlockState.Sliding:
-                    SlideTimeElapsed = SlideTimeElapsed.Add(TimeSpan.FromMilliseconds(gameTime.ElapsedGameTime.TotalMilliseconds));
+                    SlideTimeElapsed = SlideTimeElapsed.Add(gameTime.ElapsedGameTime);
 
                     if (SlideTimeElapsed >= SlideDuration)
                     {
                         State = slideTargetState;
                         Type = slideTargetType;
-                        Selected = slideTargetSelected;
+                        Renderer.Scale = slideTargetRendererScale;
+                        Renderer.AnimationState = slideTargetRendererAnimationState;
                     }
                     break;
 
@@ -223,6 +216,7 @@ namespace BlockPartyWindowsStore
                         FallTarget.Type = Type;
                         FallTarget.ChainEligible = ChainEligible;
                         FallTarget.JustFell = true;
+                        FallTarget.Renderer.Color = Renderer.Color;
 
                         State = BlockState.Empty;
                         Type = -1;
@@ -268,6 +262,18 @@ namespace BlockPartyWindowsStore
                     }
                     break;
             }
+
+            Renderer.Update(gameTime);
+        }
+
+        public void Press()
+        {
+            Renderer.Press();
+        }
+
+        public void Release()
+        {
+            Renderer.Release();
         }
 
         public void Draw(GameTime gameTime)

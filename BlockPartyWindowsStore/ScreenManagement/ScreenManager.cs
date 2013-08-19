@@ -14,7 +14,7 @@ namespace BlockPartyWindowsStore
 
         public Viewport Screen;
         public Viewport World;
-        const int worldWidth = 1366, worldHeight = 768;
+        const int worldWidth = 1600, worldHeight = 900;
         
         public GraphicsManager GraphicsManager;
         public InputManager InputManager;

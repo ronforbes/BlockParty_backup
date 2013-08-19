@@ -11,29 +11,12 @@ namespace BlockPartyWindowsStore
     {
         Board board;
         
-        /// <summary>
-        /// The row and column of the currently selected block
-        /// </summary>
         int selectedRow = -1, selectedColumn = -1;
 
-        /// <summary>
-        /// Timestamp of the most recent mouse press, used to detect double presses
-        /// </summary>
         TimeSpan previousClickTime = TimeSpan.Zero;
-
-        /// <summary>
-        /// Position of the previous mouse click
-        /// </summary>
         int previousClickX, previousClickY;
 
-        /// <summary>
-        /// Maximum amount of time in between clicks to constitute a double click (in milliseconds)
-        /// </summary>
         readonly TimeSpan doubleClickDuration = TimeSpan.FromSeconds(1);
-
-        /// <summary>
-        /// Maximum distance between clicks to constitute a double click
-        /// </summary>
         const float doubleClickDistance = 5;
 
         public BoardController(Board board)
@@ -56,7 +39,7 @@ namespace BlockPartyWindowsStore
                     {
                         selectedRow = row;
                         selectedColumn = column;
-                        board.Blocks[selectedRow, selectedColumn].Selected = true;
+                        board.Blocks[selectedRow, selectedColumn].Press();
                     }
                 }
 
@@ -116,9 +99,14 @@ namespace BlockPartyWindowsStore
             // Deselect the block if the mouse button is no longer being held
             if (board.Screen.ScreenManager.InputManager.LeftButtonReleased && selectedRow != -1 && selectedColumn != -1)
             {
-                board.Blocks[selectedRow, selectedColumn].Selected = false;
+                board.Blocks[selectedRow, selectedColumn].Release();
                 selectedRow = -1;
                 selectedColumn = -1;
+            }
+
+            if (board.State == Board.BoardState.GameOver && board.Screen.ScreenManager.InputManager.LeftButtonPressed)
+            {
+                board.Screen.ScreenManager.LoadScreen(new MainMenuScreen(board.Screen.ScreenManager));
             }
         }
     }
