@@ -23,7 +23,7 @@ namespace BlockPartyWindowsStore
 
         public void LoadContent()
         {
-            backgroundTexture = board.Screen.ContentManager.Load<Texture2D>("BoardBackground");
+            backgroundTexture = board.Screen.ContentManager.Load<Texture2D>("Rectangle");
         }
 
         public void Draw(GameTime gameTime)
@@ -44,12 +44,6 @@ namespace BlockPartyWindowsStore
 
                 case Board.BoardState.Playing:
                     DrawBlocks(gameTime);
-
-                    // Draw the next row of blocks
-                    for (int column = 0; column < board.Columns; column++)
-                    {
-                        board.NextBlocks[column].Draw(gameTime);
-                    }
 
                     // Draw celebrations
                     foreach (Celebration celebration in board.Celebrations)
@@ -86,11 +80,41 @@ namespace BlockPartyWindowsStore
 
         void DrawBackground()
         {
-            board.Screen.ScreenManager.GraphicsManager.SpriteBatch.Draw(backgroundTexture, Rectangle, null, Color.White, 0.0f, Vector2.Zero, SpriteEffects.None, 0f);
+            board.Screen.ScreenManager.GraphicsManager.SpriteBatch.End();
+            
+            DepthStencilState depthStencilState = new DepthStencilState
+            {
+                StencilEnable = true,
+                StencilFunction = CompareFunction.Always,
+                StencilPass = StencilOperation.Replace,
+                ReferenceStencil = 1,
+                DepthBufferEnable = false
+            };
+
+            board.Screen.ScreenManager.GraphicsManager.SpriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, null, depthStencilState, null, null, board.Screen.ScreenManager.GraphicsManager.WorldToScreenScaleMatrix);
+
+            board.Screen.ScreenManager.GraphicsManager.SpriteBatch.Draw(backgroundTexture, Rectangle, null, Color.White, 0.0f, Vector2.Zero, SpriteEffects.None, 0.5f);
+
+            board.Screen.ScreenManager.GraphicsManager.SpriteBatch.End();
+
+            board.Screen.ScreenManager.GraphicsManager.SpriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, null, null, null, null, board.Screen.ScreenManager.GraphicsManager.WorldToScreenScaleMatrix);
         }
 
         void DrawBlocks(GameTime gameTime)
         {
+            board.Screen.ScreenManager.GraphicsManager.SpriteBatch.End();
+
+            DepthStencilState depthStencilState = new DepthStencilState
+            {
+                StencilEnable = true,
+                StencilFunction = CompareFunction.LessEqual,
+                StencilPass = StencilOperation.Keep,
+                ReferenceStencil = 1,
+                DepthBufferEnable = false
+            };
+
+            board.Screen.ScreenManager.GraphicsManager.SpriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, null, depthStencilState, null, null, board.Screen.ScreenManager.GraphicsManager.WorldToScreenScaleMatrix);
+
             for (int row = 0; row < board.Rows; row++)
             {
                 for (int column = 0; column < board.Columns; column++)
@@ -98,6 +122,16 @@ namespace BlockPartyWindowsStore
                     board.Blocks[row, column].Draw(gameTime);
                 }
             }
+
+            // Draw the next row of blocks
+            for (int column = 0; column < board.Columns; column++)
+            {
+                board.NextBlocks[column].Draw(gameTime);
+            }
+
+            board.Screen.ScreenManager.GraphicsManager.SpriteBatch.End();
+
+            board.Screen.ScreenManager.GraphicsManager.SpriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, null, null, null, null, board.Screen.ScreenManager.GraphicsManager.WorldToScreenScaleMatrix);
         }
     }
 }

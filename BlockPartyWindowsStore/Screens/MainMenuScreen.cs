@@ -35,7 +35,7 @@ namespace BlockPartyWindowsStore
         {
             base.LoadContent();
 
-            backgroundTexture = ContentManager.Load<Texture2D>("MainMenuBackground");
+            backgroundTexture = ContentManager.Load<Texture2D>("BlockPartyMainMenuBackground");
         }
 
         public override void Update(Microsoft.Xna.Framework.GameTime gameTime)
@@ -54,11 +54,15 @@ namespace BlockPartyWindowsStore
 
         public override void Draw(Microsoft.Xna.Framework.GameTime gameTime)
         {
-            ScreenManager.GraphicsManager.DrawFullscreenSprite(backgroundTexture, Color.White);
-
+            ScreenManager.GraphicsManager.SpriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.LinearClamp, DepthStencilState.Default, RasterizerState.CullNone, null, ScreenManager.GraphicsManager.WorldToScreenScaleMatrix);
+            
+            ScreenManager.GraphicsManager.SpriteBatch.Draw(backgroundTexture, ScreenManager.World.Bounds, Color.White);
+            
             playButton.Draw(gameTime);
 
             base.Draw(gameTime);
+
+            ScreenManager.GraphicsManager.SpriteBatch.End();
         }
     }
 }

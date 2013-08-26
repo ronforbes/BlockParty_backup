@@ -24,7 +24,7 @@ namespace BlockPartyWindowsStore
         {
             base.LoadContent();
 
-            logoTexture = ContentManager.Load<Texture2D>("Logo");
+            logoTexture = ContentManager.Load<Texture2D>("OmegaSplashScreen");
         }
 
         public override void Update(GameTime gameTime)
@@ -44,7 +44,7 @@ namespace BlockPartyWindowsStore
 
         public override void Draw(Microsoft.Xna.Framework.GameTime gameTime)
         {
-            ScreenManager.GraphicsManager.DrawFullscreenSprite(logoTexture, Color.White);
+            ScreenManager.GraphicsManager.SpriteBatch.Draw(logoTexture, ScreenManager.World.Bounds, Color.White);
 
             base.Draw(gameTime);
         }

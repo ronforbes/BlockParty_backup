@@ -54,12 +54,6 @@ namespace BlockPartyWindowsStore
             AudioManager.LoadContent();
         }
 
-        public void UnloadContent()
-        {
-            GraphicsManager.UnloadContent();
-            AudioManager.UnloadContent();
-        }
-
         public void AddScreen(Screen screen)
         {
             screen.LoadContent();
@@ -123,15 +117,11 @@ namespace BlockPartyWindowsStore
 
         public void Draw(GameTime gameTime)
         {
-            GraphicsManager.Begin();
-
             // Draw screens
             foreach (Screen screen in screens)
             {
                 screen.Draw(gameTime);
             }
-
-            GraphicsManager.End();
         }
     }
 }

@@ -91,7 +91,7 @@ namespace BlockPartyWindowsStore
             Color color = Color.Black * (float)(State == ScreenState.TransitioningOn ? 
                 Tween.Linear(TransitionTimeElapsed.TotalMilliseconds, 1, -1, TransitionDuration.TotalMilliseconds) : 
                 Tween.Linear(TransitionTimeElapsed.TotalMilliseconds, 0, 1, TransitionDuration.TotalMilliseconds));
-            ScreenManager.GraphicsManager.DrawFullscreenSprite(ScreenManager.GraphicsManager.BlankTexture, color);
+            ScreenManager.GraphicsManager.SpriteBatch.Draw(ScreenManager.GraphicsManager.BlankTexture, ScreenManager.World.Bounds, color);
         }
     }
 }

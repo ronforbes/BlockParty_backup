@@ -15,9 +15,9 @@
   </Resources>
   <Applications>
     <Application Id="App" Executable="$targetnametoken$.exe" EntryPoint="BlockPartyWindowsStore.App">
-      <VisualElements DisplayName="BlockPartyWindowsStore" Logo="Assets\Logo.png" SmallLogo="Assets\SmallLogo.png" Description="BlockPartyWindowsStore" ForegroundText="light" BackgroundColor="#464646">
+      <VisualElements DisplayName="BlockPartyWindowsStore" Logo="Assets/Logo.png" SmallLogo="Assets\SmallLogo.png" Description="BlockPartyWindowsStore" ForegroundText="light" BackgroundColor="#464646">
         <DefaultTile ShowName="allLogos" />
-        <SplashScreen Image="Assets\SplashScreen.png" BackgroundColor="#FFFFFF" />
+        <SplashScreen Image="Assets\SplashScreen.png" BackgroundColor="#FFA500" />
       </VisualElements>
     </Application>
   </Applications>

@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,7 +23,8 @@ namespace BlockPartyWindowsStore
 
             for (int p = 0; p < particleCount; p++)
             {
-                particles.Add(new Particle(this, rectangle, new Vector2((float)random.NextDouble() * (maxVelocity.X - minVelocity.X) + minVelocity.X, (float)random.NextDouble() * (maxVelocity.Y - minVelocity.Y) + minVelocity.Y), acceleration, color, duration));
+                float brightness = (float)random.NextDouble();
+                particles.Add(new Particle(this, rectangle, new Vector2((float)random.NextDouble() * (maxVelocity.X - minVelocity.X) + minVelocity.X, (float)random.NextDouble() * (maxVelocity.Y - minVelocity.Y) + minVelocity.Y), acceleration, new Color(color.ToVector4() * brightness), duration));
             }
         }
 
@@ -36,10 +38,16 @@ namespace BlockPartyWindowsStore
 
         public void Draw(GameTime gameTime)
         {
+            Screen.ScreenManager.GraphicsManager.SpriteBatch.End();
+            Screen.ScreenManager.GraphicsManager.SpriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Additive, null, null, null, null, Screen.ScreenManager.GraphicsManager.WorldToScreenScaleMatrix);
+
             foreach (Particle p in particles)
             {
                 p.Draw(gameTime);
             }
+
+            Screen.ScreenManager.GraphicsManager.SpriteBatch.End();
+            Screen.ScreenManager.GraphicsManager.SpriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, null, null, null, null, Screen.ScreenManager.GraphicsManager.WorldToScreenScaleMatrix);
         }
     }
 }

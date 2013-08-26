@@ -118,6 +118,11 @@ namespace BlockPartyWindowsStore
                     Blocks[row, column].LoadContent();
                 }
             }
+
+            for (int column = 0; column < Columns; column++)
+            {
+                NextBlocks[column].LoadContent();
+            }
         }
 
         /// <summary>

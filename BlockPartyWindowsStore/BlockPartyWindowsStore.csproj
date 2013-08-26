@@ -181,6 +181,22 @@
     <Content Include="Content\BlockMagenta.xnb" />
     <Content Include="Content\BlockRed.xnb" />
     <Content Include="Content\BlockYellow.xnb" />
+    <Content Include="Content\BlockRedV2.xnb" />
+    <Content Include="Content\BlockRedV2Matched.xnb" />
+    <Content Include="Content\BlockBlueV2.xnb" />
+    <Content Include="Content\BlockCyanV2.xnb" />
+    <Content Include="Content\BlockGreenV2.xnb" />
+    <Content Include="Content\BlockMagentaV2.xnb" />
+    <Content Include="Content\BlockYellowV2.xnb" />
+    <Content Include="Content\OmegaSplashScreen.xnb">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\BlockPartyMainMenuBackground.xnb">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Rectangle.xnb">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <Content Include="Assets\Logo.png" />

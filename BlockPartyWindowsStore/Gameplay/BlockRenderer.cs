@@ -26,10 +26,11 @@ namespace BlockPartyWindowsStore
         public Vector2 Scale = Vector2.One;
         const int flashFrequency = 100;
         const float dampeningFactor = 0.15f;
-        const int margin = 5;
+        const int margin = 0;
 
         Texture2D texture;
         Texture2D redTexture;
+        Texture2D redMatchedTexture;
         Texture2D greenTexture;
         Texture2D blueTexture;
         Texture2D cyanTexture;
@@ -51,25 +52,28 @@ namespace BlockPartyWindowsStore
             this.column = column;
 
             Width = Height = block.Board.Screen.ScreenManager.World.Width > block.Board.Screen.ScreenManager.World.Height ?
-                block.Board.Screen.ScreenManager.World.Height / 10 :
-                block.Board.Screen.ScreenManager.World.Width / 10;
+                block.Board.Screen.ScreenManager.World.Height / 11 :
+                block.Board.Screen.ScreenManager.World.Width / 11;
+
+            texture = block.Board.Screen.ScreenManager.GraphicsManager.BlankTexture;
         }
 
         public void LoadContent()
         {
-            redTexture = block.Board.Screen.ContentManager.Load<Texture2D>("BlockRed");
-            greenTexture = block.Board.Screen.ContentManager.Load<Texture2D>("BlockGreen");
-            blueTexture = block.Board.Screen.ContentManager.Load<Texture2D>("BlockBlue");
-            cyanTexture = block.Board.Screen.ContentManager.Load<Texture2D>("BlockCyan");
-            magentaTexture = block.Board.Screen.ContentManager.Load<Texture2D>("BlockMagenta");
-            yellowTexture = block.Board.Screen.ContentManager.Load<Texture2D>("BlockYellow");
+            redTexture = block.Board.Screen.ContentManager.Load<Texture2D>("BlockRedV2");
+            redMatchedTexture = block.Board.Screen.ContentManager.Load<Texture2D>("BlockRedV2Matched");
+            greenTexture = block.Board.Screen.ContentManager.Load<Texture2D>("BlockGreenV2");
+            blueTexture = block.Board.Screen.ContentManager.Load<Texture2D>("BlockBlueV2");
+            cyanTexture = block.Board.Screen.ContentManager.Load<Texture2D>("BlockCyanV2");
+            magentaTexture = block.Board.Screen.ContentManager.Load<Texture2D>("BlockMagentaV2");
+            yellowTexture = block.Board.Screen.ContentManager.Load<Texture2D>("BlockYellowV2");
         }
 
         public void Update(GameTime gameTime)
         {
             Width = Height = block.Board.Screen.ScreenManager.World.Width > block.Board.Screen.ScreenManager.World.Height ?
-                block.Board.Screen.ScreenManager.World.Height / 10 :
-                block.Board.Screen.ScreenManager.World.Width / 10;
+                block.Board.Screen.ScreenManager.World.Height / 11 :
+                block.Board.Screen.ScreenManager.World.Width / 11;
 
             // Calculate base position
             Rectangle.X = block.Board.Renderer.Rectangle.X + column * Width;
@@ -88,7 +92,7 @@ namespace BlockPartyWindowsStore
                 Rectangle.Y += (int)Tween.QuadraticEaseIn(Math.Max(block.Board.GameOverTimeElapsed.TotalMilliseconds - block.PopulatingDelay.TotalMilliseconds, 0), 0, 2 * block.Board.Rows * block.Board.Blocks[0, 0].Renderer.Height, block.Board.GameOverDuration.TotalMilliseconds);
             }
 
-            Color targetColor = Color = Color.White;
+            //Color targetColor = Color = Color.White;
 
             // Adjust vertical position based on the board's raising state
             Rectangle.Y -= (int)Tween.Linear(block.Board.RaiseTimeElapsed.TotalMilliseconds, 0, Height, block.Board.RaiseDuration.TotalMilliseconds);
@@ -96,20 +100,25 @@ namespace BlockPartyWindowsStore
             // Set the color based on the block's type
             switch (block.Type)
             {
+                case 0: if (block.State == Block.BlockState.Matched ||
+                    block.State == Block.BlockState.Flashing ||
+                    block.State == Block.BlockState.WaitingToPop ||
+                    block.State == Block.BlockState.Popping)
+                    {
+                        texture = redMatchedTexture;
+                    }
+                    else
+                    {
+                        texture = redTexture;
+                    }
+                    Color = Color.Red;
+                    break;
+                case 1: texture = greenTexture; Color = Color.Green; break;
+                case 2: texture = blueTexture; Color = Color.MediumBlue; break;
+                case 3: texture = cyanTexture; Color = Color.Cyan; break;
+                case 4: texture = magentaTexture; Color = Color.Magenta; break;
+                case 5: texture = yellowTexture; Color = Color.Yellow; break;
                 default: return;
-                case 0: Color = targetColor = Color.Red; break;
-                case 1: Color = targetColor = Color.Green; break;
-                case 2: Color = targetColor = Color.Blue; break;
-                case 3: Color = targetColor = Color.Cyan; break;
-                case 4: Color = targetColor = Color.Magenta; break;
-                case 5: Color = targetColor = Color.Yellow; break;
-
-                //case 0: texture = redTexture; break;
-                //case 1: texture = greenTexture; break;
-                //case 2: texture = blueTexture; break;
-                //case 3: texture = cyanTexture; break;
-                //case 4: texture = magentaTexture; break;
-                //case 5: texture = yellowTexture; break;
             }
 
             switch (AnimationState)
@@ -117,15 +126,15 @@ namespace BlockPartyWindowsStore
                 case BlockAnimationState.Idle:
                     Scale.X = 1.0f;
                     Scale.Y = 1.0f;
-                    Color = targetColor;
+                    //Color = targetColor;
                     break;
                 case BlockAnimationState.Pressing:
                     pressTimeElapsed += gameTime.ElapsedGameTime;
                     
                     Scale.X = (float)Tween.BounceEaseOut(pressTimeElapsed.TotalMilliseconds, 1, -0.15, pressDuration.TotalMilliseconds);
                     Scale.Y = (float)Tween.BounceEaseOut(pressTimeElapsed.TotalMilliseconds, 1, -0.15, pressDuration.TotalMilliseconds);
-                    float brightness = (float)Tween.BounceEaseOut(pressTimeElapsed.TotalMilliseconds, 0, 0.5, pressDuration.TotalMilliseconds);
-                    Color = new Color(targetColor.ToVector4() + new Vector4(brightness, brightness, brightness, brightness));
+                    //float brightness = (float)Tween.BounceEaseOut(pressTimeElapsed.TotalMilliseconds, 0, 0.5, pressDuration.TotalMilliseconds);
+                    //Color = new Color(targetColor.ToVector4() + new Vector4(brightness, brightness, brightness, brightness));
                     
                     if (pressTimeElapsed >= pressDuration)
                     {
@@ -142,8 +151,8 @@ namespace BlockPartyWindowsStore
                     
                     Scale.X = (float)Tween.BounceEaseOut(releaseTimeElapsed.TotalMilliseconds, 0.85, 0.15, releaseDuration.TotalMilliseconds);
                     Scale.Y = (float)Tween.BounceEaseOut(releaseTimeElapsed.TotalMilliseconds, 0.85, 0.15, releaseDuration.TotalMilliseconds);
-                    brightness = (float)Tween.BounceEaseOut(pressTimeElapsed.TotalMilliseconds, 0, 0.5, pressDuration.TotalMilliseconds);
-                    Color = new Color(targetColor.ToVector4() + new Vector4(0.5f, 0.5f, 0.5f, 0.5f) - new Vector4(brightness, brightness, brightness, brightness));
+                    //brightness = (float)Tween.BounceEaseOut(pressTimeElapsed.TotalMilliseconds, 0, 0.5, pressDuration.TotalMilliseconds);
+                    //Color = new Color(targetColor.ToVector4() + new Vector4(0.5f, 0.5f, 0.5f, 0.5f) - new Vector4(brightness, brightness, brightness, brightness));
 
                     if (releaseTimeElapsed >= releaseDuration)
                     {
@@ -188,7 +197,7 @@ namespace BlockPartyWindowsStore
 
                 case Block.BlockState.Popping:
                     // Adjust scale and color based on progress through the pop
-                    Scale = new Vector2((float)Tween.Linear(block.PopTimeElapsed.TotalMilliseconds, 1.0, 1.0, block.PopDuration.TotalMilliseconds));
+                    Scale = new Vector2((float)Tween.Linear(block.PopTimeElapsed.TotalMilliseconds, 1.0, -1.0, block.PopDuration.TotalMilliseconds));
                     Color = new Color((int)Tween.Linear(block.PopTimeElapsed.TotalMilliseconds, Color.R, -1 * Color.R, block.PopDuration.TotalMilliseconds),
                         (int)Tween.Linear(block.PopTimeElapsed.TotalMilliseconds, Color.G, -1 * Color.G, block.PopDuration.TotalMilliseconds),
                         (int)Tween.Linear(block.PopTimeElapsed.TotalMilliseconds, Color.B, -1 * Color.B, block.PopDuration.TotalMilliseconds),
@@ -228,7 +237,9 @@ namespace BlockPartyWindowsStore
             }
 
             Rectangle scaledRectangle = new Rectangle((int)(Rectangle.X - Rectangle.Width * (Scale.X - 1) / 2 + margin), (int)(Rectangle.Y - Rectangle.Height * (Scale.Y - 1) / 2 + margin), (int)(Rectangle.Width * Scale.X - 2 * margin), (int)(Rectangle.Height * Scale.Y - 2 * margin));
-            block.Board.Screen.ScreenManager.GraphicsManager.SpriteBatch.Draw(block.Board.Screen.ScreenManager.GraphicsManager.BlankTexture, scaledRectangle, null, Color, 0f, Vector2.Zero, SpriteEffects.None, 0.0f);
+
+            block.Board.Screen.ScreenManager.GraphicsManager.SpriteBatch.Draw(texture, scaledRectangle, null, Color.White, 0f, Vector2.Zero, SpriteEffects.None, 1f);
+            //block.Board.Screen.ScreenManager.GraphicsManager.SpriteBatch.Draw(block.Board.Screen.ScreenManager.GraphicsManager.BlankTexture, scaledRectangle, null, Color, 0f, Vector2.Zero, SpriteEffects.None, 0.0f);
         }
     }
 }

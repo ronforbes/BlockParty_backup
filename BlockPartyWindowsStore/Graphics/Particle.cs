@@ -33,13 +33,13 @@ namespace BlockPartyWindowsStore
         {
             if(timeElapsed < duration)
             {
-                timeElapsed = timeElapsed.Add(TimeSpan.FromMilliseconds(gameTime.ElapsedGameTime.TotalMilliseconds));
+                timeElapsed += gameTime.ElapsedGameTime;
                 
-                velocity += acceleration * (float)timeElapsed.TotalMilliseconds;
-                velocity *= 0.85f;
+                velocity += acceleration * (float)timeElapsed.TotalSeconds;
+                velocity *= 0.9f;
                 
-                rectangle.X += (int)(velocity.X * (float)timeElapsed.TotalMilliseconds);
-                rectangle.Y += (int)(velocity.Y * (float)timeElapsed.TotalMilliseconds);
+                rectangle.X += (int)(velocity.X * (float)timeElapsed.TotalSeconds);
+                rectangle.Y += (int)(velocity.Y * (float)timeElapsed.TotalSeconds);
                 
                 scale *= 0.99f;
                 
@@ -52,8 +52,7 @@ namespace BlockPartyWindowsStore
             if (timeElapsed < duration)
             {
                 Rectangle scaledRectangle = new Rectangle((int)(rectangle.X - rectangle.Width * (scale.X - 1) / 2), (int)(rectangle.Y - rectangle.Height * (scale.Y - 1) / 2), (int)(rectangle.Width * scale.X), (int)(rectangle.Height * scale.Y));
-                emitter.Screen.ScreenManager.GraphicsManager.SpriteBatch.Draw(emitter.Screen.ScreenManager.GraphicsManager.ParticleTexture, scaledRectangle, null, color, 0.0f, Vector2.Zero, Microsoft.Xna.Framework.Graphics.SpriteEffects.None, 0.0f);
-                //emitter.Screen.ScreenManager.GraphicsManager.SpriteBatch.Draw(emitter.Screen.ScreenManager.GraphicsManager.ParticleTexture, new Vector2(rectangle.X, rectangle.Y), null, color, 0.0f, Vector2.Zero, new Vector2(rectangle.Width * scale.X, rectangle.Height * scale.Y), SpriteEffects.None, 0.0f);
+                emitter.Screen.ScreenManager.GraphicsManager.SpriteBatch.Draw(emitter.Screen.ScreenManager.GraphicsManager.ParticleTexture, scaledRectangle, null, color, 0.0f, Vector2.Zero, SpriteEffects.None, 0.0f);
             }
         }
     }

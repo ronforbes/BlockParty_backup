@@ -15,6 +15,7 @@ namespace BlockPartyWindowsStore
         public Game()
         {
             graphicsDeviceManager = new GraphicsDeviceManager(this);
+            graphicsDeviceManager.PreferredDepthStencilFormat = DepthFormat.Depth24Stencil8;
             Content.RootDirectory = "Content";
         }
 
@@ -70,7 +71,7 @@ namespace BlockPartyWindowsStore
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(Color.CornflowerBlue);
+            GraphicsDevice.Clear(ClearOptions.Stencil | ClearOptions.Target, Color.Transparent, 0, 0);
 
             screenManager.Draw(gameTime);
 

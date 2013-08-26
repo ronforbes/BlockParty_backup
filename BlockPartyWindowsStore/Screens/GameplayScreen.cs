@@ -24,7 +24,7 @@ namespace BlockPartyWindowsStore
 
             board = new Board(this);
             hud = new HUD(this, board);
-            backButton = new Button(this, "Back", Color.White, new Rectangle(5, 5, 75, 75), Color.Red);
+            backButton = new Button(this, "Back", Color.White, new Rectangle(45, 45, 75, 75), Color.Red);
             backButton.Selected += backButton_Selected;
         }
 
@@ -40,6 +40,8 @@ namespace BlockPartyWindowsStore
             backgroundTexture = ContentManager.Load<Texture2D>("GameplayBackground");
 
             board.LoadContent();
+
+            hud.LoadContent();
         }
 
         public override void Update(Microsoft.Xna.Framework.GameTime gameTime)
@@ -64,13 +66,17 @@ namespace BlockPartyWindowsStore
 
         public override void Draw(Microsoft.Xna.Framework.GameTime gameTime)
         {
-            ScreenManager.GraphicsManager.DrawFullscreenSprite(backgroundTexture, Color.White);
+            ScreenManager.GraphicsManager.SpriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, null, null, null, null, ScreenManager.GraphicsManager.WorldToScreenScaleMatrix);
+
+            ScreenManager.GraphicsManager.SpriteBatch.Draw(backgroundTexture, ScreenManager.World.Bounds, null, Color.White, 0f, Vector2.Zero, SpriteEffects.None, 0f);
 
             board.Draw(gameTime);
             hud.Draw(gameTime);
             backButton.Draw(gameTime);
 
             base.Draw(gameTime);
+
+            ScreenManager.GraphicsManager.SpriteBatch.End();
         }
     }
 }

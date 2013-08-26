@@ -20,9 +20,13 @@ namespace BlockPartyWindowsStore
 
         public SpriteFont SpriteFont;
 
+        public Matrix WorldToScreenScaleMatrix;
+
         public GraphicsManager(ScreenManager screenManager)
         {
             this.screenManager = screenManager;
+
+            WorldToScreenScaleMatrix = Matrix.CreateScale((float)screenManager.Screen.Width / screenManager.World.Width, (float)screenManager.Screen.Height / screenManager.World.Height, 1.0f);
         }
 
         public void LoadContent()
@@ -39,28 +43,6 @@ namespace BlockPartyWindowsStore
 
             // Create the sprite font
             SpriteFont = screenManager.Game.Content.Load<SpriteFont>("SpriteFont");
-        }
-
-        public void UnloadContent()
-        {
-            // textures are disposed by the global content manager being unloaded
-        }
-
-        public void Begin()
-        {
-            Matrix scaleMatrix = Matrix.CreateScale((float)screenManager.Screen.Width / screenManager.World.Width, (float)screenManager.Screen.Height / screenManager.World.Height, 1.0f);
-
-            SpriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, null, null, null, null, scaleMatrix);
-        }
-
-        public void DrawFullscreenSprite(Texture2D texture, Color color)
-        {
-            SpriteBatch.Draw(texture, screenManager.World.Bounds, color);
-        }
-
-        public void End()
-        {
-            SpriteBatch.End();
         }
     }
 }

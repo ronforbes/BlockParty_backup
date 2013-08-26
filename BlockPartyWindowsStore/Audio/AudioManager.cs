@@ -29,11 +29,6 @@ namespace BlockPartyWindowsStore
             soundEffects.Add("Celebration", screenManager.Game.Content.Load<SoundEffect>("Celebration"));
         }
 
-        public void UnloadContent()
-        {
-            // sound effects are unloaded by the content manager
-        }
-
         public void Play(string key, float volume, float pitch, float pan)
         {
             soundEffects[key].Play(volume, pitch, pan);
