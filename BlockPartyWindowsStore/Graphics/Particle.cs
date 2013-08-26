@@ -34,9 +34,9 @@ namespace BlockPartyWindowsStore
             if(timeElapsed < duration)
             {
                 timeElapsed += gameTime.ElapsedGameTime;
-                
-                velocity += acceleration * (float)timeElapsed.TotalSeconds;
+
                 velocity *= 0.9f;
+                velocity += acceleration * (float)timeElapsed.TotalSeconds;
                 
                 rectangle.X += (int)(velocity.X * (float)timeElapsed.TotalSeconds);
                 rectangle.Y += (int)(velocity.Y * (float)timeElapsed.TotalSeconds);

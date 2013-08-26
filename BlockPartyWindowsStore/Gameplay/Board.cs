@@ -435,8 +435,8 @@ namespace BlockPartyWindowsStore
                         {
                             Blocks[row, column].Land();
                             playLandSound = true;
-                            ParticleEmitters.Add(new ParticleEmitter(Screen, 3, new Rectangle(Blocks[row, column].Renderer.Rectangle.X, Blocks[row, column].Renderer.Rectangle.Y + Blocks[0, 0].Renderer.Height, 5, 5), new Vector2(-0.05f, -0.05f), new Vector2(0.0f, 0.0f), Vector2.Zero, Color.White, TimeSpan.FromMilliseconds(1000)));
-                            ParticleEmitters.Add(new ParticleEmitter(Screen, 3, new Rectangle(Blocks[row, column].Renderer.Rectangle.X + Blocks[0, 0].Renderer.Width, Blocks[row, column].Renderer.Rectangle.Y + Blocks[0, 0].Renderer.Height, 5, 5), new Vector2(0.0f, -0.05f), new Vector2(0.05f, 0.0f), Vector2.Zero, Color.White, TimeSpan.FromMilliseconds(1000)));
+                            ParticleEmitters.Add(new ParticleEmitter(Screen, 10, new Rectangle(Blocks[row, column].Renderer.Rectangle.X, Blocks[row, column].Renderer.Rectangle.Y + Blocks[0, 0].Renderer.Height, 5, 5), new Vector2(-50f, -25f), new Vector2(0.0f, 0.0f), Vector2.Zero, Color.White, TimeSpan.FromSeconds(1)));
+                            ParticleEmitters.Add(new ParticleEmitter(Screen, 10, new Rectangle(Blocks[row, column].Renderer.Rectangle.X + Blocks[0, 0].Renderer.Width, Blocks[row, column].Renderer.Rectangle.Y + Blocks[0, 0].Renderer.Height, 5, 5), new Vector2(0.0f, -25f), new Vector2(50f, 0.0f), Vector2.Zero, Color.White, TimeSpan.FromSeconds(1)));
                         }
 
                         Blocks[row, column].JustFell = false;
