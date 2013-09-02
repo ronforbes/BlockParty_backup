@@ -16,15 +16,20 @@ namespace BlockPartyWindowsStore
 
         static Random random = new Random();
 
-        public ParticleEmitter(Screen screen, int particleCount, Rectangle rectangle, Vector2 minVelocity, Vector2 maxVelocity, Vector2 acceleration, Color color, TimeSpan duration)
+        public ParticleEmitter(Screen screen, int particleCount, Rectangle rectangle, Vector2 minVelocity, Vector2 maxVelocity, Vector2 acceleration, Color minColor, Color maxColor, TimeSpan duration)
         {
             Screen = screen;
             particles = new List<Particle>();
 
             for (int p = 0; p < particleCount; p++)
             {
+                //Vector2 velocity = new Vector2((float)random.NextDouble() * (maxVelocity.X - minVelocity.X) + minVelocity.X, (float)random.NextDouble() * (maxVelocity.Y - minVelocity.Y) + minVelocity.Y);
+                float degrees = random.Next(0, 359);
+                float speed = (float)random.Next((int)maxVelocity.X);
+                Vector2 velocity = new Vector2((float)Math.Cos(MathHelper.ToRadians(degrees)) * speed, (float)Math.Sin(MathHelper.ToRadians(degrees)) * speed);
                 float brightness = (float)random.NextDouble();
-                particles.Add(new Particle(this, rectangle, new Vector2((float)random.NextDouble() * (maxVelocity.X - minVelocity.X) + minVelocity.X, (float)random.NextDouble() * (maxVelocity.Y - minVelocity.Y) + minVelocity.Y), acceleration, new Color(color.ToVector4() * brightness), duration));
+                Color color = new Color(random.Next(minColor.R, maxColor.R), random.Next(minColor.G, maxColor.G), random.Next(minColor.B, maxColor.B), random.Next(minColor.A, maxColor.A));
+                particles.Add(new Particle(this, rectangle, velocity, acceleration, color, duration));
             }
         }
 

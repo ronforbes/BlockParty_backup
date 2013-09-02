@@ -22,6 +22,7 @@ namespace BlockPartyWindowsStore
             this.board = board;
             this.text = text;
             position = new Rectangle(column * board.Blocks[0, 0].Renderer.Width, row * board.Blocks[0, 0].Renderer.Height, board.Blocks[0, 0].Renderer.Width, board.Blocks[0, 0].Renderer.Height);
+            board.ParticleEmitters.Add(new ParticleEmitter(board.Screen, 50, new Rectangle(board.Blocks[row, column].Renderer.Rectangle.X + board.Blocks[0, 0].Renderer.Width / 2, board.Blocks[row, column].Renderer.Rectangle.Y + board.Blocks[0, 0].Renderer.Height / 2, 25, 25), new Vector2(-100f, -100f), new Vector2(100f, 100f), Vector2.Zero, Color.Black, Color.White, TimeSpan.FromSeconds(3)));
         }
 
         public void Update(GameTime gameTime)

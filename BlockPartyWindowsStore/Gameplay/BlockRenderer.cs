@@ -24,8 +24,8 @@ namespace BlockPartyWindowsStore
         public Rectangle Rectangle = new Rectangle();
         public Color Color = Color.White;
         public Vector2 Scale = Vector2.One;
+        float rotation = 0f;
         const int flashFrequency = 100;
-        const float dampeningFactor = 0.15f;
         const int margin = 0;
 
         Texture2D texture;
@@ -44,6 +44,10 @@ namespace BlockPartyWindowsStore
 
         TimeSpan releaseTimeElapsed = TimeSpan.Zero;
         readonly TimeSpan releaseDuration = TimeSpan.FromSeconds(0.25);
+
+        public bool Shaking = false;
+
+        static Random random = new Random();
 
         public BlockRenderer(Block block, int row, int column)
         {
@@ -167,6 +171,16 @@ namespace BlockPartyWindowsStore
                     return;
 
                 case Block.BlockState.Idle:
+                    // Adjust rotation if the block is shaking
+                    if (Shaking)
+                    {
+                        Scale.X += (float)Math.Cos(gameTime.TotalGameTime.TotalSeconds * 10) / 15;
+                        Scale.Y += (float)Math.Sin(gameTime.TotalGameTime.TotalSeconds * 10) / 15;
+                    }
+                    else
+                    {
+                        Scale.Y = 1f;
+                    }
                     break;
 
                 case Block.BlockState.Sliding:
@@ -185,19 +199,16 @@ namespace BlockPartyWindowsStore
                 case Block.BlockState.Matched: break;
 
                 case Block.BlockState.Flashing:
-                    // Alternate between white and the original color
-                    if (gameTime.TotalGameTime.TotalMilliseconds % flashFrequency > flashFrequency / 2)
-                    {
-                        Color = Color.White;
-                    }
+                    Scale = new Vector2(Math.Min((float)Tween.Linear(block.FlashTimeElapsed.TotalSeconds, 1, 0.25, block.FlashDuration.TotalSeconds / 8), 1.25f));
                     break;
 
                 case Block.BlockState.WaitingToPop:
+                    Scale = new Vector2(1.25f);
                     break;
 
                 case Block.BlockState.Popping:
                     // Adjust scale and color based on progress through the pop
-                    Scale = new Vector2((float)Tween.Linear(block.PopTimeElapsed.TotalMilliseconds, 1.0, -1.0, block.PopDuration.TotalMilliseconds));
+                    Scale = new Vector2((float)Tween.Linear(block.PopTimeElapsed.TotalMilliseconds, 1.25, -1.25, block.PopDuration.TotalMilliseconds));
                     Color = new Color((int)Tween.Linear(block.PopTimeElapsed.TotalMilliseconds, Color.R, -1 * Color.R, block.PopDuration.TotalMilliseconds),
                         (int)Tween.Linear(block.PopTimeElapsed.TotalMilliseconds, Color.G, -1 * Color.G, block.PopDuration.TotalMilliseconds),
                         (int)Tween.Linear(block.PopTimeElapsed.TotalMilliseconds, Color.B, -1 * Color.B, block.PopDuration.TotalMilliseconds),
@@ -238,7 +249,7 @@ namespace BlockPartyWindowsStore
 
             Rectangle scaledRectangle = new Rectangle((int)(Rectangle.X - Rectangle.Width * (Scale.X - 1) / 2 + margin), (int)(Rectangle.Y - Rectangle.Height * (Scale.Y - 1) / 2 + margin), (int)(Rectangle.Width * Scale.X - 2 * margin), (int)(Rectangle.Height * Scale.Y - 2 * margin));
 
-            block.Board.Screen.ScreenManager.GraphicsManager.SpriteBatch.Draw(texture, scaledRectangle, null, Color.White, 0f, Vector2.Zero, SpriteEffects.None, 1f);
+            block.Board.Screen.ScreenManager.GraphicsManager.SpriteBatch.Draw(texture, scaledRectangle, null, Color.White, rotation, Vector2.Zero, SpriteEffects.None, 1f);
             //block.Board.Screen.ScreenManager.GraphicsManager.SpriteBatch.Draw(block.Board.Screen.ScreenManager.GraphicsManager.BlankTexture, scaledRectangle, null, Color, 0f, Vector2.Zero, SpriteEffects.None, 0.0f);
         }
     }

@@ -56,8 +56,8 @@ namespace BlockPartyWindowsStore
         readonly public TimeSpan FallDuration = TimeSpan.FromMilliseconds(50);
         public bool JustFell;           // Determines whether the block just fell and needs to be checked for its next state
 
-        TimeSpan flashTimeElapsed;
-        readonly TimeSpan flashDuration = TimeSpan.FromSeconds(1);
+        public TimeSpan FlashTimeElapsed;
+        public readonly TimeSpan FlashDuration = TimeSpan.FromSeconds(1);
 
         TimeSpan popDelayTimeElapsed;
         readonly TimeSpan popDelayInterval = TimeSpan.FromSeconds(0.25);
@@ -138,7 +138,7 @@ namespace BlockPartyWindowsStore
         public void Flash(int matchingBlockCount, int delayCounter)
         {
             State = BlockState.Flashing;
-            flashTimeElapsed = TimeSpan.Zero;
+            FlashTimeElapsed = TimeSpan.Zero;
             popDelayDuration = TimeSpan.FromMilliseconds((matchingBlockCount - delayCounter) * popDelayInterval.TotalMilliseconds);
             emptyDelayDuration = TimeSpan.FromMilliseconds(delayCounter * emptyDelayInterval.TotalMilliseconds);
         }
@@ -154,7 +154,7 @@ namespace BlockPartyWindowsStore
             State = BlockState.Popping;
             PopTimeElapsed = TimeSpan.Zero;
             Board.Score += Board.ScoreBlockPop;
-            Board.ParticleEmitters.Add(new ParticleEmitter(Board.Screen, 200, new Rectangle(Renderer.Rectangle.X + Board.Blocks[0, 0].Renderer.Width / 2, Renderer.Rectangle.Y + Board.Blocks[0, 0].Renderer.Height / 2, 25, 25), new Vector2(-100f, -100f), new Vector2(100f, 100f), Vector2.Zero, Renderer.Color, TimeSpan.FromSeconds(3)));
+            Board.ParticleEmitters.Add(new ParticleEmitter(Board.Screen, 200, new Rectangle(Renderer.Rectangle.X + Board.Blocks[0, 0].Renderer.Width / 2, Renderer.Rectangle.Y + Board.Blocks[0, 0].Renderer.Height / 2, 25, 25), new Vector2(-100f, -100f), new Vector2(100f, 100f), Vector2.Zero, new Color(Renderer.Color.ToVector4() / 2), Renderer.Color, TimeSpan.FromSeconds(3)));
             Board.Screen.ScreenManager.AudioManager.Play("BlockPop", 1.0f, 0.0f, 0.0f);
         }
 
@@ -228,9 +228,9 @@ namespace BlockPartyWindowsStore
                 case BlockState.Matched: break;
 
                 case BlockState.Flashing:
-                    flashTimeElapsed = flashTimeElapsed.Add(TimeSpan.FromMilliseconds(gameTime.ElapsedGameTime.TotalMilliseconds));
+                    FlashTimeElapsed += gameTime.ElapsedGameTime;
 
-                    if (flashTimeElapsed >= flashDuration)
+                    if (FlashTimeElapsed >= FlashDuration)
                     {
                         WaitToPop();
                     }

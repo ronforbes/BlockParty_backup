@@ -28,7 +28,6 @@ namespace BlockPartyWindowsStore
         protected override void Initialize()
         {
             screenManager = new ScreenManager(this);
-            IsMouseVisible = true;
 
             base.Initialize();
         }

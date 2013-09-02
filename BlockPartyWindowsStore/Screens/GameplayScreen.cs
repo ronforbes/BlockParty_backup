@@ -13,6 +13,7 @@ namespace BlockPartyWindowsStore
     class GameplayScreen : Screen
     {
         Texture2D backgroundTexture;
+        Texture2D mouseTexture;
         Board board;
         HUD hud;
         Button backButton;
@@ -38,6 +39,8 @@ namespace BlockPartyWindowsStore
             base.LoadContent();
 
             backgroundTexture = ContentManager.Load<Texture2D>("GameplayBackground");
+
+            mouseTexture = ContentManager.Load<Texture2D>("Cursor");
 
             board.LoadContent();
 
@@ -73,6 +76,8 @@ namespace BlockPartyWindowsStore
             board.Draw(gameTime);
             hud.Draw(gameTime);
             backButton.Draw(gameTime);
+
+            ScreenManager.GraphicsManager.SpriteBatch.Draw(mouseTexture, new Rectangle(ScreenManager.InputManager.WorldX, ScreenManager.InputManager.WorldY, 25, 50), Color.White);
 
             base.Draw(gameTime);
 

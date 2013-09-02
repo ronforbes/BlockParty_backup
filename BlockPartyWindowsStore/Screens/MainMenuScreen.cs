@@ -12,6 +12,7 @@ namespace BlockPartyWindowsStore
     class MainMenuScreen : Screen
     {
         Texture2D backgroundTexture;
+        Texture2D mouseTexture;
         Button playButton;
 
         public MainMenuScreen(ScreenManager screenManager)
@@ -36,6 +37,7 @@ namespace BlockPartyWindowsStore
             base.LoadContent();
 
             backgroundTexture = ContentManager.Load<Texture2D>("BlockPartyMainMenuBackground");
+            mouseTexture = ContentManager.Load<Texture2D>("Cursor");
         }
 
         public override void Update(Microsoft.Xna.Framework.GameTime gameTime)
@@ -59,6 +61,8 @@ namespace BlockPartyWindowsStore
             ScreenManager.GraphicsManager.SpriteBatch.Draw(backgroundTexture, ScreenManager.World.Bounds, Color.White);
             
             playButton.Draw(gameTime);
+
+            ScreenManager.GraphicsManager.SpriteBatch.Draw(mouseTexture, new Rectangle(ScreenManager.InputManager.WorldX, ScreenManager.InputManager.WorldY, 25, 50), Color.White);
 
             base.Draw(gameTime);
 

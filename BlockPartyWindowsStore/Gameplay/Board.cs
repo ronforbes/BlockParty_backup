@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using BlockPartyWindowsStore.ScreenManagement;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
@@ -34,9 +35,8 @@ namespace BlockPartyWindowsStore
 
         public TimeSpan RaiseTimeElapsed = TimeSpan.Zero;
         public readonly TimeSpan RaiseDuration = TimeSpan.FromSeconds(10);
-        int raiseRateNormal = 1;
-        public readonly int RaiseRateAccelerated = 33;
-        public int RaiseRate = 1;
+        public readonly double RaiseRateAccelerated = 33;
+        public double RaiseRate = 1;
 
         public TimeSpan GameOverDelayTimeElapsed;
         public readonly TimeSpan GameOverDelayDuration = TimeSpan.FromSeconds(10);
@@ -53,18 +53,29 @@ namespace BlockPartyWindowsStore
         public TimeSpan GameOverTimeElapsed = TimeSpan.Zero;
         public readonly TimeSpan GameOverDuration = TimeSpan.FromSeconds(1);
 
+        public TimeSpan StopTimeRemaining = TimeSpan.Zero;
+
         public int Score = 0;
         public const int ScoreBlockPop = 10;
-        const int ScoreBlockComboInterval = 50;
-        const int ScoreBlockChainInterval = 100;
+        const int ScoreBlockComboInterval = 100;
+        const int ScoreBlockChainInterval = 200;
 
         public int Level = 1;
+        public TimeSpan TimeElapsed = TimeSpan.Zero;
+        public int BlocksMatched = 0;
+        public int Combos = 0;
+        public Dictionary<int, int> ComboBreakdown = new Dictionary<int, int>();
+        public int Chains = 0;
+        public Dictionary<int, int> ChainBreakdown = new Dictionary<int, int>();
 
         public List<Celebration> Celebrations = new List<Celebration>();
         public List<ParticleEmitter> ParticleEmitters = new List<ParticleEmitter>();
 
         public BoardRenderer Renderer;
         BoardController controller;
+
+        Button retryButton;
+        Button doneButton;
 
         /// <summary>
         /// Construct the board
@@ -105,6 +116,35 @@ namespace BlockPartyWindowsStore
 
             Renderer = new BoardRenderer(this);
             controller = new BoardController(this);
+
+            RaiseRate = (double)Level / 4;
+
+            for (int comboStrength = 4; comboStrength < Rows * Columns; comboStrength++)
+            {
+                ComboBreakdown.Add(comboStrength, 0);
+            }
+
+            for (int chainLength = 2; chainLength < Rows * Columns / 3; chainLength++)
+            {
+                ChainBreakdown.Add(chainLength, 0);
+            }
+
+            // Initialize buttons
+            retryButton = new Button(screen, "Retry", Color.White, new Rectangle(Renderer.Rectangle.X + Renderer.Rectangle.Width / 4 - 50, Renderer.Rectangle.Y + Renderer.Rectangle.Height - 100, Renderer.Rectangle.Width / 4, 100), Color.Orange);
+            retryButton.Selected += retryButton_Selected;
+
+            doneButton = new Button(screen, "Done", Color.White, new Rectangle(Renderer.Rectangle.X + Renderer.Rectangle.Width / 2 + 50, Renderer.Rectangle.Y + Renderer.Rectangle.Height - 100, Renderer.Rectangle.Width / 4, 100), Color.Orange);
+            doneButton.Selected += doneButton_Selected;
+        }
+
+        void retryButton_Selected(object sender, EventArgs e)
+        {
+            Screen.ScreenManager.LoadScreen(new GameplayScreen(Screen.ScreenManager));
+        }
+
+        void doneButton_Selected(object sender, EventArgs e)
+        {
+            Screen.ScreenManager.LoadScreen(new MainMenuScreen(Screen.ScreenManager));
         }
 
         public void LoadContent()
@@ -183,6 +223,11 @@ namespace BlockPartyWindowsStore
                     }
 
                     UpdateLevel();
+
+                    TimeElapsed += gameTime.ElapsedGameTime;
+
+                    Renderer.Update(gameTime);
+
                     break;
 
                 case BoardState.GameOver:
@@ -194,6 +239,9 @@ namespace BlockPartyWindowsStore
                     }
 
                     UpdateBlocks(gameTime);
+
+                    retryButton.Update(gameTime);
+                    doneButton.Update(gameTime);
 
                     break;
             }
@@ -239,6 +287,7 @@ namespace BlockPartyWindowsStore
                             for (int matchingColumn = horizontalMatchingBlocks; matchingColumn >= 0; matchingColumn--)
                             {
                                 Blocks[row, column - matchingColumn].Match();
+                                BlocksMatched++;
                                 matchingBlockCount++;
                                 comboCelebrationRow = row;
                                 comboCelebrationColumn = column - matchingColumn;
@@ -285,6 +334,7 @@ namespace BlockPartyWindowsStore
                             for (int matchingRow = verticalMatchingBlocks; matchingRow >= 0; matchingRow--)
                             {
                                 Blocks[row - matchingRow, column].State = Block.BlockState.Matched;
+                                BlocksMatched++;
                                 matchingBlockCount++;
                                 comboCelebrationRow = row - matchingRow;
                                 comboCelebrationColumn = column;
@@ -307,14 +357,35 @@ namespace BlockPartyWindowsStore
             if (matchingBlockCount > 3)
             {
                 Score += matchingBlockCount * ScoreBlockComboInterval;
+                Combos++;
+
+                // Add the combo in the breakdown stats
+                if (!ComboBreakdown.ContainsKey(matchingBlockCount))
+                {
+                    ComboBreakdown.Add(matchingBlockCount, 0);
+                }
+                ComboBreakdown[matchingBlockCount]++;
+
+                // Add a celebration
                 Celebrations.Add(new Celebration(this, matchingBlockCount.ToString(), comboCelebrationRow, comboCelebrationColumn));
-                //ParticleEmitters.Add(new ParticleEmitter(Screen, 50, new Vector2(Screen.ScreenManager.WorldViewport.Width / 2 - Columns * BlockRenderer.Width / 2, (int)(-1 * BlockRenderer.Height * raiseTimeElapsed.TotalMilliseconds / raiseDuration.TotalMilliseconds)) + new Vector2(comboCelebrationColumn * BlockRenderer.Width, comboCelebrationRow * BlockRenderer.Width), new Vector2(-0.2f, -0.2f), new Vector2(0.2f, 0.2f), Vector2.Zero, new Color((float)random.NextDouble(), (float)random.NextDouble(), (float)random.NextDouble(), (float)random.NextDouble()), new Vector2(10, 10), TimeSpan.FromMilliseconds(1000)));
+
+                // Play a sound
                 float pitch = 0.1f * (matchingBlockCount - 3);
 
                 // Only play the combo sound if a chain sound isn't going to play (avoid cacophany!)
                 if (!incrementChain)
                 {
                     Screen.ScreenManager.AudioManager.Play("Celebration", 1.0f, pitch, 0.0f);
+                }
+
+                // Add stop time if the board is more than half full
+                for (int column = 0; column < Columns; column++)
+                {
+                    if (Blocks[Rows / 4, column].State != Block.BlockState.Empty)
+                    {
+                        StopTimeRemaining += TimeSpan.FromSeconds(matchingBlockCount * 2);
+                        break;
+                    }
                 }
             }
 
@@ -324,9 +395,18 @@ namespace BlockPartyWindowsStore
                 chainCount++;
                 Score += chainCount * ScoreBlockChainInterval;
                 Celebrations.Add(new Celebration(this, chainCount.ToString() + "x", chainCelebrationRow, chainCelebrationColumn));
-                //ParticleEmitters.Add(new ParticleEmitter(Screen, 50, new Vector2(Screen.ScreenManager.WorldViewport.Width / 2 - Columns * BlockRenderer.Width / 2, (int)(-1 * BlockRenderer.Height * raiseTimeElapsed.TotalMilliseconds / raiseDuration.TotalMilliseconds)) + new Vector2(chainCelebrationColumn * BlockRenderer.Width, chainCelebrationRow * BlockRenderer.Width), new Vector2(-0.2f, -0.2f), new Vector2(0.2f, 0.2f), Vector2.Zero, new Color((float)random.NextDouble(), (float)random.NextDouble(), (float)random.NextDouble(), (float)random.NextDouble()), new Vector2(10, 10), TimeSpan.FromMilliseconds(1000)));
                 float pitch = 0.1f * chainCount;
                 Screen.ScreenManager.AudioManager.Play("Celebration", 1.0f, pitch, 0.0f);
+
+                // Add stop time if the board is more than half full
+                for (int column = 0; column < Columns; column++)
+                {
+                    if (Blocks[Rows / 4, column].State != Block.BlockState.Empty)
+                    {
+                        StopTimeRemaining += TimeSpan.FromSeconds(chainCount * 2);
+                        break;
+                    }
+                }
             }
 
             // Setup matching Blocks to pop
@@ -395,6 +475,17 @@ namespace BlockPartyWindowsStore
                     }
                 }
 
+                Chains++;
+                
+                // Add to the chain breakdown
+                if (chainCount > 1)
+                {
+                    if (!ChainBreakdown.ContainsKey(chainCount))
+                    {
+                        ChainBreakdown.Add(chainCount, 0);
+                    }
+                    ChainBreakdown[chainCount]++;
+                }
                 chainCount = 1;
             }
         }
@@ -435,8 +526,8 @@ namespace BlockPartyWindowsStore
                         {
                             Blocks[row, column].Land();
                             playLandSound = true;
-                            ParticleEmitters.Add(new ParticleEmitter(Screen, 10, new Rectangle(Blocks[row, column].Renderer.Rectangle.X, Blocks[row, column].Renderer.Rectangle.Y + Blocks[0, 0].Renderer.Height, 5, 5), new Vector2(-50f, -25f), new Vector2(0.0f, 0.0f), Vector2.Zero, Color.White, TimeSpan.FromSeconds(1)));
-                            ParticleEmitters.Add(new ParticleEmitter(Screen, 10, new Rectangle(Blocks[row, column].Renderer.Rectangle.X + Blocks[0, 0].Renderer.Width, Blocks[row, column].Renderer.Rectangle.Y + Blocks[0, 0].Renderer.Height, 5, 5), new Vector2(0.0f, -25f), new Vector2(50f, 0.0f), Vector2.Zero, Color.White, TimeSpan.FromSeconds(1)));
+                            ParticleEmitters.Add(new ParticleEmitter(Screen, 10, new Rectangle(Blocks[row, column].Renderer.Rectangle.X, Blocks[row, column].Renderer.Rectangle.Y + Blocks[0, 0].Renderer.Height, 5, 5), new Vector2(-50f, -25f), new Vector2(0.0f, 0.0f), Vector2.Zero, Color.White, Color.White, TimeSpan.FromSeconds(1)));
+                            ParticleEmitters.Add(new ParticleEmitter(Screen, 10, new Rectangle(Blocks[row, column].Renderer.Rectangle.X + Blocks[0, 0].Renderer.Width, Blocks[row, column].Renderer.Rectangle.Y + Blocks[0, 0].Renderer.Height, 5, 5), new Vector2(0.0f, -25f), new Vector2(50f, 0.0f), Vector2.Zero, Color.White, Color.White, TimeSpan.FromSeconds(1)));
                         }
 
                         Blocks[row, column].JustFell = false;
@@ -452,58 +543,61 @@ namespace BlockPartyWindowsStore
 
         void Raise(GameTime gameTime)
         {
-            int rate = RaiseRate;
-            // Determine whether the board should raise based on whether there are any non-empty/idle Blocks
-            for (int row = 0; row < Rows; row++)
+            // Process stop time first
+            if (StopTimeRemaining > TimeSpan.Zero)
             {
-                for (int column = 0; column < Columns; column++)
+                StopTimeRemaining -= gameTime.ElapsedGameTime;
+            }
+            else
+            {
+                double rate = RaiseRate;
+
+                // Determine whether the board should raise based on whether there are any non-empty/idle Blocks
+                for (int row = 0; row < Rows; row++)
                 {
-                    if (Blocks[row, column].State != Block.BlockState.Empty &&
-                        Blocks[row, column].State != Block.BlockState.Idle &&
-                        Blocks[row, column].State != Block.BlockState.Sliding)
+                    for (int column = 0; column < Columns; column++)
                     {
-                        if (rate == raiseRateNormal)
+                        if (Blocks[row, column].State != Block.BlockState.Empty &&
+                            Blocks[row, column].State != Block.BlockState.Idle &&
+                            Blocks[row, column].State != Block.BlockState.Sliding)
                         {
                             rate = 0;
                         }
-                    }
 
-                    // Stop raising if any cells in the top row are occupied
-                    if (row == 0)
-                    {
-                        if (Blocks[row, column].State != Block.BlockState.Empty)
+                        // Stop raising if any cells in the top row are occupied
+                        if (row == 0)
                         {
-                            if (rate == raiseRateNormal)
+                            if (Blocks[row, column].State != Block.BlockState.Empty)
                             {
                                 rate = 0;
                             }
                         }
                     }
                 }
-            }
 
-            RaiseTimeElapsed = RaiseTimeElapsed.Add(TimeSpan.FromMilliseconds(gameTime.ElapsedGameTime.TotalMilliseconds * rate));
+                RaiseTimeElapsed = RaiseTimeElapsed.Add(TimeSpan.FromSeconds(gameTime.ElapsedGameTime.TotalSeconds * rate));
 
-            if (RaiseTimeElapsed >= RaiseDuration)
-            {
-                RaiseTimeElapsed = TimeSpan.Zero;
-                RaiseRate = raiseRateNormal;
-
-                for (int row = 0; row < Rows - 1; row++)
+                if (RaiseTimeElapsed >= RaiseDuration)
                 {
+                    RaiseTimeElapsed = TimeSpan.Zero;
+                    RaiseRate = (double)Level / 4;
+
+                    for (int row = 0; row < Rows - 1; row++)
+                    {
+                        for (int column = 0; column < Columns; column++)
+                        {
+                            Blocks[row, column].Raise(Blocks[row + 1, column]);
+                        }
+                    }
+
                     for (int column = 0; column < Columns; column++)
                     {
-                        Blocks[row, column].Raise(Blocks[row + 1, column]);
+                        Blocks[Rows - 1, column].Raise(NextBlocks[column]);
+                        Blocks[Rows - 1, column].State = Block.BlockState.Idle;
+
+                        NextBlocks[column].Create();
+                        NextBlocks[column].State = Block.BlockState.Preview;
                     }
-                }
-
-                for (int column = 0; column < Columns; column++)
-                {
-                    Blocks[Rows - 1, column].Raise(NextBlocks[column]);
-                    Blocks[Rows - 1, column].State = Block.BlockState.Idle;
-
-                    NextBlocks[column].Create();
-                    NextBlocks[column].State = Block.BlockState.Preview;
                 }
             }
         }
@@ -582,17 +676,28 @@ namespace BlockPartyWindowsStore
         void UpdateLevel()
         {
             Level = (int)MathHelper.Clamp(Score / 1000, 1, 99);
-            raiseRateNormal = Math.Max(Level / 3, 1);
         }
 
         public void HandleInput(GameTime gameTime)
         {
             controller.HandleInput(gameTime);
+
+            if (State == BoardState.GameOver)
+            {
+                retryButton.HandleInput(gameTime);
+                doneButton.HandleInput(gameTime);
+            }
         }
 
         public void Draw(GameTime gameTime)
         {
             Renderer.Draw(gameTime);
+
+            if (State == BoardState.GameOver)
+            {
+                retryButton.Draw(gameTime);
+                doneButton.Draw(gameTime);
+            }
         }
     }
 }

@@ -49,6 +49,7 @@ namespace BlockPartyWindowsStore
                     if (Vector2.Distance(new Vector2(board.Screen.ScreenManager.InputManager.WorldX, board.Screen.ScreenManager.InputManager.WorldY), new Vector2(previousClickX, previousClickY)) < doubleClickDistance)
                     {
                         board.RaiseRate = board.RaiseRateAccelerated;
+                        board.StopTimeRemaining = TimeSpan.Zero;
                     }
                 }
 
@@ -102,11 +103,6 @@ namespace BlockPartyWindowsStore
                 board.Blocks[selectedRow, selectedColumn].Release();
                 selectedRow = -1;
                 selectedColumn = -1;
-            }
-
-            if (board.State == Board.BoardState.GameOver && board.Screen.ScreenManager.InputManager.LeftButtonPressed)
-            {
-                board.Screen.ScreenManager.LoadScreen(new MainMenuScreen(board.Screen.ScreenManager));
             }
         }
     }

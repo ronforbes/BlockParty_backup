@@ -155,9 +155,6 @@
       <SubType>Designer</SubType>
     </AppxManifest>
     <None Include="BlockPartyWindowsStore_TemporaryKey.pfx" />
-    <Content Include="Assets\SplashScreen.scale-100.png" />
-    <Content Include="Assets\SplashScreen.scale-140.png" />
-    <Content Include="Assets\SplashScreen.scale-180.png" />
     <Content Include="Content\SpriteFont.xnb" />
     <Content Include="Content\Circle.xnb" />
     <Content Include="Content\Diamond.xnb" />
@@ -195,6 +192,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Content\Rectangle.xnb">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Cursor.xnb">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
