@@ -104,19 +104,7 @@ namespace BlockPartyWindowsStore
             // Set the color based on the block's type
             switch (block.Type)
             {
-                case 0: if (block.State == Block.BlockState.Matched ||
-                    block.State == Block.BlockState.Flashing ||
-                    block.State == Block.BlockState.WaitingToPop ||
-                    block.State == Block.BlockState.Popping)
-                    {
-                        texture = redMatchedTexture;
-                    }
-                    else
-                    {
-                        texture = redTexture;
-                    }
-                    Color = Color.Red;
-                    break;
+                case 0: texture = redTexture; Color = Color.Red; break;
                 case 1: texture = greenTexture; Color = Color.Green; break;
                 case 2: texture = blueTexture; Color = Color.MediumBlue; break;
                 case 3: texture = cyanTexture; Color = Color.Cyan; break;
@@ -172,6 +160,7 @@ namespace BlockPartyWindowsStore
 
                 case Block.BlockState.Idle:
                     // Adjust rotation if the block is shaking
+                    Vector2 originalScale = Scale;
                     if (Shaking)
                     {
                         Scale.X += (float)Math.Cos(gameTime.TotalGameTime.TotalSeconds * 10) / 15;
@@ -179,7 +168,7 @@ namespace BlockPartyWindowsStore
                     }
                     else
                     {
-                        Scale.Y = 1f;
+                        Scale = originalScale;
                     }
                     break;
 

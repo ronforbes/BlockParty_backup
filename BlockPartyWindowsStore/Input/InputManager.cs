@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework.Input;
+using Microsoft.Xna.Framework.Input.Touch;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -29,6 +30,8 @@ namespace BlockPartyWindowsStore
         // Stores the previous mouse state to know if buttons were just pressed or released
         MouseState previousMouseState;
 
+        TouchCollection previousTouchCollection;
+
         public InputManager(ScreenManager screenManager)
         {
             this.screenManager = screenManager;
@@ -58,6 +61,31 @@ namespace BlockPartyWindowsStore
             RightButtonReleased = (mouseState.RightButton == ButtonState.Released && previousMouseState.RightButton == ButtonState.Pressed) ? true : false;
 
             previousMouseState = mouseState;
+
+            // Process touch input
+            TouchCollection touchCollection = TouchPanel.GetState();
+            foreach (TouchLocation touchLocation in touchCollection)
+            {
+                LeftButtonPressed = false;
+                LeftButtonReleased = false;
+
+                WorldX = (int)touchLocation.Position.X * screenManager.World.Width / screenManager.Screen.Width;
+                WorldY = (int)touchLocation.Position.Y * screenManager.World.Height / screenManager.Screen.Height;
+
+                ScreenX = (int)touchLocation.Position.X;
+                ScreenY = (int)touchLocation.Position.Y;
+
+                if (touchLocation.State == TouchLocationState.Pressed)
+                {
+                    LeftButton = true;
+                    LeftButtonPressed = true;
+                }
+                if (touchLocation.State == TouchLocationState.Released)
+                {
+                    LeftButton = false;
+                    LeftButtonReleased = true;
+                }
+            }
         }
     }
 }

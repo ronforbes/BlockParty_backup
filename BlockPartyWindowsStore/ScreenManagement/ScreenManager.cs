@@ -1,10 +1,13 @@
-﻿using Microsoft.Xna.Framework;
+﻿using BlockPartyWindowsStore.Screens;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.UI.Core;
+using Windows.UI.ViewManagement;
 
 namespace BlockPartyWindowsStore
 {
@@ -25,6 +28,10 @@ namespace BlockPartyWindowsStore
         Screen screenToLoad;
         bool loadingScreen = false;
 
+        ApplicationViewState applicationViewState;
+
+        SnapFilledScreen snapFilledScreen;
+
         public ScreenManager(Game game)
         {
             Game = game;
@@ -32,6 +39,7 @@ namespace BlockPartyWindowsStore
             // Setup the screen viewport and update it when the window size changes
             Screen = new Viewport(0, 0, game.GraphicsDevice.Viewport.Width, game.GraphicsDevice.Viewport.Height);
             game.Window.ClientSizeChanged += Window_ClientSizeChanged;
+            game.ApplicationViewChanged += game_ApplicationViewChanged;
 
             // Setup the world viewport
             World = new Viewport(0, 0, worldWidth, worldHeight);
@@ -40,18 +48,57 @@ namespace BlockPartyWindowsStore
             GraphicsManager = new GraphicsManager(this);
             InputManager = new InputManager(this);
             AudioManager = new AudioManager(this);
+
+            snapFilledScreen = new SnapFilledScreen(this);
+        }
+
+        void game_ApplicationViewChanged(object sender, ViewStateChangedEventArgs e)
+        {
+            applicationViewState = e.ViewState;
+
+            if (applicationViewState == ApplicationViewState.Snapped)
+            {
+                Game.IsMouseVisible = true;
+            }
+            else
+            {
+                Game.IsMouseVisible = false;
+            }
         }
 
         void Window_ClientSizeChanged(object sender, EventArgs e)
         {
             Screen.Width = Game.GraphicsDevice.Viewport.Width;
             Screen.Height = Game.GraphicsDevice.Viewport.Height;
+
+            if (applicationViewState == ApplicationViewState.FullScreenLandscape)
+            {
+                World.Width = 1600;
+                World.Height = 900;
+            }
+            if (applicationViewState == ApplicationViewState.FullScreenPortrait)
+            {
+                World.Width = 900;
+                World.Height = 1600;
+            }
+            if (applicationViewState == ApplicationViewState.Snapped)
+            {
+                World.Width = Screen.Width;
+                World.Height = Screen.Height;
+            }
+            if (applicationViewState == ApplicationViewState.Filled)
+            {
+                World.Width = 400;
+                World.Height = 300;
+            }
         }
 
         public void LoadContent()
         {
             GraphicsManager.LoadContent();
             AudioManager.LoadContent();
+
+            snapFilledScreen.LoadContent();
         }
 
         public void AddScreen(Screen screen)
@@ -82,45 +129,59 @@ namespace BlockPartyWindowsStore
 
         public void Update(GameTime gameTime)
         {
-            // Read input
-            InputManager.Update();
-
-            // Make a copy of the list of screens to allow for adds/removes
-            // not interfering with updates
-            screensToUpdate.Clear();
-
-            foreach (Screen screen in screens)
+            if (applicationViewState != ApplicationViewState.Snapped)
             {
-                screensToUpdate.Add(screen);
-            }
+                // Read input
+                InputManager.Update();
 
-            while (screensToUpdate.Count > 0)
-            {
-                // Pop the topmost screen off the stack
-                Screen screen = screensToUpdate[screensToUpdate.Count - 1];
-                screensToUpdate.RemoveAt(screensToUpdate.Count - 1);
+                // Make a copy of the list of screens to allow for adds/removes
+                // not interfering with updates
+                screensToUpdate.Clear();
 
-                // Update the screen
-                screen.Update(gameTime);
-                screen.HandleInput(gameTime);
-            }
-
-            if (loadingScreen)
-            {
-                if (screens.Count == 0)
+                foreach (Screen screen in screens)
                 {
-                    AddScreen(screenToLoad);
-                    loadingScreen = false;
+                    screensToUpdate.Add(screen);
                 }
+
+                while (screensToUpdate.Count > 0)
+                {
+                    // Pop the topmost screen off the stack
+                    Screen screen = screensToUpdate[screensToUpdate.Count - 1];
+                    screensToUpdate.RemoveAt(screensToUpdate.Count - 1);
+
+                    // Update the screen
+                    screen.Update(gameTime);
+                    screen.HandleInput(gameTime);
+                }
+
+                if (loadingScreen)
+                {
+                    if (screens.Count == 0)
+                    {
+                        AddScreen(screenToLoad);
+                        loadingScreen = false;
+                    }
+                }
+            }
+            else
+            {
+                snapFilledScreen.Update(gameTime);
             }
         }
 
         public void Draw(GameTime gameTime)
         {
-            // Draw screens
-            foreach (Screen screen in screens)
+            if (applicationViewState != ApplicationViewState.Snapped)
             {
-                screen.Draw(gameTime);
+                // Draw screens
+                foreach (Screen screen in screens)
+                {
+                    screen.Draw(gameTime);
+                }
+            }
+            else
+            {
+                snapFilledScreen.Draw(gameTime);
             }
         }
     }

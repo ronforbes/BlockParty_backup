@@ -130,10 +130,10 @@ namespace BlockPartyWindowsStore
             }
 
             // Initialize buttons
-            retryButton = new Button(screen, "Retry", Color.White, new Rectangle(Renderer.Rectangle.X + Renderer.Rectangle.Width / 4 - 50, Renderer.Rectangle.Y + Renderer.Rectangle.Height - 100, Renderer.Rectangle.Width / 4, 100), Color.Orange);
+            retryButton = new Button(screen, "Retry", Color.White, new Rectangle(Renderer.Rectangle.X + Renderer.Rectangle.Width / 4 - 50, Renderer.Rectangle.Y + Renderer.Rectangle.Height - 150, Renderer.Rectangle.Width / 4, 100), Color.Orange);
             retryButton.Selected += retryButton_Selected;
 
-            doneButton = new Button(screen, "Done", Color.White, new Rectangle(Renderer.Rectangle.X + Renderer.Rectangle.Width / 2 + 50, Renderer.Rectangle.Y + Renderer.Rectangle.Height - 100, Renderer.Rectangle.Width / 4, 100), Color.Orange);
+            doneButton = new Button(screen, "Done", Color.White, new Rectangle(Renderer.Rectangle.X + Renderer.Rectangle.Width / 2 + 50, Renderer.Rectangle.Y + Renderer.Rectangle.Height - 150, Renderer.Rectangle.Width / 4, 100), Color.Orange);
             doneButton.Selected += doneButton_Selected;
         }
 

@@ -1,4 +1,5 @@
-﻿using BlockPartyWindowsStore.ScreenManagement;
+﻿using BlockPartyWindowsStore.Gameplay;
+using BlockPartyWindowsStore.ScreenManagement;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
@@ -14,6 +15,7 @@ namespace BlockPartyWindowsStore
         Texture2D backgroundTexture;
         Texture2D mouseTexture;
         Button playButton;
+        BlockRain blockRain;
 
         public MainMenuScreen(ScreenManager screenManager)
             : base(screenManager)
@@ -25,6 +27,8 @@ namespace BlockPartyWindowsStore
 
             playButton = new Button(this, "Play!", Color.White, new Rectangle(screenManager.World.Width / 2 - playButtonWidth / 2, screenManager.World.Height / 2 - playButtonHeight / 2, playButtonWidth, playButtonHeight), Color.Green);
             playButton.Selected += playButton_Selected;
+
+            blockRain = new BlockRain(this);
         }
 
         void playButton_Selected(object sender, EventArgs e)
@@ -38,6 +42,8 @@ namespace BlockPartyWindowsStore
 
             backgroundTexture = ContentManager.Load<Texture2D>("BlockPartyMainMenuBackground");
             mouseTexture = ContentManager.Load<Texture2D>("Cursor");
+
+            blockRain.LoadContent();
         }
 
         public override void Update(Microsoft.Xna.Framework.GameTime gameTime)
@@ -45,6 +51,8 @@ namespace BlockPartyWindowsStore
             base.Update(gameTime);
 
             playButton.Update(gameTime);
+
+            blockRain.Update(gameTime);
         }
 
         public override void HandleInput(Microsoft.Xna.Framework.GameTime gameTime)
@@ -59,7 +67,9 @@ namespace BlockPartyWindowsStore
             ScreenManager.GraphicsManager.SpriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.LinearClamp, DepthStencilState.Default, RasterizerState.CullNone, null, ScreenManager.GraphicsManager.WorldToScreenScaleMatrix);
             
             ScreenManager.GraphicsManager.SpriteBatch.Draw(backgroundTexture, ScreenManager.World.Bounds, Color.White);
-            
+
+            blockRain.Draw(gameTime);
+
             playButton.Draw(gameTime);
 
             ScreenManager.GraphicsManager.SpriteBatch.Draw(mouseTexture, new Rectangle(ScreenManager.InputManager.WorldX, ScreenManager.InputManager.WorldY, 25, 50), Color.White);

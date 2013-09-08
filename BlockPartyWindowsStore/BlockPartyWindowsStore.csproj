@@ -134,6 +134,8 @@
     <Compile Include="Gameplay\BoardRenderer.cs" />
     <Compile Include="Gameplay\Celebration.cs" />
     <Compile Include="Gameplay\HUD.cs" />
+    <Compile Include="Gameplay\BlockParticle.cs" />
+    <Compile Include="Gameplay\BlockRain.cs" />
     <Compile Include="ScreenManagement\Button.cs" />
     <Compile Include="Screens\GameplayScreen.cs" />
     <Compile Include="Graphics\GraphicsManager.cs" />
@@ -147,6 +149,7 @@
     <Compile Include="ScreenManagement\Screen.cs" />
     <Compile Include="ScreenManagement\ScreenManager.cs" />
     <Compile Include="Audio\AudioManager.cs" />
+    <Compile Include="Screens\SnapFilledScreen.cs" />
     <Compile Include="Screens\SplashScreen.cs" />
     <Compile Include="Utilities\Tween.cs" />
   </ItemGroup>

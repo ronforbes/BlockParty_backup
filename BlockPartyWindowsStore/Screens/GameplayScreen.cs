@@ -16,7 +16,7 @@ namespace BlockPartyWindowsStore
         Texture2D mouseTexture;
         Board board;
         HUD hud;
-        Button backButton;
+        Button menuButton;
 
         public GameplayScreen(ScreenManager screenManager)
             : base(screenManager)
@@ -25,11 +25,11 @@ namespace BlockPartyWindowsStore
 
             board = new Board(this);
             hud = new HUD(this, board);
-            backButton = new Button(this, "Back", Color.White, new Rectangle(45, 45, 75, 75), Color.Red);
-            backButton.Selected += backButton_Selected;
+            menuButton = new Button(this, "Menu", Color.White, new Rectangle(45, 45, 75, 75), Color.Red);
+            menuButton.Selected += menuButton_Selected;
         }
 
-        void backButton_Selected(object sender, EventArgs e)
+        void menuButton_Selected(object sender, EventArgs e)
         {
             ScreenManager.LoadScreen(new MainMenuScreen(ScreenManager));
         }
@@ -56,7 +56,7 @@ namespace BlockPartyWindowsStore
                 board.Update(gameTime);
             }
 
-            backButton.Update(gameTime);
+            menuButton.Update(gameTime);
         }
 
         public override void HandleInput(Microsoft.Xna.Framework.GameTime gameTime)
@@ -64,7 +64,7 @@ namespace BlockPartyWindowsStore
             base.HandleInput(gameTime);
 
             board.HandleInput(gameTime);
-            backButton.HandleInput(gameTime);
+            menuButton.HandleInput(gameTime);
         }
 
         public override void Draw(Microsoft.Xna.Framework.GameTime gameTime)
@@ -75,7 +75,7 @@ namespace BlockPartyWindowsStore
 
             board.Draw(gameTime);
             hud.Draw(gameTime);
-            backButton.Draw(gameTime);
+            menuButton.Draw(gameTime);
 
             ScreenManager.GraphicsManager.SpriteBatch.Draw(mouseTexture, new Rectangle(ScreenManager.InputManager.WorldX, ScreenManager.InputManager.WorldY, 25, 50), Color.White);
 

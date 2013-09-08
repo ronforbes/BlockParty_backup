@@ -9,7 +9,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlockPartyWindowsStore", "B
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlockPartyContent", "BlockPartyContent\BlockPartyContent\BlockPartyContent.csproj", "{A66B2031-30EE-4137-864D-C13863654C42}"
 EndProject
-Project("{96E2B04D-8817-42C6-938A-82C39BA4D311}") = "BlockPartyContentContent", "BlockPartyContent\BlockPartyContentContent\BlockPartyContentContent.contentproj", "{95D6629B-B0AD-451B-A7B6-2CD96FEB489E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlockPartyContentContent", "BlockPartyContent\BlockPartyContentContent\BlockPartyContentContent.contentproj", "{95D6629B-B0AD-451B-A7B6-2CD96FEB489E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -65,9 +65,9 @@ Global
 		{9460AD82-F690-4460-ADA7-1B5B44595EBC}.Debug|ARM.ActiveCfg = Debug|ARM
 		{9460AD82-F690-4460-ADA7-1B5B44595EBC}.Debug|ARM.Build.0 = Debug|ARM
 		{9460AD82-F690-4460-ADA7-1B5B44595EBC}.Debug|ARM.Deploy.0 = Debug|ARM
-		{9460AD82-F690-4460-ADA7-1B5B44595EBC}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
-		{9460AD82-F690-4460-ADA7-1B5B44595EBC}.Debug|Mixed Platforms.Build.0 = Debug|x86
-		{9460AD82-F690-4460-ADA7-1B5B44595EBC}.Debug|Mixed Platforms.Deploy.0 = Debug|x86
+		{9460AD82-F690-4460-ADA7-1B5B44595EBC}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{9460AD82-F690-4460-ADA7-1B5B44595EBC}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{9460AD82-F690-4460-ADA7-1B5B44595EBC}.Debug|Mixed Platforms.Deploy.0 = Debug|Any CPU
 		{9460AD82-F690-4460-ADA7-1B5B44595EBC}.Debug|Windows Phone.ActiveCfg = Debug|Any CPU
 		{9460AD82-F690-4460-ADA7-1B5B44595EBC}.Debug|x64.ActiveCfg = Debug|x64
 		{9460AD82-F690-4460-ADA7-1B5B44595EBC}.Debug|x64.Build.0 = Debug|x64
@@ -81,9 +81,9 @@ Global
 		{9460AD82-F690-4460-ADA7-1B5B44595EBC}.Release|ARM.ActiveCfg = Release|ARM
 		{9460AD82-F690-4460-ADA7-1B5B44595EBC}.Release|ARM.Build.0 = Release|ARM
 		{9460AD82-F690-4460-ADA7-1B5B44595EBC}.Release|ARM.Deploy.0 = Release|ARM
-		{9460AD82-F690-4460-ADA7-1B5B44595EBC}.Release|Mixed Platforms.ActiveCfg = Release|x86
-		{9460AD82-F690-4460-ADA7-1B5B44595EBC}.Release|Mixed Platforms.Build.0 = Release|x86
-		{9460AD82-F690-4460-ADA7-1B5B44595EBC}.Release|Mixed Platforms.Deploy.0 = Release|x86
+		{9460AD82-F690-4460-ADA7-1B5B44595EBC}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{9460AD82-F690-4460-ADA7-1B5B44595EBC}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{9460AD82-F690-4460-ADA7-1B5B44595EBC}.Release|Mixed Platforms.Deploy.0 = Release|Any CPU
 		{9460AD82-F690-4460-ADA7-1B5B44595EBC}.Release|Windows Phone.ActiveCfg = Release|Any CPU
 		{9460AD82-F690-4460-ADA7-1B5B44595EBC}.Release|x64.ActiveCfg = Release|x64
 		{9460AD82-F690-4460-ADA7-1B5B44595EBC}.Release|x64.Build.0 = Release|x64
