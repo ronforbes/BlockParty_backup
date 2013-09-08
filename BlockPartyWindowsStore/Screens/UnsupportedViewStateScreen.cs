@@ -8,12 +8,12 @@ using System.Threading.Tasks;
 
 namespace BlockPartyWindowsStore.Screens
 {
-    class SnapFilledScreen : Screen
+    class UnsupportedViewStateScreen : Screen
     {
         Texture2D backgroundTexture;
         Texture2D mouseTexture;
 
-        public SnapFilledScreen(ScreenManager screenManager)
+        public UnsupportedViewStateScreen(ScreenManager screenManager)
             : base(screenManager)
         {
             TransitionDuration = TimeSpan.FromSeconds(1);
