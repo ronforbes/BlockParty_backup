@@ -23,8 +23,8 @@ namespace BlockPartyWindowsStore.Gameplay
             this.blockRain = blockRain;
 
             int width = random.Next(blockRain.Screen.ScreenManager.World.Width > blockRain.Screen.ScreenManager.World.Height ?
-                blockRain.Screen.ScreenManager.World.Height / 11 :
-                blockRain.Screen.ScreenManager.World.Width / 11);
+                blockRain.Screen.ScreenManager.World.Height / 5 :
+                blockRain.Screen.ScreenManager.World.Width / 5);
             int height = width;
             int x = random.Next(blockRain.Screen.ScreenManager.World.Width);
             int y = -1 * height;

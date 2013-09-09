@@ -160,6 +160,7 @@
       <SubType>Designer</SubType>
     </AppxManifest>
     <None Include="BlockPartyWindowsStore_StoreKey.pfx" />
+    <Content Include="Assets\WideLogo.scale-100.png" />
     <Content Include="Content\BlockPartyMainMenuTitle.xnb" />
     <None Include="Package.StoreAssociation.xml" />
     <None Include="BlockPartyWindowsStore_TemporaryKey.pfx" />
