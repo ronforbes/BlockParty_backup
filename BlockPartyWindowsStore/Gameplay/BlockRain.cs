@@ -15,6 +15,7 @@ namespace BlockPartyWindowsStore.Gameplay
         TimeSpan spawnDelayTimeElapsed = TimeSpan.Zero;
         readonly TimeSpan spawnDelayDuration = TimeSpan.FromMilliseconds(1);
         public List<Texture2D> Textures = new List<Texture2D>();
+        List<BlockParticle> blocksToRemove = new List<BlockParticle>();
 
         public BlockRain(Screen screen)
         {
@@ -42,9 +43,21 @@ namespace BlockPartyWindowsStore.Gameplay
                 spawnDelayTimeElapsed = TimeSpan.Zero;
             }
 
+            blocksToRemove.Clear();
+
             foreach (BlockParticle blockParticle in blockParticles)
             {
                 blockParticle.Update(gameTime);
+
+                if (!blockParticle.Alive)
+                {
+                    blocksToRemove.Add(blockParticle);
+                }
+            }
+
+            foreach (BlockParticle blockParticle in blocksToRemove)
+            {
+                blockParticles.Remove(blockParticle);
             }
         }
 
