@@ -14,12 +14,9 @@ namespace BlockPartyWindowsStore
         ScreenManager screenManager;
         
         public SpriteBatch SpriteBatch;
-        
         public Texture2D BlankTexture;
         public Texture2D ParticleTexture;
-
         public SpriteFont SpriteFont;
-
         public Matrix WorldToScreenScaleMatrix;
 
         public GraphicsManager(ScreenManager screenManager)

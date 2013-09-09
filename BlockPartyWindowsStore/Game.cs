@@ -14,8 +14,10 @@ namespace BlockPartyWindowsStore
 
         public Game()
         {
+            // initialize the graphics device manager and setup the depth stencil buffer format
             graphicsDeviceManager = new GraphicsDeviceManager(this);
             graphicsDeviceManager.PreferredDepthStencilFormat = DepthFormat.Depth24Stencil8;
+
             Content.RootDirectory = "Content";
         }
 

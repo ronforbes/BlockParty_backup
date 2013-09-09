@@ -10,8 +10,9 @@ namespace BlockPartyWindowsStore
 {
     class AudioManager
     {
-        ScreenManager screenManager;
+        public bool Muted;
 
+        ScreenManager screenManager;
         Dictionary<string, SoundEffect> soundEffects;
 
         public AudioManager(ScreenManager screenManager)
@@ -31,7 +32,10 @@ namespace BlockPartyWindowsStore
 
         public void Play(string key, float volume, float pitch, float pan)
         {
-            soundEffects[key].Play(volume, pitch, pan);
+            if (!Muted)
+            {
+                soundEffects[key].Play(volume, pitch, pan);
+            }
         }
     }
 }

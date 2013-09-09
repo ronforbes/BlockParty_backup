@@ -37,8 +37,6 @@ namespace BlockPartyWindowsStore.Screens
 
             ScreenManager.GraphicsManager.SpriteBatch.DrawString(ScreenManager.GraphicsManager.SpriteFont, "Go fullscreen to play!", new Vector2(ScreenManager.Screen.Width / 2, ScreenManager.Screen.Height / 2), Color.White, 0f, stringOrigin, Vector2.One, SpriteEffects.None, 0f);
 
-            //ScreenManager.GraphicsManager.SpriteBatch.Draw(mouseTexture, new Rectangle(ScreenManager.InputManager.ScreenX, ScreenManager.InputManager.ScreenY, 25, 50), Color.White);
-
             base.Draw(gameTime);
 
             ScreenManager.GraphicsManager.SpriteBatch.End();

@@ -151,7 +151,7 @@
     <Compile Include="ScreenManagement\Screen.cs" />
     <Compile Include="ScreenManagement\ScreenManager.cs" />
     <Compile Include="Audio\AudioManager.cs" />
-    <Compile Include="Screens\SnapFilledScreen.cs" />
+    <Compile Include="Screens\UnsupportedViewStateScreen.cs" />
     <Compile Include="Screens\SplashScreen.cs" />
     <Compile Include="Utilities\Tween.cs" />
   </ItemGroup>
@@ -160,6 +160,7 @@
       <SubType>Designer</SubType>
     </AppxManifest>
     <None Include="BlockPartyWindowsStore_StoreKey.pfx" />
+    <Content Include="Content\BlockPartyMainMenuTitle.xnb" />
     <None Include="Package.StoreAssociation.xml" />
     <None Include="BlockPartyWindowsStore_TemporaryKey.pfx" />
     <Content Include="Content\SpriteFont.xnb" />

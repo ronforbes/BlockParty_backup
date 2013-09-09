@@ -18,7 +18,7 @@ namespace BlockPartyWindowsStore.ScreenManagement
         }
 
         Screen screen;
-        string text;
+        public string Text;
         Color textColor = Color.White;
         Rectangle rectangle;
         Color rectangleColor = Color.Gray;
@@ -43,7 +43,7 @@ namespace BlockPartyWindowsStore.ScreenManagement
         public Button(Screen screen, string text, Color textColor, Rectangle rectangle, Color rectangleColor)
         {
             this.screen = screen;
-            this.text = text;
+            this.Text = text;
             this.textColor = textColor;
             this.rectangle = rectangle;
             this.rectangleColor = rectangleColor;
@@ -120,8 +120,8 @@ namespace BlockPartyWindowsStore.ScreenManagement
             screen.ScreenManager.GraphicsManager.SpriteBatch.Draw(screen.ScreenManager.GraphicsManager.BlankTexture, new Rectangle((int)(rectangle.X - rectangle.Width * (scale.X - 1) / 2), (int)(rectangle.Y - rectangle.Height * (scale.Y - 1) / 2), (int)(rectangle.Width * scale.X), (int)(rectangle.Height * scale.Y)), drawRectangleColor);
 
             Vector2 position = new Vector2(rectangle.X + rectangle.Width / 2, rectangle.Y + rectangle.Height / 2);
-            Vector2 origin = screen.ScreenManager.GraphicsManager.SpriteFont.MeasureString(text) / 2;
-            screen.ScreenManager.GraphicsManager.SpriteBatch.DrawString(screen.ScreenManager.GraphicsManager.SpriteFont, text, position, drawTextColor, 0f, origin, scale, SpriteEffects.None, 0f);
+            Vector2 origin = screen.ScreenManager.GraphicsManager.SpriteFont.MeasureString(Text) / 2;
+            screen.ScreenManager.GraphicsManager.SpriteBatch.DrawString(screen.ScreenManager.GraphicsManager.SpriteFont, Text, position, drawTextColor, 0f, origin, scale, SpriteEffects.None, 0f);
         }
     }
 }
