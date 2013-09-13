@@ -30,8 +30,6 @@ namespace BlockPartyWindowsStore
         // Stores the previous mouse state to know if buttons were just pressed or released
         MouseState previousMouseState;
 
-        TouchCollection previousTouchCollection;
-
         public InputManager(ScreenManager screenManager)
         {
             this.screenManager = screenManager;

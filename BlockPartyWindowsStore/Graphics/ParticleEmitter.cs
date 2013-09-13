@@ -11,8 +11,10 @@ namespace BlockPartyWindowsStore
     class ParticleEmitter
     {
         public Screen Screen;
+        public bool Active = true;
 
         List<Particle> particles;
+        List<Particle> particlesToRemove = new List<Particle>();
 
         static Random random = new Random();
 
@@ -35,24 +37,48 @@ namespace BlockPartyWindowsStore
 
         public void Update(GameTime gameTime)
         {
-            foreach (Particle p in particles)
+            if (particles.Count > 0)
             {
-                p.Update(gameTime);
+                particlesToRemove.Clear();
+
+                foreach (Particle p in particles)
+                {
+                    if (p.Active)
+                    {
+                        p.Update(gameTime);
+                    }
+                    else
+                    {
+                        particlesToRemove.Add(p);
+                    }
+                }
+
+                foreach (Particle particle in particlesToRemove)
+                {
+                    particles.Remove(particle);
+                }
+            }
+            else
+            {
+                Active = false;
             }
         }
 
         public void Draw(GameTime gameTime)
         {
-            Screen.ScreenManager.GraphicsManager.SpriteBatch.End();
-            Screen.ScreenManager.GraphicsManager.SpriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Additive, null, null, null, null, Screen.ScreenManager.GraphicsManager.WorldToScreenScaleMatrix);
-
-            foreach (Particle p in particles)
+            if (Active)
             {
-                p.Draw(gameTime);
-            }
+                Screen.ScreenManager.GraphicsManager.SpriteBatch.End();
+                Screen.ScreenManager.GraphicsManager.SpriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Additive, null, null, null, null, Screen.ScreenManager.GraphicsManager.WorldToScreenScaleMatrix);
 
-            Screen.ScreenManager.GraphicsManager.SpriteBatch.End();
-            Screen.ScreenManager.GraphicsManager.SpriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, null, null, null, null, Screen.ScreenManager.GraphicsManager.WorldToScreenScaleMatrix);
+                foreach (Particle p in particles)
+                {
+                    p.Draw(gameTime);
+                }
+
+                Screen.ScreenManager.GraphicsManager.SpriteBatch.End();
+                Screen.ScreenManager.GraphicsManager.SpriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, null, null, null, null, Screen.ScreenManager.GraphicsManager.WorldToScreenScaleMatrix);
+            }
         }
     }
 }

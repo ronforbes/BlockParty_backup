@@ -134,7 +134,9 @@
     <Compile Include="Gameplay\Board.cs" />
     <Compile Include="Gameplay\BoardController.cs" />
     <Compile Include="Gameplay\BoardRenderer.cs" />
+    <Compile Include="Gameplay\BoardStats.cs" />
     <Compile Include="Gameplay\Celebration.cs" />
+    <Compile Include="Gameplay\CelebrationManager.cs" />
     <Compile Include="Gameplay\HUD.cs" />
     <Compile Include="Gameplay\BlockParticle.cs" />
     <Compile Include="Gameplay\BlockRain.cs" />
@@ -153,6 +155,7 @@
     <Compile Include="Audio\AudioManager.cs" />
     <Compile Include="Screens\UnsupportedViewStateScreen.cs" />
     <Compile Include="Screens\SplashScreen.cs" />
+    <Compile Include="Utilities\FrameRateCounter.cs" />
     <Compile Include="Utilities\Tween.cs" />
   </ItemGroup>
   <ItemGroup>

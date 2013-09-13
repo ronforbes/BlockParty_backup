@@ -10,6 +10,9 @@ namespace BlockPartyWindowsStore.ScreenManagement
 {
     class Button
     {
+        public string Text;
+        public event EventHandler Selected;
+
         enum ButtonAnimationState
         {
             Idle,
@@ -17,28 +20,15 @@ namespace BlockPartyWindowsStore.ScreenManagement
             Releasing
         }
 
-        Screen screen;
-        public string Text;
+        Screen screen;        
         Color textColor = Color.White;
         Rectangle rectangle;
         Color rectangleColor = Color.Gray;
         Vector2 scale = Vector2.One;
-        
         bool pressed;
         ButtonAnimationState animationState = ButtonAnimationState.Idle;
-
         TimeSpan scaleTimeElapsed = TimeSpan.Zero;
         readonly TimeSpan scaleDuration = TimeSpan.FromSeconds(0.5);
-
-        public event EventHandler Selected;
-
-        protected internal virtual void OnSelect()
-        {
-            if (Selected != null)
-            {
-                Selected(this, null);
-            }
-        }
 
         public Button(Screen screen, string text, Color textColor, Rectangle rectangle, Color rectangleColor)
         {
@@ -103,6 +93,14 @@ namespace BlockPartyWindowsStore.ScreenManagement
                 pressed = false;
                 animationState = ButtonAnimationState.Releasing;
                 scaleTimeElapsed = TimeSpan.Zero;
+            }
+        }
+
+        protected internal virtual void OnSelect()
+        {
+            if (Selected != null)
+            {
+                Selected(this, null);
             }
         }
 

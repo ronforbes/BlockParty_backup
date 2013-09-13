@@ -1,4 +1,5 @@
 ﻿using BlockPartyWindowsStore.Screens;
+using BlockPartyWindowsStore.Utilities;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
@@ -28,6 +29,7 @@ namespace BlockPartyWindowsStore
         UnsupportedViewStateScreen unsupportedViewStateScreen;
         bool loadingScreen = false;
         ApplicationViewState applicationViewState;
+        FrameRateCounter frameRateCounter;
 
         public ScreenManager(Game game)
         {
@@ -47,6 +49,7 @@ namespace BlockPartyWindowsStore
             GraphicsManager = new GraphicsManager(this);
             InputManager = new InputManager(this);
             AudioManager = new AudioManager(this);
+            frameRateCounter = new FrameRateCounter(this);
 
             // Setup an unsupported view state screen to show when the game is snapped
             unsupportedViewStateScreen = new UnsupportedViewStateScreen(this);
@@ -171,6 +174,8 @@ namespace BlockPartyWindowsStore
             {
                 unsupportedViewStateScreen.Update(gameTime);
             }
+
+            frameRateCounter.Update(gameTime);
         }
 
         public void Draw(GameTime gameTime)
@@ -188,6 +193,8 @@ namespace BlockPartyWindowsStore
             {
                 unsupportedViewStateScreen.Draw(gameTime);
             }
+
+            frameRateCounter.Draw(gameTime);
         }
     }
 }

@@ -13,9 +13,9 @@ namespace BlockPartyWindowsStore
         Board board;
         string text; // Text to display in the celebration
         Rectangle position;
-        TimeSpan timeElapsed; // Amount of time the celebration has been active
+        TimeSpan timeElapsed = TimeSpan.Zero; // Amount of time the celebration has been active
         readonly TimeSpan duration = TimeSpan.FromSeconds(1); // Duration of the celebration
-        bool expired;
+        public bool Active = true;
 
         public Celebration(Board board, string text, int row, int column)
         {
@@ -27,17 +27,20 @@ namespace BlockPartyWindowsStore
 
         public void Update(GameTime gameTime)
         {
-            timeElapsed += gameTime.ElapsedGameTime;
-
-            if (timeElapsed >= duration)
+            if (Active)
             {
-                expired = true;
+                timeElapsed += gameTime.ElapsedGameTime;
+
+                if (timeElapsed >= duration)
+                {
+                    Active = false;
+                }
             }
         }
 
         public void Draw(GameTime gameTime)
         {
-            if (!expired)
+            if (Active)
             {
                 int y = (int)Tween.Linear(timeElapsed.TotalMilliseconds, 0, (-1 * board.Blocks[0, 0].Renderer.Height), duration.TotalMilliseconds);
                 byte rectangleR = (byte)Tween.Linear(timeElapsed.TotalMilliseconds, Color.Orange.R, -1 * Color.Orange.R, duration.TotalMilliseconds);

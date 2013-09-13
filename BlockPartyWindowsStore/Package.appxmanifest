@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Package xmlns="http://schemas.microsoft.com/appx/2010/manifest">
-  <Identity Name="22179RonForbes.BlockParty" Publisher="CN=697DF61F-8AAB-4396-B52C-32B294B095D2" Version="0.0.1.0" />
+  <Identity Name="22179RonForbes.BlockParty" Publisher="CN=697DF61F-8AAB-4396-B52C-32B294B095D2" Version="0.0.2.1" />
   <Properties>
     <DisplayName>Block Party</DisplayName>
     <PublisherDisplayName>Ron Forbes</PublisherDisplayName>
@@ -15,7 +15,7 @@
   </Resources>
   <Applications>
     <Application Id="App" Executable="$targetnametoken$.exe" EntryPoint="BlockPartyWindowsStore.App">
-      <VisualElements DisplayName="Block Party" Logo="Assets/Logo.png" SmallLogo="Assets\SmallLogo.png" Description="BlockPartyWindowsStore" ForegroundText="light" BackgroundColor="#464646">
+      <VisualElements DisplayName="Block Party" Logo="Assets/Logo.png" SmallLogo="Assets\SmallLogo.png" Description="Block Party is a fast-paced puzzle game where you slide blocks around to form matches. Create killer combos by matching larger sets of blocks. Pull off mighty chains by matching blocks that lead to more matches. But be quick about it; if the blocks reach the top of the board, it's game over!" ForegroundText="light" BackgroundColor="#464646">
         <DefaultTile ShowName="logoOnly" WideLogo="Assets/WideLogo.png" />
         <SplashScreen Image="Assets\SplashScreen.png" BackgroundColor="#FFA500" />
       </VisualElements>

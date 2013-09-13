@@ -1,4 +1,5 @@
-﻿using BlockPartyWindowsStore.ScreenManagement;
+﻿using BlockPartyWindowsStore.Gameplay;
+using BlockPartyWindowsStore.ScreenManagement;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -55,24 +56,14 @@ namespace BlockPartyWindowsStore
 
         public TimeSpan StopTimeRemaining = TimeSpan.Zero;
 
-        public int Score = 0;
-        public const int ScoreBlockPop = 10;
-        const int ScoreBlockComboInterval = 100;
-        const int ScoreBlockChainInterval = 200;
+        public CelebrationManager CelebrationManager;
 
-        public int Level = 1;
-        public TimeSpan TimeElapsed = TimeSpan.Zero;
-        public int BlocksMatched = 0;
-        public int Combos = 0;
-        public Dictionary<int, int> ComboBreakdown = new Dictionary<int, int>();
-        public int Chains = 0;
-        public Dictionary<int, int> ChainBreakdown = new Dictionary<int, int>();
-
-        public List<Celebration> Celebrations = new List<Celebration>();
         public List<ParticleEmitter> ParticleEmitters = new List<ParticleEmitter>();
+        List<ParticleEmitter> particleEmittersToRemove = new List<ParticleEmitter>();
 
         public BoardRenderer Renderer;
         BoardController controller;
+        public BoardStats Stats;
 
         Button retryButton;
         Button doneButton;
@@ -114,20 +105,13 @@ namespace BlockPartyWindowsStore
                 NextBlocks[column].State = Block.BlockState.Preview;
             }
 
+            CelebrationManager = new CelebrationManager(this);
+
             Renderer = new BoardRenderer(this);
             controller = new BoardController(this);
+            Stats = new BoardStats(this);
 
-            RaiseRate = (double)Level / 4;
-
-            for (int comboStrength = 4; comboStrength < Rows * Columns; comboStrength++)
-            {
-                ComboBreakdown.Add(comboStrength, 0);
-            }
-
-            for (int chainLength = 2; chainLength < Rows * Columns / 3; chainLength++)
-            {
-                ChainBreakdown.Add(chainLength, 0);
-            }
+            RaiseRate = (double)Stats.Level / 4;
 
             // Initialize buttons
             retryButton = new Button(screen, "Retry", Color.White, new Rectangle(Renderer.Rectangle.X + Renderer.Rectangle.Width / 4 - 50, Renderer.Rectangle.Y + Renderer.Rectangle.Height - 150, Renderer.Rectangle.Width / 4, 100), Color.Orange);
@@ -196,38 +180,19 @@ namespace BlockPartyWindowsStore
                     break;
 
                 case BoardState.Playing:
-                    DetectMatchingBlocks();
-
                     Raise(gameTime);
-
-                    DetectGameOver(gameTime);
-
                     UpdateBlocks(gameTime);
-
+                    DetectMatchingBlocks();
+                    
+                    DetectGameOver(gameTime);
+                    //UpdateBlocks(gameTime);
                     DetectChain();
-
                     ApplyGravity(gameTime);
-
                     UpdateGo(gameTime);
-
-                    // Update celebrations
-                    foreach (Celebration celebration in Celebrations)
-                    {
-                        celebration.Update(gameTime);
-                    }
-
-                    // Update particle emitters
-                    foreach (ParticleEmitter pe in ParticleEmitters)
-                    {
-                        pe.Update(gameTime);
-                    }
-
-                    UpdateLevel();
-
-                    TimeElapsed += gameTime.ElapsedGameTime;
-
+                    CelebrationManager.Update(gameTime);
+                    UpdateParticleEmitters(gameTime);
+                    Stats.Update(gameTime);
                     Renderer.Update(gameTime);
-
                     break;
 
                 case BoardState.GameOver:
@@ -242,8 +207,29 @@ namespace BlockPartyWindowsStore
 
                     retryButton.Update(gameTime);
                     doneButton.Update(gameTime);
-
                     break;
+            }
+        }
+
+        void UpdateParticleEmitters(GameTime gameTime)
+        {
+            particleEmittersToRemove.Clear();
+
+            foreach (ParticleEmitter pe in ParticleEmitters)
+            {
+                if (pe.Active)
+                {
+                    pe.Update(gameTime);
+                }
+                else
+                {
+                    particleEmittersToRemove.Add(pe);
+                }
+            }
+
+            foreach (ParticleEmitter particleEmitter in particleEmittersToRemove)
+            {
+                ParticleEmitters.Remove(particleEmitter);
             }
         }
 
@@ -287,7 +273,7 @@ namespace BlockPartyWindowsStore
                             for (int matchingColumn = horizontalMatchingBlocks; matchingColumn >= 0; matchingColumn--)
                             {
                                 Blocks[row, column - matchingColumn].Match();
-                                BlocksMatched++;
+                                Stats.BlocksMatched++;
                                 matchingBlockCount++;
                                 comboCelebrationRow = row;
                                 comboCelebrationColumn = column - matchingColumn;
@@ -334,7 +320,7 @@ namespace BlockPartyWindowsStore
                             for (int matchingRow = verticalMatchingBlocks; matchingRow >= 0; matchingRow--)
                             {
                                 Blocks[row - matchingRow, column].State = Block.BlockState.Matched;
-                                BlocksMatched++;
+                                Stats.BlocksMatched++;
                                 matchingBlockCount++;
                                 comboCelebrationRow = row - matchingRow;
                                 comboCelebrationColumn = column;
@@ -356,18 +342,10 @@ namespace BlockPartyWindowsStore
             // Handle combos
             if (matchingBlockCount > 3)
             {
-                Score += matchingBlockCount * ScoreBlockComboInterval;
-                Combos++;
-
-                // Add the combo in the breakdown stats
-                if (!ComboBreakdown.ContainsKey(matchingBlockCount))
-                {
-                    ComboBreakdown.Add(matchingBlockCount, 0);
-                }
-                ComboBreakdown[matchingBlockCount]++;
+                Stats.ScoreCombo(matchingBlockCount);
 
                 // Add a celebration
-                Celebrations.Add(new Celebration(this, matchingBlockCount.ToString(), comboCelebrationRow, comboCelebrationColumn));
+                CelebrationManager.Add(matchingBlockCount.ToString(), comboCelebrationRow, comboCelebrationColumn);                
 
                 // Play a sound
                 float pitch = 0.1f * (matchingBlockCount - 3);
@@ -393,8 +371,9 @@ namespace BlockPartyWindowsStore
             if (incrementChain)
             {
                 chainCount++;
-                Score += chainCount * ScoreBlockChainInterval;
-                Celebrations.Add(new Celebration(this, chainCount.ToString() + "x", chainCelebrationRow, chainCelebrationColumn));
+                Stats.ScoreChain(chainCount);
+                
+                CelebrationManager.Add(chainCount.ToString() + "x", chainCelebrationRow, chainCelebrationColumn);
                 float pitch = 0.1f * chainCount;
                 Screen.ScreenManager.AudioManager.Play("Celebration", 1.0f, pitch, 0.0f);
 
@@ -475,17 +454,8 @@ namespace BlockPartyWindowsStore
                     }
                 }
 
-                Chains++;
-                
-                // Add to the chain breakdown
-                if (chainCount > 1)
-                {
-                    if (!ChainBreakdown.ContainsKey(chainCount))
-                    {
-                        ChainBreakdown.Add(chainCount, 0);
-                    }
-                    ChainBreakdown[chainCount]++;
-                }
+                Stats.IncrementChainCounter(chainCount);
+
                 chainCount = 1;
             }
         }
@@ -580,7 +550,7 @@ namespace BlockPartyWindowsStore
                 if (RaiseTimeElapsed >= RaiseDuration)
                 {
                     RaiseTimeElapsed = TimeSpan.Zero;
-                    RaiseRate = (double)Level / 4;
+                    RaiseRate = (double)Stats.Level / 4;
 
                     for (int row = 0; row < Rows - 1; row++)
                     {
@@ -673,19 +643,17 @@ namespace BlockPartyWindowsStore
             }
         }
 
-        void UpdateLevel()
-        {
-            Level = (int)MathHelper.Clamp(Score / 1000, 1, 99);
-        }
-
         public void HandleInput(GameTime gameTime)
         {
-            controller.HandleInput(gameTime);
-
-            if (State == BoardState.GameOver)
+            switch(State)
             {
-                retryButton.HandleInput(gameTime);
-                doneButton.HandleInput(gameTime);
+                case BoardState.Playing:
+                    controller.HandleInput(gameTime);
+                    break;
+                case BoardState.GameOver:
+                    retryButton.HandleInput(gameTime);
+                    doneButton.HandleInput(gameTime);
+                    break;
             }
         }
 

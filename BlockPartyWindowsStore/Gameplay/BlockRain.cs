@@ -47,9 +47,11 @@ namespace BlockPartyWindowsStore.Gameplay
 
             foreach (BlockParticle blockParticle in blockParticles)
             {
-                blockParticle.Update(gameTime);
-
-                if (!blockParticle.Alive)
+                if (blockParticle.Active)
+                {
+                    blockParticle.Update(gameTime);
+                }
+                else
                 {
                     blocksToRemove.Add(blockParticle);
                 }

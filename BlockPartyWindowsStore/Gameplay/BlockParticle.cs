@@ -15,7 +15,7 @@ namespace BlockPartyWindowsStore.Gameplay
         Vector2 velocity;
         Vector2 acceleration;
         Texture2D texture;
-        public bool Alive = true;
+        public bool Active = true;
         static Random random = new Random();
 
         public BlockParticle(BlockRain blockRain)
@@ -37,21 +37,24 @@ namespace BlockPartyWindowsStore.Gameplay
 
         public void Update(GameTime gameTime)
         {
-            if (Alive)
+            if (Active)
             {
                 velocity += acceleration;
                 rectangle.Y += (int)velocity.Y;
 
                 if (rectangle.Y >= blockRain.Screen.ScreenManager.World.Height)
                 {
-                    Alive = false;
+                    Active = false;
                 }
             }
         }
 
         public void Draw(GameTime gameTime)
         {
-            blockRain.Screen.ScreenManager.GraphicsManager.SpriteBatch.Draw(texture, rectangle, Color.White);
+            if (Active)
+            {
+                blockRain.Screen.ScreenManager.GraphicsManager.SpriteBatch.Draw(texture, rectangle, Color.White);
+            }
         }
     }
 }

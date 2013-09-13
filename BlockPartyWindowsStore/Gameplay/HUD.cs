@@ -34,10 +34,10 @@ namespace BlockPartyWindowsStore.Gameplay
             screen.ScreenManager.GraphicsManager.SpriteBatch.Draw(backgroundTexture, rectangle, Color.White);
 
             // Draw the score display
-            scoreDisplay += (board.Score - scoreDisplay) * 0.1;
+            scoreDisplay += (board.Stats.Score - scoreDisplay) * 0.1;
             
-            if (Math.Abs(board.Score - scoreDisplay) < 1)
-                scoreDisplay = board.Score;
+            if (Math.Abs(board.Stats.Score - scoreDisplay) < 1)
+                scoreDisplay = board.Stats.Score;
 
             Vector2 scoreLabelPosition = new Vector2(rectangle.X + rectangle.Width / 2, rectangle.Y);
             Vector2 scoreLabelOrigin = new Vector2(screen.ScreenManager.GraphicsManager.SpriteFont.MeasureString("Score").X / 2, 0);
@@ -48,9 +48,9 @@ namespace BlockPartyWindowsStore.Gameplay
             // Draw the level display
             Vector2 levelLabelPosition = new Vector2(rectangle.X + rectangle.Width / 2, rectangle.Y + 60);
             Vector2 levelLabelOrigin = new Vector2(screen.ScreenManager.GraphicsManager.SpriteFont.MeasureString("Level").X / 2, 0);
-            Vector2 levelOrigin = new Vector2(screen.ScreenManager.GraphicsManager.SpriteFont.MeasureString(board.Level.ToString()).X / 2, 0);
+            Vector2 levelOrigin = new Vector2(screen.ScreenManager.GraphicsManager.SpriteFont.MeasureString(board.Stats.Level.ToString()).X / 2, 0);
             board.Screen.ScreenManager.GraphicsManager.SpriteBatch.DrawString(board.Screen.ScreenManager.GraphicsManager.SpriteFont, "Level", levelLabelPosition, Color.White, 0f, levelLabelOrigin, Vector2.One, SpriteEffects.None, 0f);
-            board.Screen.ScreenManager.GraphicsManager.SpriteBatch.DrawString(board.Screen.ScreenManager.GraphicsManager.SpriteFont, board.Level.ToString(), new Vector2(levelLabelPosition.X, levelLabelPosition.Y + 20), Color.White, 0f, levelOrigin, Vector2.One, SpriteEffects.None, 0f);
+            board.Screen.ScreenManager.GraphicsManager.SpriteBatch.DrawString(board.Screen.ScreenManager.GraphicsManager.SpriteFont, board.Stats.Level.ToString(), new Vector2(levelLabelPosition.X, levelLabelPosition.Y + 20), Color.White, 0f, levelOrigin, Vector2.One, SpriteEffects.None, 0f);
 
             // Draw the stop time
             Vector2 stopLabelPosition = new Vector2(rectangle.X + rectangle.Width / 2, rectangle.Y + 120);
