@@ -1,25 +1,19 @@
+/// <reference path="Rectangle.ts" />
+/// <reference path="Viewport.ts" />
+/// <reference path="ScreenManager.ts" />
 /// <reference path="Vector2.ts" />
 /// <reference path="../Scripts/typings/jquery/jquery.d.ts" />
-
-class GraphicsManager {
-    public WorldWidth: number = 90;
-    public WorldHeight: number = 160;
-    public AspectRatio: number = 9 / 16;
-
-    private canvas: HTMLCanvasElement;
-    private canvasContext: CanvasRenderingContext2D;
-    private backBuffer: HTMLCanvasElement;
-    private backBufferContext: CanvasRenderingContext2D;
-
-    constructor(element: JQuery) {
-        this.canvas = <HTMLCanvasElement>element[0];
+var GraphicsManager = (function () {
+    function GraphicsManager(game, element) {
+        this.game = game;
+        this.canvas = element[0];
         this.canvasContext = this.canvas.getContext("2d");
-        this.backBuffer = <HTMLCanvasElement>document.createElement("canvas");
+        this.backBuffer = document.createElement("canvas");
         this.backBuffer.width = this.canvas.width;
         this.backBuffer.height = this.canvas.height;
         this.backBufferContext = this.backBuffer.getContext("2d");
 
-        var that: GraphicsManager = this;
+        var that = this;
 
         $(window).resize(function () {
             // Wait until the window has finished resizing
@@ -27,13 +21,10 @@ class GraphicsManager {
                 that.WindowResized();
             }, 250);
         });
-    }
 
-    public Initialize(): void {
         this.WindowResized();
     }
-
-    private WindowResized(): void {
+    GraphicsManager.prototype.WindowResized = function () {
         var that = this;
         this.UpdateDimensions();
 
@@ -41,20 +32,19 @@ class GraphicsManager {
         setTimeout(function () {
             that.UpdateDimensions();
         }, 1500);
-    }
+    };
 
-    private UpdateDimensions(): void {
+    GraphicsManager.prototype.UpdateDimensions = function () {
         var newCanvasWidth, newCanvasHeight;
         var windowAspectRatio = window.innerWidth / window.innerHeight;
+        var worldAspectRatio = this.game.WorldViewport.Width / this.game.WorldViewport.Height;
 
-        // Adjust the new canvas dimensions to maintain aspect ratio
-        if (windowAspectRatio > this.AspectRatio) {
-            newCanvasWidth = window.innerHeight * this.AspectRatio;
+        if (windowAspectRatio > worldAspectRatio) {
+            newCanvasWidth = window.innerHeight * worldAspectRatio;
             newCanvasHeight = window.innerHeight;
-        }
-        else {
+        } else {
             newCanvasWidth = window.innerWidth;
-            newCanvasHeight = window.innerWidth / this.AspectRatio;
+            newCanvasHeight = window.innerWidth / worldAspectRatio;
         }
 
         // Scale the canvas element to fit the screen while maintaining aspect ratio
@@ -70,11 +60,11 @@ class GraphicsManager {
         // Center the canvas
         this.canvas.style.left = (window.innerWidth - this.canvas.width) / 2 + "px";
         this.canvas.style.top = (window.innerHeight - this.canvas.height) / 2 + "px";
-    }
+    };
 
-    public DrawLine(startPosition: Vector2, endPosition: Vector2, width: number, color: string): void {
-        var canvasStartPosition: Vector2 = this.TransformWorldToCanvas(startPosition);
-        var canvasEndPosition: Vector2 = this.TransformWorldToCanvas(endPosition);
+    GraphicsManager.prototype.DrawLine = function (startPosition, endPosition, width, color) {
+        var canvasStartPosition = this.TransformWorldToCanvas(startPosition);
+        var canvasEndPosition = this.TransformWorldToCanvas(endPosition);
 
         this.backBufferContext.save();
 
@@ -91,12 +81,12 @@ class GraphicsManager {
         this.backBufferContext.stroke();
 
         this.backBufferContext.restore();
-    }
+    };
 
-    public DrawRectangle(position: Vector2, width: number, height: number, lineWidth: number, strokeColor: string, fillColor: string) {
-        var canvasPosition: Vector2 = this.TransformWorldToCanvas(position);
-        var canvasWidth: number = this.TransformWorldToCanvasX(width);
-        var canvasHeight: number = this.TransformWorldToCanvasY(height);
+    GraphicsManager.prototype.DrawRectangle = function (position, width, height, lineWidth, strokeColor, fillColor) {
+        var canvasPosition = this.TransformWorldToCanvas(position);
+        var canvasWidth = this.TransformWorldToCanvasX(width);
+        var canvasHeight = this.TransformWorldToCanvasY(height);
 
         this.backBufferContext.save();
 
@@ -116,9 +106,9 @@ class GraphicsManager {
         }
 
         this.backBufferContext.restore();
-    }
+    };
 
-    public DrawFullscreenRectangle(color: string) {
+    GraphicsManager.prototype.DrawFullscreenRectangle = function (color) {
         this.backBufferContext.save();
 
         //this.backBufferContext.globalCompositeOperation = "lighter";
@@ -126,9 +116,9 @@ class GraphicsManager {
         this.backBufferContext.fillRect(0, 0, this.canvas.width, this.canvas.height);
 
         this.backBufferContext.restore();
-    }
+    };
 
-    public DrawCircle(position: Vector2, radius: number, lineWidth: number, color: string, filled: bool): void {
+    GraphicsManager.prototype.DrawCircle = function (position, radius, lineWidth, color, filled) {
         var canvasPosition = this.TransformWorldToCanvas(position);
         var canvasRadius = this.TransformWorldToCanvasX(radius);
 
@@ -145,16 +135,25 @@ class GraphicsManager {
         if (filled) {
             this.backBufferContext.fillStyle = color;
             this.backBufferContext.fill();
-        }
-        else {
+        } else {
             this.backBufferContext.strokeStyle = color;
             this.backBufferContext.stroke();
         }
 
         this.backBufferContext.restore();
-    }
+    };
 
-    public DrawText(text: string, position: Vector2, color: string) {
+    GraphicsManager.prototype.Draw = function (image, rectangle, color) {
+        var canvasPosition = this.TransformWorldToCanvasRectangle(rectangle);
+
+        this.backBufferContext.save();
+
+        this.backBufferContext.drawImage(image, canvasPosition.X, canvasPosition.Y, canvasPosition.Width, canvasPosition.Height);
+
+        this.backBufferContext.restore();
+    };
+
+    GraphicsManager.prototype.DrawText = function (text, position, color) {
         var canvasPosition = this.TransformWorldToCanvas(position);
 
         this.backBufferContext.save();
@@ -165,32 +164,36 @@ class GraphicsManager {
         //this.backBufferContext.shadowBlur = 10;
         //this.backBufferContext.shadowColor = color;
         this.backBufferContext.font = "bold 24px Arial";
+        this.backBufferContext.textBaseline = "top";
         this.backBufferContext.fillStyle = color;
         this.backBufferContext.fillText(text, canvasPosition.X, canvasPosition.Y);
 
         this.backBufferContext.restore();
-    }
+    };
 
-    public Clear(): void {
+    GraphicsManager.prototype.Clear = function () {
         this.backBufferContext.clearRect(0, 0, this.canvas.width, this.canvas.height);
-    }
+    };
 
-    public Draw(): void {
+    GraphicsManager.prototype.Present = function () {
         this.canvasContext.clearRect(0, 0, this.canvas.width, this.canvas.height);
         this.canvasContext.drawImage(this.backBuffer, 0, 0);
-    }
+    };
 
-    private TransformWorldToCanvas(vector: Vector2): Vector2 {
-        return new Vector2(vector.X * this.canvas.width / this.WorldWidth, vector.Y * this.canvas.height / this.WorldHeight);
-    }
+    GraphicsManager.prototype.TransformWorldToCanvas = function (vector) {
+        return new Vector2(vector.X * this.canvas.width / this.game.WorldViewport.Width, vector.Y * this.canvas.height / this.game.WorldViewport.Height);
+    };
 
-    private TransformWorldToCanvasX(x: number) {
-        return x * this.canvas.width / this.WorldWidth;
-    }
+    GraphicsManager.prototype.TransformWorldToCanvasRectangle = function (rectangle) {
+        return new Rectangle(rectangle.X * this.canvas.width / this.game.WorldViewport.Width, rectangle.Y * this.canvas.height / this.game.WorldViewport.Height, rectangle.Width * this.canvas.width / this.game.WorldViewport.Width, rectangle.Height * this.canvas.height / this.game.WorldViewport.Height);
+    };
 
-    private TransformWorldToCanvasY(y: number) {
-        return y * this.canvas.height / this.WorldHeight;
-    }
-}
+    GraphicsManager.prototype.TransformWorldToCanvasX = function (x) {
+        return x * this.canvas.width / this.game.WorldViewport.Width;
+    };
 
-var Graphics = new GraphicsManager($("#canvas"));
+    GraphicsManager.prototype.TransformWorldToCanvasY = function (y) {
+        return y * this.canvas.height / this.game.WorldViewport.Height;
+    };
+    return GraphicsManager;
+})();

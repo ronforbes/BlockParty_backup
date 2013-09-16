@@ -8,26 +8,26 @@ using System.Threading.Tasks;
 
 namespace BlockPartyWindowsStore
 {
-    class AudioManager
+    public class AudioManager
     {
         public bool Muted;
 
-        ScreenManager screenManager;
+        Game game;
         Dictionary<string, SoundEffect> soundEffects;
 
-        public AudioManager(ScreenManager screenManager)
+        public AudioManager(Game game)
         {
-            this.screenManager = screenManager;
+            this.game = game;
 
             soundEffects = new Dictionary<string, SoundEffect>();
         }
 
         public void LoadContent()
         {
-            soundEffects.Add("BlockSlide", screenManager.Game.Content.Load<SoundEffect>("BlockSlide"));
-            soundEffects.Add("BlockPop", screenManager.Game.Content.Load<SoundEffect>("BlockPop"));
-            soundEffects.Add("BlockLand", screenManager.Game.Content.Load<SoundEffect>("BlockLand"));
-            soundEffects.Add("Celebration", screenManager.Game.Content.Load<SoundEffect>("Celebration"));
+            soundEffects.Add("BlockSlide", game.Content.Load<SoundEffect>("BlockSlide"));
+            soundEffects.Add("BlockPop", game.Content.Load<SoundEffect>("BlockPop"));
+            soundEffects.Add("BlockLand", game.Content.Load<SoundEffect>("BlockLand"));
+            soundEffects.Add("Celebration", game.Content.Load<SoundEffect>("Celebration"));
         }
 
         public void Play(string key, float volume, float pitch, float pan)

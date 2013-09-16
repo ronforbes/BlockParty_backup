@@ -27,11 +27,11 @@ namespace BlockPartyWindowsStore
         public void HandleInput(GameTime gameTime)
         {
             // If the mouse has been pressed over a valid block, select the block that it's hovering over
-            if (board.Screen.ScreenManager.InputManager.LeftButtonPressed)
+            if (board.Screen.ScreenManager.Game.InputManager.LeftButtonPressed)
             {
                 // Determine which block the mouse is hovering over
-                int row = (board.Screen.ScreenManager.InputManager.WorldY - board.Renderer.Rectangle.Y + (int)(board.Blocks[0, 0].Renderer.Height * (float)(board.RaiseTimeElapsed.TotalMilliseconds / board.RaiseDuration.TotalMilliseconds))) / board.Blocks[0, 0].Renderer.Height;
-                int column = (board.Screen.ScreenManager.InputManager.WorldX - board.Renderer.Rectangle.X) / board.Blocks[0, 0].Renderer.Width;
+                int row = (board.Screen.ScreenManager.Game.InputManager.WorldPosition.Y - board.Renderer.Rectangle.Y + (int)(board.Blocks[0, 0].Renderer.Height * (float)(board.RaiseTimeElapsed.TotalMilliseconds / board.RaiseDuration.TotalMilliseconds))) / board.Blocks[0, 0].Renderer.Height;
+                int column = (board.Screen.ScreenManager.Game.InputManager.WorldPosition.X - board.Renderer.Rectangle.X) / board.Blocks[0, 0].Renderer.Width;
 
                 if (row >= 0 && row < board.Rows && column >= 0 && column < board.Columns)
                 {
@@ -46,7 +46,7 @@ namespace BlockPartyWindowsStore
                 // Determine if the mouse was double pressed
                 if (gameTime.TotalGameTime - previousClickTime < doubleClickDuration)
                 {
-                    if (Vector2.Distance(new Vector2(board.Screen.ScreenManager.InputManager.WorldX, board.Screen.ScreenManager.InputManager.WorldY), new Vector2(previousClickX, previousClickY)) < doubleClickDistance)
+                    if (Vector2.Distance(new Vector2(board.Screen.ScreenManager.Game.InputManager.WorldPosition.X, board.Screen.ScreenManager.Game.InputManager.WorldPosition.Y), new Vector2(previousClickX, previousClickY)) < doubleClickDistance)
                     {
                         board.RaiseRate = board.RaiseRateAccelerated;
                         board.StopTimeRemaining = TimeSpan.Zero;
@@ -54,15 +54,15 @@ namespace BlockPartyWindowsStore
                 }
 
                 previousClickTime = gameTime.TotalGameTime;
-                previousClickX = board.Screen.ScreenManager.InputManager.WorldX;
-                previousClickY = board.Screen.ScreenManager.InputManager.WorldY;
+                previousClickX = board.Screen.ScreenManager.Game.InputManager.WorldPosition.X;
+                previousClickY = board.Screen.ScreenManager.Game.InputManager.WorldPosition.Y;
             }
 
             // If a block is selected, swap it based on the mouse's position
             if (selectedRow != -1 && selectedColumn != -1)
             {
                 // Swap the blocks if the mouse has moved to a different column
-                if (board.Screen.ScreenManager.InputManager.WorldX - board.Renderer.Rectangle.X < selectedColumn * board.Blocks[0, 0].Renderer.Width &&
+                if (board.Screen.ScreenManager.Game.InputManager.WorldPosition.X - board.Renderer.Rectangle.X < selectedColumn * board.Blocks[0, 0].Renderer.Width &&
                     selectedColumn - 1 >= 0 &&
                     board.Blocks[selectedRow, selectedColumn].State == Block.BlockState.Idle &&
                     (board.Blocks[selectedRow, selectedColumn - 1].State == Block.BlockState.Idle ||
@@ -74,12 +74,12 @@ namespace BlockPartyWindowsStore
 
                     board.Blocks[selectedRow, selectedColumn].Slide();
                     board.Blocks[selectedRow, selectedColumn - 1].Slide();
-                    board.Screen.ScreenManager.AudioManager.Play("BlockSlide", 1.0f, 0.0f, 0.0f);
+                    board.Screen.ScreenManager.Game.AudioManager.Play("BlockSlide", 1.0f, 0.0f, 0.0f);
 
                     selectedColumn--;
                 }
 
-                if (board.Screen.ScreenManager.InputManager.WorldX - board.Renderer.Rectangle.X > (selectedColumn + 1) * board.Blocks[0, 0].Renderer.Width &&
+                if (board.Screen.ScreenManager.Game.InputManager.WorldPosition.X - board.Renderer.Rectangle.X > (selectedColumn + 1) * board.Blocks[0, 0].Renderer.Width &&
                     selectedColumn + 1 < board.Columns &&
                     board.Blocks[selectedRow, selectedColumn].State == Block.BlockState.Idle &&
                     (board.Blocks[selectedRow, selectedColumn + 1].State == Block.BlockState.Idle ||
@@ -91,14 +91,14 @@ namespace BlockPartyWindowsStore
 
                     board.Blocks[selectedRow, selectedColumn].Slide();
                     board.Blocks[selectedRow, selectedColumn + 1].Slide();
-                    board.Screen.ScreenManager.AudioManager.Play("BlockSlide", 1.0f, 0.0f, 0.0f);
+                    board.Screen.ScreenManager.Game.AudioManager.Play("BlockSlide", 1.0f, 0.0f, 0.0f);
 
                     selectedColumn++;
                 }
             }
 
             // Deselect the block if the mouse button is no longer being held
-            if (board.Screen.ScreenManager.InputManager.LeftButtonReleased && selectedRow != -1 && selectedColumn != -1)
+            if (board.Screen.ScreenManager.Game.InputManager.LeftButtonReleased && selectedRow != -1 && selectedColumn != -1)
             {
                 board.Blocks[selectedRow, selectedColumn].Release();
                 selectedRow = -1;

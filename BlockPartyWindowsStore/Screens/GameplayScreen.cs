@@ -45,6 +45,8 @@ namespace BlockPartyWindowsStore
             board.LoadContent();
 
             hud.LoadContent();
+
+            menuButton.LoadContent();
         }
 
         public override void Update(Microsoft.Xna.Framework.GameTime gameTime)
@@ -69,19 +71,19 @@ namespace BlockPartyWindowsStore
 
         public override void Draw(Microsoft.Xna.Framework.GameTime gameTime)
         {
-            ScreenManager.GraphicsManager.SpriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, null, null, null, null, ScreenManager.GraphicsManager.WorldToScreenScaleMatrix);
+            ScreenManager.Game.GraphicsManager.SpriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, null, null, null, null, ScreenManager.Game.GraphicsManager.WorldToScreenScaleMatrix);
 
-            ScreenManager.GraphicsManager.SpriteBatch.Draw(backgroundTexture, ScreenManager.World.Bounds, null, Color.White, 0f, Vector2.Zero, SpriteEffects.None, 0f);
+            ScreenManager.Game.GraphicsManager.SpriteBatch.Draw(backgroundTexture, ScreenManager.Game.WorldViewport.Bounds, null, Color.White, 0f, Vector2.Zero, SpriteEffects.None, 0f);
 
             board.Draw(gameTime);
             hud.Draw(gameTime);
             menuButton.Draw(gameTime);
 
-            ScreenManager.GraphicsManager.SpriteBatch.Draw(mouseTexture, new Rectangle(ScreenManager.InputManager.WorldX, ScreenManager.InputManager.WorldY, 25, 50), Color.White);
+            ScreenManager.Game.GraphicsManager.SpriteBatch.Draw(mouseTexture, new Rectangle(ScreenManager.Game.InputManager.WorldPosition.X, ScreenManager.Game.InputManager.WorldPosition.Y, 25, 50), Color.White);
 
             base.Draw(gameTime);
 
-            ScreenManager.GraphicsManager.SpriteBatch.End();
+            ScreenManager.Game.GraphicsManager.SpriteBatch.End();
         }
     }
 }

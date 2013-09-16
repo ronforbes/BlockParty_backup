@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
+using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,9 +25,14 @@ namespace BlockPartyWindowsStore
         public TimeSpan TransitionTimeElapsed = TimeSpan.Zero;
         public TimeSpan TransitionDuration = TimeSpan.Zero;
 
+        Texture2D blankTexture;
+
         public Screen(ScreenManager screenManager)
         {
             ScreenManager = screenManager;
+
+            blankTexture = new Texture2D(ScreenManager.Game.GraphicsDevice, 1, 1);
+            blankTexture.SetData(new Color[] { Color.White });
         }
 
         public virtual void LoadContent()
@@ -91,7 +97,7 @@ namespace BlockPartyWindowsStore
             Color color = Color.Black * (float)(State == ScreenState.TransitioningOn ? 
                 Tween.Linear(TransitionTimeElapsed.TotalMilliseconds, 1, -1, TransitionDuration.TotalMilliseconds) : 
                 Tween.Linear(TransitionTimeElapsed.TotalMilliseconds, 0, 1, TransitionDuration.TotalMilliseconds));
-            ScreenManager.GraphicsManager.SpriteBatch.Draw(ScreenManager.GraphicsManager.BlankTexture, ScreenManager.World.Bounds, color);
+            ScreenManager.Game.GraphicsManager.SpriteBatch.Draw(blankTexture, ScreenManager.Game.WorldViewport.Bounds, color);
         }
     }
 }

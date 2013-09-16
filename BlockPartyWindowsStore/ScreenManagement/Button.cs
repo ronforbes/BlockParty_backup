@@ -29,6 +29,7 @@ namespace BlockPartyWindowsStore.ScreenManagement
         ButtonAnimationState animationState = ButtonAnimationState.Idle;
         TimeSpan scaleTimeElapsed = TimeSpan.Zero;
         readonly TimeSpan scaleDuration = TimeSpan.FromSeconds(0.5);
+        Texture2D texture;
 
         public Button(Screen screen, string text, Color textColor, Rectangle rectangle, Color rectangleColor)
         {
@@ -37,6 +38,11 @@ namespace BlockPartyWindowsStore.ScreenManagement
             this.textColor = textColor;
             this.rectangle = rectangle;
             this.rectangleColor = rectangleColor;
+        }
+
+        public void LoadContent()
+        {
+            texture = screen.ContentManager.Load<Texture2D>("Button");
         }
 
         public virtual void Update(GameTime gameTime)
@@ -73,21 +79,21 @@ namespace BlockPartyWindowsStore.ScreenManagement
 
         public virtual void HandleInput(GameTime gameTime)
         {
-            if(screen.ScreenManager.InputManager.LeftButtonPressed && rectangle.Contains(screen.ScreenManager.InputManager.WorldX, screen.ScreenManager.InputManager.WorldY))
+            if(screen.ScreenManager.Game.InputManager.LeftButtonPressed && rectangle.Contains(screen.ScreenManager.Game.InputManager.WorldPosition.X, screen.ScreenManager.Game.InputManager.WorldPosition.Y))
             {
                 pressed = true;
                 animationState = ButtonAnimationState.Pressing;
                 scaleTimeElapsed = TimeSpan.Zero;
             }
 
-            if (pressed && !rectangle.Contains(screen.ScreenManager.InputManager.WorldX, screen.ScreenManager.InputManager.WorldY))
+            if (pressed && !rectangle.Contains(screen.ScreenManager.Game.InputManager.WorldPosition.X, screen.ScreenManager.Game.InputManager.WorldPosition.Y))
             {
                 pressed = false;
                 animationState = ButtonAnimationState.Releasing;
                 scaleTimeElapsed = TimeSpan.Zero;
             }
 
-            if (pressed && screen.ScreenManager.InputManager.LeftButtonReleased && rectangle.Contains(screen.ScreenManager.InputManager.WorldX, screen.ScreenManager.InputManager.WorldY))
+            if (pressed && screen.ScreenManager.Game.InputManager.LeftButtonReleased && rectangle.Contains(screen.ScreenManager.Game.InputManager.WorldPosition.X, screen.ScreenManager.Game.InputManager.WorldPosition.Y))
             {
                 OnSelect();
                 pressed = false;
@@ -115,11 +121,11 @@ namespace BlockPartyWindowsStore.ScreenManagement
                 drawRectangleColor = new Color(drawRectangleColor.ToVector3() / 2);
             }
 
-            screen.ScreenManager.GraphicsManager.SpriteBatch.Draw(screen.ScreenManager.GraphicsManager.BlankTexture, new Rectangle((int)(rectangle.X - rectangle.Width * (scale.X - 1) / 2), (int)(rectangle.Y - rectangle.Height * (scale.Y - 1) / 2), (int)(rectangle.Width * scale.X), (int)(rectangle.Height * scale.Y)), drawRectangleColor);
+            screen.ScreenManager.Game.GraphicsManager.SpriteBatch.Draw(texture, new Rectangle((int)(rectangle.X - rectangle.Width * (scale.X - 1) / 2), (int)(rectangle.Y - rectangle.Height * (scale.Y - 1) / 2), (int)(rectangle.Width * scale.X), (int)(rectangle.Height * scale.Y)), drawRectangleColor);
 
             Vector2 position = new Vector2(rectangle.X + rectangle.Width / 2, rectangle.Y + rectangle.Height / 2);
-            Vector2 origin = screen.ScreenManager.GraphicsManager.SpriteFont.MeasureString(Text) / 2;
-            screen.ScreenManager.GraphicsManager.SpriteBatch.DrawString(screen.ScreenManager.GraphicsManager.SpriteFont, Text, position, drawTextColor, 0f, origin, scale, SpriteEffects.None, 0f);
+            Vector2 origin = screen.ScreenManager.Game.GraphicsManager.SpriteFont.MeasureString(Text) / 2;
+            screen.ScreenManager.Game.GraphicsManager.SpriteBatch.DrawString(screen.ScreenManager.Game.GraphicsManager.SpriteFont, Text, position, drawTextColor, 0f, origin, scale, SpriteEffects.None, 0f);
         }
     }
 }

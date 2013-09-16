@@ -55,11 +55,9 @@ namespace BlockPartyWindowsStore
             this.row = row;
             this.column = column;
 
-            Width = Height = block.Board.Screen.ScreenManager.World.Width > block.Board.Screen.ScreenManager.World.Height ?
-                block.Board.Screen.ScreenManager.World.Height / 11 :
-                block.Board.Screen.ScreenManager.World.Width / 11;
-
-            texture = block.Board.Screen.ScreenManager.GraphicsManager.BlankTexture;
+            Width = Height = block.Board.Screen.ScreenManager.Game.WorldViewport.Width > block.Board.Screen.ScreenManager.Game.WorldViewport.Height ?
+                block.Board.Screen.ScreenManager.Game.WorldViewport.Height / 11 :
+                block.Board.Screen.ScreenManager.Game.WorldViewport.Width / 11;
         }
 
         public void LoadContent()
@@ -75,9 +73,9 @@ namespace BlockPartyWindowsStore
 
         public void Update(GameTime gameTime)
         {
-            Width = Height = block.Board.Screen.ScreenManager.World.Width > block.Board.Screen.ScreenManager.World.Height ?
-                block.Board.Screen.ScreenManager.World.Height / 11 :
-                block.Board.Screen.ScreenManager.World.Width / 11;
+            Width = Height = block.Board.Screen.ScreenManager.Game.WorldViewport.Width > block.Board.Screen.ScreenManager.Game.WorldViewport.Height ?
+                block.Board.Screen.ScreenManager.Game.WorldViewport.Height / 11 :
+                block.Board.Screen.ScreenManager.Game.WorldViewport.Width / 11;
 
             // Calculate base position
             Rectangle.X = block.Board.Renderer.Rectangle.X + column * Width;
@@ -238,8 +236,10 @@ namespace BlockPartyWindowsStore
 
             Rectangle scaledRectangle = new Rectangle((int)(Rectangle.X - Rectangle.Width * (Scale.X - 1) / 2 + margin), (int)(Rectangle.Y - Rectangle.Height * (Scale.Y - 1) / 2 + margin), (int)(Rectangle.Width * Scale.X - 2 * margin), (int)(Rectangle.Height * Scale.Y - 2 * margin));
 
-            block.Board.Screen.ScreenManager.GraphicsManager.SpriteBatch.Draw(texture, scaledRectangle, null, Color.White, rotation, Vector2.Zero, SpriteEffects.None, 1f);
-            //block.Board.Screen.ScreenManager.GraphicsManager.SpriteBatch.Draw(block.Board.Screen.ScreenManager.GraphicsManager.BlankTexture, scaledRectangle, null, Color, 0f, Vector2.Zero, SpriteEffects.None, 0.0f);
+            if (texture != null)
+            {
+                block.Board.Screen.ScreenManager.Game.GraphicsManager.SpriteBatch.Draw(texture, scaledRectangle, null, Color.White, rotation, Vector2.Zero, SpriteEffects.None, 1f);
+            }
         }
     }
 }

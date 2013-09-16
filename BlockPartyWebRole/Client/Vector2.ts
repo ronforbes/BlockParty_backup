@@ -7,6 +7,8 @@ class Vector2 {
         this.Y = y;
     }
 
+    public static Zero: Vector2 = new Vector2(0, 0);
+
     public AddVector(to: Vector2): Vector2 {
         return new Vector2(this.X + to.X, this.Y + to.Y);
     }

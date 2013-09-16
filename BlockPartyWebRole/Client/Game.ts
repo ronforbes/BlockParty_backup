@@ -1,27 +1,50 @@
-/// <reference path="Board.ts" />
-/// <reference path="Mouse.ts" />
-/// <reference path="Block.ts" />
-/// <reference path="Graphics.ts" />
+/// <reference path="SplashScreen.ts" />
+/// <reference path="FrameRateCounter.ts" />
+/// <reference path="InputManager.ts" />
+/// <reference path="AudioManager.ts" />
+/// <reference path="Viewport.ts" />
+/// <reference path="GraphicsManager.ts" />
+/// <reference path="GameTime.ts" />
+/// <reference path="ScreenManager.ts" />
 
 class Game {
-    private board: Board;
+    public WorldViewport: Viewport;
+    public GraphicsManager: GraphicsManager;
+    public InputManager: InputManager;
+    public AudioManager: AudioManager;
+
+    private screenManager: ScreenManager;
+    private frameRateCounter: FrameRateCounter;
+
+    private defaultWorldWidth: number = 1600;
+    private defaultWorldHeight: number = 900;
 
     constructor() {
-        // Initialize the board
-        this.board = new Board();
+        this.WorldViewport = new Viewport(0, 0, this.defaultWorldWidth, this.defaultWorldHeight);
     }
 
-    public Update(elapsedMilliseconds: number): void {
-        Graphics.Clear();
+    public Initialize() {
+        this.GraphicsManager = new GraphicsManager(this, $("#canvas"));
+        this.InputManager = new InputManager(this, $("#canvas"));
+        this.AudioManager = new AudioManager(this);
+        this.screenManager = new ScreenManager(this);
+        this.frameRateCounter = new FrameRateCounter(this);
+    }
 
-        this.board.Update(elapsedMilliseconds);
+    public LoadContent() {
+        this.AudioManager.LoadContent();
         
-        /*var mouseState = Mouse.GetState();
-        
-        if (mouseState.LeftButton) {
-            Graphics.DrawRectangle(new Vector2(mouseState.X - 7.5, mouseState.Y - 7.5), 15, 15, 0, "black", "red");
-        }*/
-        
-        Graphics.Draw();
+        this.screenManager.AddScreen(new SplashScreen(this.screenManager));
+    }
+
+    public Update(gameTime: GameTime): void {
+        this.screenManager.Update(gameTime);
+        this.frameRateCounter.Update(gameTime);
+    }
+
+    public Draw(gameTime: GameTime) {
+        this.screenManager.Draw(gameTime);
+        this.frameRateCounter.Draw(gameTime);
+        this.GraphicsManager.Present();
     }
 }

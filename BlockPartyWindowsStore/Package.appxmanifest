@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Package xmlns="http://schemas.microsoft.com/appx/2010/manifest">
-  <Identity Name="22179RonForbes.BlockParty" Publisher="CN=697DF61F-8AAB-4396-B52C-32B294B095D2" Version="0.0.2.1" />
+  <Identity Name="22179RonForbes.BlockParty" Publisher="CN=697DF61F-8AAB-4396-B52C-32B294B095D2" Version="0.0.2.2" />
   <Properties>
     <DisplayName>Block Party</DisplayName>
     <PublisherDisplayName>Ron Forbes</PublisherDisplayName>

@@ -147,6 +147,9 @@ namespace BlockPartyWindowsStore
             {
                 NextBlocks[column].LoadContent();
             }
+
+            retryButton.LoadContent();
+            doneButton.LoadContent();
         }
 
         /// <summary>
@@ -182,12 +185,12 @@ namespace BlockPartyWindowsStore
                 case BoardState.Playing:
                     Raise(gameTime);
                     UpdateBlocks(gameTime);
-                    DetectMatchingBlocks();
-                    
-                    DetectGameOver(gameTime);
-                    //UpdateBlocks(gameTime);
                     DetectChain();
                     ApplyGravity(gameTime);
+                    DetectMatchingBlocks();
+                    DetectGameOver(gameTime);
+                    
+                    
                     UpdateGo(gameTime);
                     CelebrationManager.Update(gameTime);
                     UpdateParticleEmitters(gameTime);
@@ -253,14 +256,16 @@ namespace BlockPartyWindowsStore
                 for (int column = 0; column < Columns; column++)
                 {
                     // Skip non-idle Blocks
-                    if (Blocks[row, column].State != Block.BlockState.Idle)
+                    if (Blocks[row, column].State != Block.BlockState.Idle &&
+                        Blocks[row, column].State != Block.BlockState.Matched)
                     {
                         continue;
                     }
 
                     // Search to the right for matching Blocks
                     if (column + 1 < Columns &&
-                        Blocks[row, column + 1].State == Block.BlockState.Idle &&
+                        (Blocks[row, column + 1].State == Block.BlockState.Idle ||
+                        Blocks[row, column + 1].State == Block.BlockState.Matched) &&
                         Blocks[row, column].Type == Blocks[row, column + 1].Type)
                     {
                         horizontalMatchingBlocks++;
@@ -300,14 +305,16 @@ namespace BlockPartyWindowsStore
                 for (int row = 0; row < Rows; row++)
                 {
                     // Skip non-idle Blocks
-                    if (Blocks[row, column].State != Block.BlockState.Idle)
+                    if (Blocks[row, column].State != Block.BlockState.Idle &&
+                        Blocks[row, column].State != Block.BlockState.Matched)
                     {
                         continue;
                     }
 
                     // Search down for matching Blocks
                     if (row + 1 < Rows &&
-                        Blocks[row + 1, column].State == Block.BlockState.Idle &&
+                        (Blocks[row + 1, column].State == Block.BlockState.Idle ||
+                        Blocks[row + 1, column].State == Block.BlockState.Matched) &&
                         Blocks[row, column].Type == Blocks[row + 1, column].Type)
                     {
                         verticalMatchingBlocks++;
@@ -353,7 +360,7 @@ namespace BlockPartyWindowsStore
                 // Only play the combo sound if a chain sound isn't going to play (avoid cacophany!)
                 if (!incrementChain)
                 {
-                    Screen.ScreenManager.AudioManager.Play("Celebration", 1.0f, pitch, 0.0f);
+                    Screen.ScreenManager.Game.AudioManager.Play("Celebration", 1.0f, pitch, 0.0f);
                 }
 
                 // Add stop time if the board is more than half full
@@ -375,7 +382,7 @@ namespace BlockPartyWindowsStore
                 
                 CelebrationManager.Add(chainCount.ToString() + "x", chainCelebrationRow, chainCelebrationColumn);
                 float pitch = 0.1f * chainCount;
-                Screen.ScreenManager.AudioManager.Play("Celebration", 1.0f, pitch, 0.0f);
+                Screen.ScreenManager.Game.AudioManager.Play("Celebration", 1.0f, pitch, 0.0f);
 
                 // Add stop time if the board is more than half full
                 for (int column = 0; column < Columns; column++)
@@ -507,7 +514,7 @@ namespace BlockPartyWindowsStore
 
             if (playLandSound)
             {
-                Screen.ScreenManager.AudioManager.Play("BlockLand", 1.0f, 0.0f, 0.0f);
+                Screen.ScreenManager.Game.AudioManager.Play("BlockLand", 1.0f, 0.0f, 0.0f);
             }
         }
 

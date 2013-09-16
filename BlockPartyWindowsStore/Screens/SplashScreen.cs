@@ -42,9 +42,9 @@ namespace BlockPartyWindowsStore
             }
         }
 
-        public override void Draw(Microsoft.Xna.Framework.GameTime gameTime)
+        public override void Draw(GameTime gameTime)
         {
-            ScreenManager.GraphicsManager.SpriteBatch.Draw(logoTexture, ScreenManager.World.Bounds, Color.White);
+            ScreenManager.Game.GraphicsManager.SpriteBatch.Draw(logoTexture, ScreenManager.Game.WorldViewport.Bounds, Color.White);
 
             base.Draw(gameTime);
         }

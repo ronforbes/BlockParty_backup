@@ -18,7 +18,7 @@ namespace BlockPartyWindowsStore
         public BoardRenderer(Board board)
         {
             this.board = board;
-            Rectangle = new Rectangle(board.Screen.ScreenManager.World.Width / 2 - board.Columns * board.Blocks[0, 0].Renderer.Width / 2, board.Screen.ScreenManager.World.Height / 2 - board.Rows * board.Blocks[0, 0].Renderer.Height / 2, board.Columns * board.Blocks[0, 0].Renderer.Width, board.Rows * board.Blocks[0, 0].Renderer.Height);
+            Rectangle = new Rectangle(board.Screen.ScreenManager.Game.WorldViewport.Width / 2 - board.Columns * board.Blocks[0, 0].Renderer.Width / 2, board.Screen.ScreenManager.Game.WorldViewport.Height / 2 - board.Rows * board.Blocks[0, 0].Renderer.Height / 2, board.Columns * board.Blocks[0, 0].Renderer.Width, board.Rows * board.Blocks[0, 0].Renderer.Height);
         }
 
         public void LoadContent()
@@ -60,8 +60,8 @@ namespace BlockPartyWindowsStore
 
                 case Board.BoardState.CountingDown:
                     DrawBlocks(gameTime);
-                    Vector2 origin = board.Screen.ScreenManager.GraphicsManager.SpriteFont.MeasureString(Math.Ceiling(3 - board.CountdownTimeElapsed.TotalMilliseconds / 1000).ToString()) / 2;
-                    board.Screen.ScreenManager.GraphicsManager.SpriteBatch.DrawString(board.Screen.ScreenManager.GraphicsManager.SpriteFont, Math.Ceiling(3 - board.CountdownTimeElapsed.TotalMilliseconds / 1000).ToString(), new Vector2(board.Screen.ScreenManager.World.Width / 2, board.Screen.ScreenManager.World.Height / 2), Color.White, 0f, origin, Vector2.One, SpriteEffects.None, 0f);
+                    Vector2 origin = board.Screen.ScreenManager.Game.GraphicsManager.SpriteFont.MeasureString(Math.Ceiling(3 - board.CountdownTimeElapsed.TotalMilliseconds / 1000).ToString()) / 2;
+                    board.Screen.ScreenManager.Game.GraphicsManager.SpriteBatch.DrawString(board.Screen.ScreenManager.Game.GraphicsManager.SpriteFont, Math.Ceiling(3 - board.CountdownTimeElapsed.TotalMilliseconds / 1000).ToString(), new Vector2(board.Screen.ScreenManager.Game.WorldViewport.Width / 2, board.Screen.ScreenManager.Game.WorldViewport.Height / 2), Color.White, 0f, origin, Vector2.One, SpriteEffects.None, 0f);
                     break;
 
                 case Board.BoardState.Playing:
@@ -77,59 +77,59 @@ namespace BlockPartyWindowsStore
 
                     if (board.GoTimeElapsed < board.GoDuration)
                     {
-                        origin = board.Screen.ScreenManager.GraphicsManager.SpriteFont.MeasureString("Go!") / 2;
-                        board.Screen.ScreenManager.GraphicsManager.SpriteBatch.DrawString(board.Screen.ScreenManager.GraphicsManager.SpriteFont, "Go!", new Vector2(board.Screen.ScreenManager.World.Width / 2, board.Screen.ScreenManager.World.Height / 2), Color.White, 0f, origin, Vector2.One, SpriteEffects.None, 0f);
+                        origin = board.Screen.ScreenManager.Game.GraphicsManager.SpriteFont.MeasureString("Go!") / 2;
+                        board.Screen.ScreenManager.Game.GraphicsManager.SpriteBatch.DrawString(board.Screen.ScreenManager.Game.GraphicsManager.SpriteFont, "Go!", new Vector2(board.Screen.ScreenManager.Game.WorldViewport.Width / 2, board.Screen.ScreenManager.Game.WorldViewport.Height / 2), Color.White, 0f, origin, Vector2.One, SpriteEffects.None, 0f);
                     }
 
                     if (board.GameOverDelayDuration - board.GameOverDelayTimeElapsed <= TimeSpan.FromSeconds(3))
                     {
-                        origin = board.Screen.ScreenManager.GraphicsManager.SpriteFont.MeasureString(Math.Ceiling((board.GameOverDelayDuration - board.GameOverDelayTimeElapsed).TotalSeconds).ToString()) / 2;
-                        board.Screen.ScreenManager.GraphicsManager.SpriteBatch.DrawString(board.Screen.ScreenManager.GraphicsManager.SpriteFont, Math.Ceiling((board.GameOverDelayDuration - board.GameOverDelayTimeElapsed).TotalSeconds).ToString(), new Vector2(board.Screen.ScreenManager.World.Width / 2, board.Screen.ScreenManager.World.Height / 2), Color.White, 0f, origin, Vector2.One, SpriteEffects.None, 0f);
+                        origin = board.Screen.ScreenManager.Game.GraphicsManager.SpriteFont.MeasureString(Math.Ceiling((board.GameOverDelayDuration - board.GameOverDelayTimeElapsed).TotalSeconds).ToString()) / 2;
+                        board.Screen.ScreenManager.Game.GraphicsManager.SpriteBatch.DrawString(board.Screen.ScreenManager.Game.GraphicsManager.SpriteFont, Math.Ceiling((board.GameOverDelayDuration - board.GameOverDelayTimeElapsed).TotalSeconds).ToString(), new Vector2(board.Screen.ScreenManager.Game.WorldViewport.Width / 2, board.Screen.ScreenManager.Game.WorldViewport.Height / 2), Color.White, 0f, origin, Vector2.One, SpriteEffects.None, 0f);
                     }
                     break;
 
                 case Board.BoardState.GameOver:
                     DrawBlocks(gameTime);
                     
-                    origin = board.Screen.ScreenManager.GraphicsManager.SpriteFont.MeasureString("Game Over!") / 2;
-                    board.Screen.ScreenManager.GraphicsManager.SpriteBatch.DrawString(board.Screen.ScreenManager.GraphicsManager.SpriteFont, "Game Over!", new Vector2(board.Screen.ScreenManager.World.Width / 2, Rectangle.Y + 20), Color.White, 0f, origin, Vector2.One, SpriteEffects.None, 0f);
+                    origin = board.Screen.ScreenManager.Game.GraphicsManager.SpriteFont.MeasureString("Game Over!") / 2;
+                    board.Screen.ScreenManager.Game.GraphicsManager.SpriteBatch.DrawString(board.Screen.ScreenManager.Game.GraphicsManager.SpriteFont, "Game Over!", new Vector2(board.Screen.ScreenManager.Game.WorldViewport.Width / 2, Rectangle.Y + 20), Color.White, 0f, origin, Vector2.One, SpriteEffects.None, 0f);
                     
-                    origin = board.Screen.ScreenManager.GraphicsManager.SpriteFont.MeasureString("Time elapsed") / 2;
-                    board.Screen.ScreenManager.GraphicsManager.SpriteBatch.DrawString(board.Screen.ScreenManager.GraphicsManager.SpriteFont, "Time elapsed", new Vector2(board.Screen.ScreenManager.World.Width / 2, Rectangle.Y + 60), Color.White, 0f, origin, Vector2.One, SpriteEffects.None, 0f);
+                    origin = board.Screen.ScreenManager.Game.GraphicsManager.SpriteFont.MeasureString("Time elapsed") / 2;
+                    board.Screen.ScreenManager.Game.GraphicsManager.SpriteBatch.DrawString(board.Screen.ScreenManager.Game.GraphicsManager.SpriteFont, "Time elapsed", new Vector2(board.Screen.ScreenManager.Game.WorldViewport.Width / 2, Rectangle.Y + 60), Color.White, 0f, origin, Vector2.One, SpriteEffects.None, 0f);
                     
-                    origin = board.Screen.ScreenManager.GraphicsManager.SpriteFont.MeasureString(board.Stats.TimeElapsed.ToString()) / 2;
-                    board.Screen.ScreenManager.GraphicsManager.SpriteBatch.DrawString(board.Screen.ScreenManager.GraphicsManager.SpriteFont, board.Stats.TimeElapsed.ToString(), new Vector2(board.Screen.ScreenManager.World.Width / 2, Rectangle.Y + 80), Color.White, 0f, origin, Vector2.One, SpriteEffects.None, 0f);
+                    origin = board.Screen.ScreenManager.Game.GraphicsManager.SpriteFont.MeasureString(board.Stats.TimeElapsed.ToString()) / 2;
+                    board.Screen.ScreenManager.Game.GraphicsManager.SpriteBatch.DrawString(board.Screen.ScreenManager.Game.GraphicsManager.SpriteFont, board.Stats.TimeElapsed.ToString(), new Vector2(board.Screen.ScreenManager.Game.WorldViewport.Width / 2, Rectangle.Y + 80), Color.White, 0f, origin, Vector2.One, SpriteEffects.None, 0f);
                     
-                    origin = board.Screen.ScreenManager.GraphicsManager.SpriteFont.MeasureString("Blocks matched") / 2;
-                    board.Screen.ScreenManager.GraphicsManager.SpriteBatch.DrawString(board.Screen.ScreenManager.GraphicsManager.SpriteFont, "Blocks matched", new Vector2(board.Screen.ScreenManager.World.Width / 2, Rectangle.Y + 120), Color.White, 0f, origin, Vector2.One, SpriteEffects.None, 0f);
+                    origin = board.Screen.ScreenManager.Game.GraphicsManager.SpriteFont.MeasureString("Blocks matched") / 2;
+                    board.Screen.ScreenManager.Game.GraphicsManager.SpriteBatch.DrawString(board.Screen.ScreenManager.Game.GraphicsManager.SpriteFont, "Blocks matched", new Vector2(board.Screen.ScreenManager.Game.WorldViewport.Width / 2, Rectangle.Y + 120), Color.White, 0f, origin, Vector2.One, SpriteEffects.None, 0f);
                     
-                    origin = board.Screen.ScreenManager.GraphicsManager.SpriteFont.MeasureString(board.Stats.BlocksMatched.ToString()) / 2;
-                    board.Screen.ScreenManager.GraphicsManager.SpriteBatch.DrawString(board.Screen.ScreenManager.GraphicsManager.SpriteFont, board.Stats.BlocksMatched.ToString(), new Vector2(board.Screen.ScreenManager.World.Width / 2, Rectangle.Y + 140), Color.White, 0f, origin, Vector2.One, SpriteEffects.None, 0f);
+                    origin = board.Screen.ScreenManager.Game.GraphicsManager.SpriteFont.MeasureString(board.Stats.BlocksMatched.ToString()) / 2;
+                    board.Screen.ScreenManager.Game.GraphicsManager.SpriteBatch.DrawString(board.Screen.ScreenManager.Game.GraphicsManager.SpriteFont, board.Stats.BlocksMatched.ToString(), new Vector2(board.Screen.ScreenManager.Game.WorldViewport.Width / 2, Rectangle.Y + 140), Color.White, 0f, origin, Vector2.One, SpriteEffects.None, 0f);
 
-                    origin = board.Screen.ScreenManager.GraphicsManager.SpriteFont.MeasureString("Combos") / 2;
-                    board.Screen.ScreenManager.GraphicsManager.SpriteBatch.DrawString(board.Screen.ScreenManager.GraphicsManager.SpriteFont, "Combos", new Vector2(board.Screen.ScreenManager.World.Width / 2, Rectangle.Y + 180), Color.White, 0f, origin, Vector2.One, SpriteEffects.None, 0f);
+                    origin = board.Screen.ScreenManager.Game.GraphicsManager.SpriteFont.MeasureString("Combos") / 2;
+                    board.Screen.ScreenManager.Game.GraphicsManager.SpriteBatch.DrawString(board.Screen.ScreenManager.Game.GraphicsManager.SpriteFont, "Combos", new Vector2(board.Screen.ScreenManager.Game.WorldViewport.Width / 2, Rectangle.Y + 180), Color.White, 0f, origin, Vector2.One, SpriteEffects.None, 0f);
 
                     int y = 180;
                     foreach (int key in board.Stats.ComboBreakdown.Keys)
                     {
                         if (board.Stats.ComboBreakdown[key] > 0)
                         {
-                            board.Screen.ScreenManager.GraphicsManager.SpriteBatch.DrawString(board.Screen.ScreenManager.GraphicsManager.SpriteFont, key.ToString(), new Vector2(board.Screen.ScreenManager.World.Width / 2 - 100, Rectangle.Y + y), Color.White, 0f, Vector2.One, Vector2.One, SpriteEffects.None, 0f);
-                            board.Screen.ScreenManager.GraphicsManager.SpriteBatch.DrawString(board.Screen.ScreenManager.GraphicsManager.SpriteFont, board.Stats.ComboBreakdown[key].ToString(), new Vector2(board.Screen.ScreenManager.World.Width / 2 + 100, Rectangle.Y + y), Color.White, 0f, Vector2.One, Vector2.One, SpriteEffects.None, 0f);
+                            board.Screen.ScreenManager.Game.GraphicsManager.SpriteBatch.DrawString(board.Screen.ScreenManager.Game.GraphicsManager.SpriteFont, key.ToString(), new Vector2(board.Screen.ScreenManager.Game.WorldViewport.Width / 2 - 100, Rectangle.Y + y), Color.White, 0f, Vector2.One, Vector2.One, SpriteEffects.None, 0f);
+                            board.Screen.ScreenManager.Game.GraphicsManager.SpriteBatch.DrawString(board.Screen.ScreenManager.Game.GraphicsManager.SpriteFont, board.Stats.ComboBreakdown[key].ToString(), new Vector2(board.Screen.ScreenManager.Game.WorldViewport.Width / 2 + 100, Rectangle.Y + y), Color.White, 0f, Vector2.One, Vector2.One, SpriteEffects.None, 0f);
                             y += 20;
                         }
                     }
 
-                    origin = board.Screen.ScreenManager.GraphicsManager.SpriteFont.MeasureString("Chains") / 2;
-                    board.Screen.ScreenManager.GraphicsManager.SpriteBatch.DrawString(board.Screen.ScreenManager.GraphicsManager.SpriteFont, "Chains", new Vector2(board.Screen.ScreenManager.World.Width / 2, Rectangle.Y + y + 40), Color.White, 0f, origin, Vector2.One, SpriteEffects.None, 0f);
+                    origin = board.Screen.ScreenManager.Game.GraphicsManager.SpriteFont.MeasureString("Chains") / 2;
+                    board.Screen.ScreenManager.Game.GraphicsManager.SpriteBatch.DrawString(board.Screen.ScreenManager.Game.GraphicsManager.SpriteFont, "Chains", new Vector2(board.Screen.ScreenManager.Game.WorldViewport.Width / 2, Rectangle.Y + y + 40), Color.White, 0f, origin, Vector2.One, SpriteEffects.None, 0f);
 
                     y += 40;
                     foreach (int key in board.Stats.ChainBreakdown.Keys)
                     {
                         if (board.Stats.ChainBreakdown[key] > 0)
                         {
-                            board.Screen.ScreenManager.GraphicsManager.SpriteBatch.DrawString(board.Screen.ScreenManager.GraphicsManager.SpriteFont, key.ToString(), new Vector2(board.Screen.ScreenManager.World.Width / 2 - 100, Rectangle.Y + y), Color.White, 0f, Vector2.One, Vector2.One, SpriteEffects.None, 0f);
-                            board.Screen.ScreenManager.GraphicsManager.SpriteBatch.DrawString(board.Screen.ScreenManager.GraphicsManager.SpriteFont, board.Stats.ChainBreakdown[key].ToString(), new Vector2(board.Screen.ScreenManager.World.Width / 2 + 100, Rectangle.Y + y), Color.White, 0f, Vector2.One, Vector2.One, SpriteEffects.None, 0f);
+                            board.Screen.ScreenManager.Game.GraphicsManager.SpriteBatch.DrawString(board.Screen.ScreenManager.Game.GraphicsManager.SpriteFont, key.ToString(), new Vector2(board.Screen.ScreenManager.Game.WorldViewport.Width / 2 - 100, Rectangle.Y + y), Color.White, 0f, Vector2.One, Vector2.One, SpriteEffects.None, 0f);
+                            board.Screen.ScreenManager.Game.GraphicsManager.SpriteBatch.DrawString(board.Screen.ScreenManager.Game.GraphicsManager.SpriteFont, board.Stats.ChainBreakdown[key].ToString(), new Vector2(board.Screen.ScreenManager.Game.WorldViewport.Width / 2 + 100, Rectangle.Y + y), Color.White, 0f, Vector2.One, Vector2.One, SpriteEffects.None, 0f);
                             y += 20;
                         }
                     }
@@ -139,7 +139,7 @@ namespace BlockPartyWindowsStore
 
         void DrawBackground()
         {
-            board.Screen.ScreenManager.GraphicsManager.SpriteBatch.End();
+            board.Screen.ScreenManager.Game.GraphicsManager.SpriteBatch.End();
             
             DepthStencilState depthStencilState = new DepthStencilState
             {
@@ -150,18 +150,18 @@ namespace BlockPartyWindowsStore
                 DepthBufferEnable = false
             };
 
-            board.Screen.ScreenManager.GraphicsManager.SpriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, null, depthStencilState, null, null, board.Screen.ScreenManager.GraphicsManager.WorldToScreenScaleMatrix);
+            board.Screen.ScreenManager.Game.GraphicsManager.SpriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, null, depthStencilState, null, null, board.Screen.ScreenManager.Game.GraphicsManager.WorldToScreenScaleMatrix);
 
-            board.Screen.ScreenManager.GraphicsManager.SpriteBatch.Draw(backgroundTexture, Rectangle, null, Color.White, 0.0f, Vector2.Zero, SpriteEffects.None, 0.5f);
+            board.Screen.ScreenManager.Game.GraphicsManager.SpriteBatch.Draw(backgroundTexture, Rectangle, null, Color.White, 0.0f, Vector2.Zero, SpriteEffects.None, 0.5f);
 
-            board.Screen.ScreenManager.GraphicsManager.SpriteBatch.End();
+            board.Screen.ScreenManager.Game.GraphicsManager.SpriteBatch.End();
 
-            board.Screen.ScreenManager.GraphicsManager.SpriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, null, null, null, null, board.Screen.ScreenManager.GraphicsManager.WorldToScreenScaleMatrix);
+            board.Screen.ScreenManager.Game.GraphicsManager.SpriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, null, null, null, null, board.Screen.ScreenManager.Game.GraphicsManager.WorldToScreenScaleMatrix);
         }
 
         void DrawBlocks(GameTime gameTime)
         {
-            board.Screen.ScreenManager.GraphicsManager.SpriteBatch.End();
+            board.Screen.ScreenManager.Game.GraphicsManager.SpriteBatch.End();
 
             DepthStencilState depthStencilState = new DepthStencilState
             {
@@ -172,7 +172,7 @@ namespace BlockPartyWindowsStore
                 DepthBufferEnable = false
             };
 
-            board.Screen.ScreenManager.GraphicsManager.SpriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, null, depthStencilState, null, null, board.Screen.ScreenManager.GraphicsManager.WorldToScreenScaleMatrix);
+            board.Screen.ScreenManager.Game.GraphicsManager.SpriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, null, depthStencilState, null, null, board.Screen.ScreenManager.Game.GraphicsManager.WorldToScreenScaleMatrix);
 
             for (int row = 0; row < board.Rows; row++)
             {
@@ -188,9 +188,9 @@ namespace BlockPartyWindowsStore
                 board.NextBlocks[column].Draw(gameTime);
             }
 
-            board.Screen.ScreenManager.GraphicsManager.SpriteBatch.End();
+            board.Screen.ScreenManager.Game.GraphicsManager.SpriteBatch.End();
 
-            board.Screen.ScreenManager.GraphicsManager.SpriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, null, null, null, null, board.Screen.ScreenManager.GraphicsManager.WorldToScreenScaleMatrix);
+            board.Screen.ScreenManager.Game.GraphicsManager.SpriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, null, null, null, null, board.Screen.ScreenManager.Game.GraphicsManager.WorldToScreenScaleMatrix);
         }
     }
 }

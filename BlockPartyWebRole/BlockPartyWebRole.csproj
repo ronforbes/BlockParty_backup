@@ -38,14 +38,17 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Microsoft.AspNet.SignalR.Core">
-      <HintPath>..\packages\Microsoft.AspNet.SignalR.Core.1.1.2\lib\net40\Microsoft.AspNet.SignalR.Core.dll</HintPath>
+    <Reference Include="Microsoft.AspNet.SignalR.Core, Version=1.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Microsoft.AspNet.SignalR.Core.1.1.3\lib\net40\Microsoft.AspNet.SignalR.Core.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.AspNet.SignalR.Owin">
-      <HintPath>..\packages\Microsoft.AspNet.SignalR.Owin.1.1.2\lib\net45\Microsoft.AspNet.SignalR.Owin.dll</HintPath>
+    <Reference Include="Microsoft.AspNet.SignalR.Owin, Version=1.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Microsoft.AspNet.SignalR.Owin.1.1.3\lib\net45\Microsoft.AspNet.SignalR.Owin.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.AspNet.SignalR.SystemWeb">
-      <HintPath>..\packages\Microsoft.AspNet.SignalR.SystemWeb.1.1.2\lib\net45\Microsoft.AspNet.SignalR.SystemWeb.dll</HintPath>
+    <Reference Include="Microsoft.AspNet.SignalR.SystemWeb, Version=1.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Microsoft.AspNet.SignalR.SystemWeb.1.1.3\lib\net45\Microsoft.AspNet.SignalR.SystemWeb.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Microsoft.Owin.Host.SystemWeb">
@@ -87,10 +90,16 @@
     <Reference Include="System.Web.ApplicationServices" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Scripts\jquery-2.0.2.intellisense.js" />
     <TypeScriptCompile Include="Client\Main.ts" />
     <TypeScriptCompile Include="Client\Game.ts" />
     <TypeScriptCompile Include="Client\Block.ts" />
+    <TypeScriptCompile Include="Client\AudioManager.ts" />
+    <Content Include="Client\AudioManager.js">
+      <DependentUpon>AudioManager.ts</DependentUpon>
+    </Content>
+    <Content Include="Client\AudioManager.min.js">
+      <DependentUpon>AudioManager.ts</DependentUpon>
+    </Content>
     <Content Include="Client\Block.js">
       <DependentUpon>Block.ts</DependentUpon>
     </Content>
@@ -104,18 +113,49 @@
     <Content Include="Client\Board.min.js">
       <DependentUpon>Board.ts</DependentUpon>
     </Content>
+    <TypeScriptCompile Include="Client\FrameRateCounter.ts" />
+    <Content Include="Client\FrameRateCounter.js">
+      <DependentUpon>FrameRateCounter.ts</DependentUpon>
+    </Content>
+    <Content Include="Client\FrameRateCounter.min.js">
+      <DependentUpon>FrameRateCounter.ts</DependentUpon>
+    </Content>
     <Content Include="Client\Game.js">
       <DependentUpon>Game.ts</DependentUpon>
     </Content>
     <Content Include="Client\Game.min.js">
       <DependentUpon>Game.ts</DependentUpon>
     </Content>
-    <TypeScriptCompile Include="Client\Graphics.ts" />
+    <TypeScriptCompile Include="Client\GraphicsManager.ts" />
+    <Content Include="Client\GameScreen.js">
+      <DependentUpon>GameScreen.ts</DependentUpon>
+    </Content>
+    <Content Include="Client\GameScreen.min.js">
+      <DependentUpon>GameScreen.ts</DependentUpon>
+    </Content>
+    <Content Include="Client\GameTime.js">
+      <DependentUpon>GameTime.ts</DependentUpon>
+    </Content>
+    <Content Include="Client\GameTime.min.js">
+      <DependentUpon>GameTime.ts</DependentUpon>
+    </Content>
     <Content Include="Client\Graphics.js">
-      <DependentUpon>Graphics.ts</DependentUpon>
+      <DependentUpon>GraphicsManager.ts</DependentUpon>
     </Content>
     <Content Include="Client\Graphics.min.js">
-      <DependentUpon>Graphics.ts</DependentUpon>
+      <DependentUpon>GraphicsManager.ts</DependentUpon>
+    </Content>
+    <Content Include="Client\GraphicsManager.js">
+      <DependentUpon>GraphicsManager.ts</DependentUpon>
+    </Content>
+    <Content Include="Client\GraphicsManager.min.js">
+      <DependentUpon>GraphicsManager.ts</DependentUpon>
+    </Content>
+    <Content Include="Client\InputManager.js">
+      <DependentUpon>InputManager.ts</DependentUpon>
+    </Content>
+    <Content Include="Client\InputManager.min.js">
+      <DependentUpon>InputManager.ts</DependentUpon>
     </Content>
     <Content Include="Client\Main.js">
       <DependentUpon>Main.ts</DependentUpon>
@@ -123,38 +163,87 @@
     <Content Include="Client\Main.min.js">
       <DependentUpon>Main.ts</DependentUpon>
     </Content>
-    <TypeScriptCompile Include="Client\Timer.ts" />
-    <TypeScriptCompile Include="Client\Mouse.ts" />
+    <TypeScriptCompile Include="Client\GameTime.ts" />
+    <TypeScriptCompile Include="Client\InputManager.ts" />
     <Content Include="Client\Mouse.js">
-      <DependentUpon>Mouse.ts</DependentUpon>
+      <DependentUpon>InputManager.ts</DependentUpon>
     </Content>
     <Content Include="Client\Mouse.min.js">
-      <DependentUpon>Mouse.ts</DependentUpon>
+      <DependentUpon>InputManager.ts</DependentUpon>
+    </Content>
+    <TypeScriptCompile Include="Client\ScreenManager.ts" />
+    <TypeScriptCompile Include="Client\Point.ts" />
+    <Content Include="Client\Point.js">
+      <DependentUpon>Point.ts</DependentUpon>
+    </Content>
+    <Content Include="Client\Point.min.js">
+      <DependentUpon>Point.ts</DependentUpon>
+    </Content>
+    <TypeScriptCompile Include="Client\GameScreen.ts" />
+    <TypeScriptCompile Include="Client\Rectangle.ts" />
+    <Content Include="Client\Rectangle.js">
+      <DependentUpon>Rectangle.ts</DependentUpon>
+    </Content>
+    <Content Include="Client\Rectangle.min.js">
+      <DependentUpon>Rectangle.ts</DependentUpon>
+    </Content>
+    <Content Include="Client\Screen.js">
+      <DependentUpon>GameScreen.ts</DependentUpon>
+    </Content>
+    <Content Include="Client\Screen.min.js">
+      <DependentUpon>GameScreen.ts</DependentUpon>
+    </Content>
+    <Content Include="Client\ScreenManager.js">
+      <DependentUpon>ScreenManager.ts</DependentUpon>
+    </Content>
+    <Content Include="Client\ScreenManager.min.js">
+      <DependentUpon>ScreenManager.ts</DependentUpon>
+    </Content>
+    <TypeScriptCompile Include="Client\SplashScreen.ts" />
+    <Content Include="Client\SplashScreen.js">
+      <DependentUpon>SplashScreen.ts</DependentUpon>
+    </Content>
+    <Content Include="Client\SplashScreen.min.js">
+      <DependentUpon>SplashScreen.ts</DependentUpon>
     </Content>
     <Content Include="Client\Timer.js">
-      <DependentUpon>Timer.ts</DependentUpon>
+      <DependentUpon>GameTime.ts</DependentUpon>
     </Content>
     <Content Include="Client\Timer.min.js">
-      <DependentUpon>Timer.ts</DependentUpon>
+      <DependentUpon>GameTime.ts</DependentUpon>
     </Content>
     <TypeScriptCompile Include="Client\Vector2.ts" />
+    <TypeScriptCompile Include="Client\TimeSpan.ts" />
+    <Content Include="Client\TimeSpan.js">
+      <DependentUpon>TimeSpan.ts</DependentUpon>
+    </Content>
+    <Content Include="Client\TimeSpan.min.js">
+      <DependentUpon>TimeSpan.ts</DependentUpon>
+    </Content>
     <Content Include="Client\Vector2.js">
       <DependentUpon>Vector2.ts</DependentUpon>
     </Content>
     <Content Include="Client\Vector2.min.js">
       <DependentUpon>Vector2.ts</DependentUpon>
     </Content>
-    <Content Include="Scripts\jquery-2.0.2.js" />
-    <Content Include="Scripts\jquery-2.0.2.min.js" />
-    <Content Include="Scripts\jquery.signalR-1.1.2.js" />
-    <Content Include="Scripts\jquery.signalR-1.1.2.min.js" />
+    <None Include="Scripts\jquery-2.0.3.intellisense.js" />
+    <TypeScriptCompile Include="Client\Viewport.ts" />
+    <Content Include="Client\Viewport.js">
+      <DependentUpon>Viewport.ts</DependentUpon>
+    </Content>
+    <Content Include="Client\Viewport.min.js">
+      <DependentUpon>Viewport.ts</DependentUpon>
+    </Content>
+    <Content Include="Scripts\jquery-2.0.3.js" />
+    <Content Include="Scripts\jquery-2.0.3.min.js" />
+    <Content Include="Scripts\jquery.signalR-1.1.3.js" />
+    <Content Include="Scripts\jquery.signalR-1.1.3.min.js" />
     <Content Include="Scripts\typings\jquery\jquery.d.ts" />
     <Content Include="Scripts\_references.js" />
     <Content Include="Default.aspx" />
     <Content Include="Global.asax" />
     <Content Include="Styles\Main.css" />
     <Content Include="Web.config" />
-    <Content Include="Scripts\jquery-2.0.2.min.map" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Default.aspx.cs">
@@ -172,9 +261,12 @@
     <Compile Include="Server\GameHub.cs" />
     <Compile Include="WebRole.cs" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Client\Images\" />
+  </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />
+    <Content Include="Scripts\jquery-2.0.3.min.map" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

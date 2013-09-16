@@ -58,8 +58,8 @@ var Block = (function () {
         this.emptyDelayTimer = 0;
     }
     Block.TYPE_COUNT = 6;
-    BlockRenderer.Width = 15;
-    BlockRenderer.Height = 15;
+    Block.WIDTH = 15;
+    Block.HEIGHT = 15;
     Block.FALL_DURATION = 50;
     Block.POP_DELAY_INTERVAL = 250;
     Block.EMPTY_DELAY_INTERVAL = 250;

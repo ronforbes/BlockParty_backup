@@ -6,40 +6,46 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.UI.ViewManagement;
 
 namespace BlockPartyWindowsStore
 {
-    class GraphicsManager
+    public class GraphicsManager
     {
-        ScreenManager screenManager;
+        Game game;
         
+        public Viewport ScreenViewport;        
         public SpriteBatch SpriteBatch;
-        public Texture2D BlankTexture;
-        public Texture2D ParticleTexture;
         public SpriteFont SpriteFont;
         public Matrix WorldToScreenScaleMatrix;
 
-        public GraphicsManager(ScreenManager screenManager)
+        public GraphicsManager(Game game)
         {
-            this.screenManager = screenManager;
+            this.game = game;
 
-            WorldToScreenScaleMatrix = Matrix.CreateScale((float)screenManager.Screen.Width / screenManager.World.Width, (float)screenManager.Screen.Height / screenManager.World.Height, 1.0f);
+            // Setup the screen viewport and update it when the window size changes
+            ScreenViewport = new Viewport(0, 0, game.GraphicsDevice.Viewport.Width, game.GraphicsDevice.Viewport.Height);
+            game.Window.ClientSizeChanged += Window_ClientSizeChanged;
+
+            WorldToScreenScaleMatrix = Matrix.CreateScale((float)ScreenViewport.Width / game.WorldViewport.Width, (float)ScreenViewport.Height / game.WorldViewport.Height, 1.0f);
+        }
+
+        void Window_ClientSizeChanged(object sender, EventArgs e)
+        {
+            // Update the screen viewport based on the new dimensions
+            ScreenViewport.Width = game.GraphicsDevice.Viewport.Width;
+            ScreenViewport.Height = game.GraphicsDevice.Viewport.Height;
+
+            WorldToScreenScaleMatrix = Matrix.CreateScale((float)ScreenViewport.Width / game.WorldViewport.Width, (float)ScreenViewport.Height / game.WorldViewport.Height, 1.0f);
         }
 
         public void LoadContent()
         {
             // Create the sprite batch
-            SpriteBatch = new SpriteBatch(screenManager.Game.GraphicsDevice);
-
-            // Create the blank texture
-            BlankTexture = new Texture2D(screenManager.Game.GraphicsDevice, 1, 1);
-            BlankTexture.SetData(new Color[] { Color.White });
-
-            // Create the particle texture
-            ParticleTexture = screenManager.Game.Content.Load<Texture2D>("Particle");
+            SpriteBatch = new SpriteBatch(game.GraphicsDevice);
 
             // Create the sprite font
-            SpriteFont = screenManager.Game.Content.Load<SpriteFont>("SpriteFont");
+            SpriteFont = game.Content.Load<SpriteFont>("SpriteFont");
         }
     }
 }

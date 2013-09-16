@@ -1,23 +1,34 @@
+/// <reference path="Game.ts" />
+/// <reference path="../Scripts/typings/jquery/jquery.d.ts" />
+/// <reference path="GameTime.ts" />
 $(function () {
     var gameHub = ($).connection.gameHub;
     var game;
-    var timer;
-    var updatesPerSecond = 60;
+    var gameTime;
+    var targetFrameRate = 60;
+
     function InitializeGame() {
         game = new Game();
-        timer = new Timer();
-        Graphics.Initialize();
+        gameTime = new GameTime();
+
+        game.Initialize();
+        game.LoadContent();
+
+        // Start the game loop
         (window).requestAnimationFrame = (function () {
             return window.requestAnimationFrame || (window).webkitRequestAnimationFrame || (window).mozRequestAnimationFrame || (window).oRequestAnimationFrame || (window).msRequestAnimationFrame || function (Callback) {
-                window.setTimeout(Callback, 1000 / updatesPerSecond);
+                window.setTimeout(Callback, 1000 / targetFrameRate);
             };
         })();
+
         (function Update() {
             (window).requestAnimationFrame(Update);
-            timer.Update();
-            game.Update(timer.ElapsedMilliseconds);
+            gameTime.Update();
+            game.Update(gameTime);
+            game.Draw(gameTime);
         })();
     }
+
     ($).connection.hub.start(function () {
         InitializeGame();
     });

@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework.Input;
+﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Input.Touch;
 using System;
 using System.Collections.Generic;
@@ -8,15 +9,15 @@ using System.Threading.Tasks;
 
 namespace BlockPartyWindowsStore
 {
-    class InputManager
+    public class InputManager
     {
-        ScreenManager screenManager;
+        Game game;
 
         // World position of the mouse
-        public int WorldX, WorldY;
+        public Point WorldPosition = new Point();
 
         // Screen position of the mouse
-        public int ScreenX, ScreenY;
+        public Point ScreenPosition = new Point();
 
         // Determines whether the mouse buttons are currently pressed
         public bool LeftButton, RightButton;
@@ -30,10 +31,10 @@ namespace BlockPartyWindowsStore
         // Stores the previous mouse state to know if buttons were just pressed or released
         MouseState previousMouseState;
 
-        public InputManager(ScreenManager screenManager)
+        public InputManager(Game game)
         {
-            this.screenManager = screenManager;
-
+            this.game = game;
+            
             previousMouseState = Mouse.GetState();
         }
 
@@ -41,12 +42,12 @@ namespace BlockPartyWindowsStore
         {
             MouseState mouseState = Mouse.GetState();
 
-            // Scale mouse coordinates to world dimensions
-            WorldX = mouseState.X * screenManager.World.Width / screenManager.Screen.Width;
-            WorldY = mouseState.Y * screenManager.World.Height / screenManager.Screen.Height;
+            ScreenPosition.X = mouseState.X;
+            ScreenPosition.Y = mouseState.Y;
 
-            ScreenX = mouseState.X;
-            ScreenY = mouseState.Y;
+            // Scale mouse coordinates to world dimensions
+            WorldPosition.X = ScreenPosition.X * game.WorldViewport.Width / game.GraphicsManager.ScreenViewport.Width;
+            WorldPosition.Y = ScreenPosition.Y * game.WorldViewport.Height / game.GraphicsManager.ScreenViewport.Height;
 
             // Determine whether the buttons are currently pressed
             LeftButton = mouseState.LeftButton == ButtonState.Pressed;
@@ -67,11 +68,11 @@ namespace BlockPartyWindowsStore
                 LeftButtonPressed = false;
                 LeftButtonReleased = false;
 
-                WorldX = (int)touchLocation.Position.X * screenManager.World.Width / screenManager.Screen.Width;
-                WorldY = (int)touchLocation.Position.Y * screenManager.World.Height / screenManager.Screen.Height;
+                WorldPosition.X = (int)touchLocation.Position.X * game.WorldViewport.Width / game.GraphicsManager.ScreenViewport.Width;
+                WorldPosition.Y = (int)touchLocation.Position.Y * game.WorldViewport.Height / game.GraphicsManager.ScreenViewport.Height;
 
-                ScreenX = (int)touchLocation.Position.X;
-                ScreenY = (int)touchLocation.Position.Y;
+                ScreenPosition.X = (int)touchLocation.Position.X;
+                ScreenPosition.Y = (int)touchLocation.Position.Y;
 
                 if (touchLocation.State == TouchLocationState.Pressed)
                 {

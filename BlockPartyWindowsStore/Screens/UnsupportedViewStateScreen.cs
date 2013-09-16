@@ -29,17 +29,17 @@ namespace BlockPartyWindowsStore.Screens
 
         public override void Draw(GameTime gameTime)
         {
-            ScreenManager.GraphicsManager.SpriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, null, null, null, null, Matrix.Identity);
+            ScreenManager.Game.GraphicsManager.SpriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, null, null, null, null, Matrix.Identity);
 
-            ScreenManager.GraphicsManager.SpriteBatch.Draw(backgroundTexture, ScreenManager.Screen.Bounds, null, Color.White, 0f, Vector2.Zero, SpriteEffects.None, 0f);
+            ScreenManager.Game.GraphicsManager.SpriteBatch.Draw(backgroundTexture, ScreenManager.Game.GraphicsManager.ScreenViewport.Bounds, null, Color.White, 0f, Vector2.Zero, SpriteEffects.None, 0f);
 
-            Vector2 stringOrigin = ScreenManager.GraphicsManager.SpriteFont.MeasureString("Go fullscreen to play!") / 2;
+            Vector2 stringOrigin = ScreenManager.Game.GraphicsManager.SpriteFont.MeasureString("Go fullscreen to play!") / 2;
 
-            ScreenManager.GraphicsManager.SpriteBatch.DrawString(ScreenManager.GraphicsManager.SpriteFont, "Go fullscreen to play!", new Vector2(ScreenManager.Screen.Width / 2, ScreenManager.Screen.Height / 2), Color.White, 0f, stringOrigin, Vector2.One, SpriteEffects.None, 0f);
+            ScreenManager.Game.GraphicsManager.SpriteBatch.DrawString(ScreenManager.Game.GraphicsManager.SpriteFont, "Go fullscreen to play!", new Vector2(ScreenManager.Game.GraphicsManager.ScreenViewport.Width / 2, ScreenManager.Game.GraphicsManager.ScreenViewport.Height / 2), Color.White, 0f, stringOrigin, Vector2.One, SpriteEffects.None, 0f);
 
             base.Draw(gameTime);
 
-            ScreenManager.GraphicsManager.SpriteBatch.End();
+            ScreenManager.Game.GraphicsManager.SpriteBatch.End();
         }
     }
 }

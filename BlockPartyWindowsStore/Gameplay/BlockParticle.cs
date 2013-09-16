@@ -22,11 +22,11 @@ namespace BlockPartyWindowsStore.Gameplay
         {
             this.blockRain = blockRain;
 
-            int width = random.Next(blockRain.Screen.ScreenManager.World.Width > blockRain.Screen.ScreenManager.World.Height ?
-                blockRain.Screen.ScreenManager.World.Height / 5 :
-                blockRain.Screen.ScreenManager.World.Width / 5);
+            int width = random.Next(blockRain.Screen.ScreenManager.Game.WorldViewport.Width > blockRain.Screen.ScreenManager.Game.WorldViewport.Height ?
+                blockRain.Screen.ScreenManager.Game.WorldViewport.Height / 5 :
+                blockRain.Screen.ScreenManager.Game.WorldViewport.Width / 5);
             int height = width;
-            int x = random.Next(blockRain.Screen.ScreenManager.World.Width);
+            int x = random.Next(blockRain.Screen.ScreenManager.Game.WorldViewport.Width);
             int y = -1 * height;
 
             rectangle = new Rectangle(x, y, width, height);
@@ -42,7 +42,7 @@ namespace BlockPartyWindowsStore.Gameplay
                 velocity += acceleration;
                 rectangle.Y += (int)velocity.Y;
 
-                if (rectangle.Y >= blockRain.Screen.ScreenManager.World.Height)
+                if (rectangle.Y >= blockRain.Screen.ScreenManager.Game.WorldViewport.Height)
                 {
                     Active = false;
                 }
@@ -53,7 +53,7 @@ namespace BlockPartyWindowsStore.Gameplay
         {
             if (Active)
             {
-                blockRain.Screen.ScreenManager.GraphicsManager.SpriteBatch.Draw(texture, rectangle, Color.White);
+                blockRain.Screen.ScreenManager.Game.GraphicsManager.SpriteBatch.Draw(texture, rectangle, Color.White);
             }
         }
     }

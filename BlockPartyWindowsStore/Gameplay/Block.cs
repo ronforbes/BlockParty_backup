@@ -155,7 +155,7 @@ namespace BlockPartyWindowsStore
             PopTimeElapsed = TimeSpan.Zero;
             Board.Stats.ScoreBlockPop();
             Board.ParticleEmitters.Add(new ParticleEmitter(Board.Screen, 200, new Rectangle(Renderer.Rectangle.X + Board.Blocks[0, 0].Renderer.Width / 2, Renderer.Rectangle.Y + Board.Blocks[0, 0].Renderer.Height / 2, 25, 25), new Vector2(-100f, -100f), new Vector2(100f, 100f), Vector2.Zero, new Color(Renderer.Color.ToVector4() / 2), Renderer.Color, TimeSpan.FromSeconds(3)));
-            Board.Screen.ScreenManager.AudioManager.Play("BlockPop", 1.0f, 0.0f, 0.0f);
+            Board.Screen.ScreenManager.Game.AudioManager.Play("BlockPop", 1.0f, 0.0f, 0.0f);
         }
 
         public void WaitToEmpty()

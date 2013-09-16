@@ -20,6 +20,7 @@ namespace BlockPartyWindowsStore
         Vector2 scale = Vector2.One;
         TimeSpan timeElapsed = TimeSpan.Zero;
         TimeSpan duration = TimeSpan.Zero;
+        Texture2D texture;
 
         public Particle(ParticleEmitter emitter, Rectangle rectangle, Vector2 velocity, Vector2 acceleration, Color color, TimeSpan duration)
         {
@@ -29,6 +30,7 @@ namespace BlockPartyWindowsStore
             this.acceleration = acceleration;
             this.color = color;
             this.duration = duration;
+            texture = emitter.Screen.ContentManager.Load<Texture2D>("Particle");
         }
 
         public void Update(GameTime gameTime)
@@ -58,7 +60,7 @@ namespace BlockPartyWindowsStore
             if (Active)
             {
                 Rectangle scaledRectangle = new Rectangle((int)(rectangle.X - rectangle.Width * (scale.X - 1) / 2), (int)(rectangle.Y - rectangle.Height * (scale.Y - 1) / 2), (int)(rectangle.Width * scale.X), (int)(rectangle.Height * scale.Y));
-                emitter.Screen.ScreenManager.GraphicsManager.SpriteBatch.Draw(emitter.Screen.ScreenManager.GraphicsManager.ParticleTexture, scaledRectangle, null, color, 0.0f, Vector2.Zero, SpriteEffects.None, 0.0f);
+                emitter.Screen.ScreenManager.Game.GraphicsManager.SpriteBatch.Draw(texture, scaledRectangle, null, color, 0.0f, Vector2.Zero, SpriteEffects.None, 0.0f);
             }
         }
     }

@@ -15,15 +15,24 @@
                 <canvas id="canvas"></canvas>
             </div>
 
-            <script src="Scripts/jquery-2.0.2.js"></script>
-            <script src="Scripts/jquery.signalR-1.1.2.js"></script>
+            <script src="Scripts/jquery-2.0.3.js"></script>
+            <script src="Scripts/jquery.signalR-1.1.3.js"></script>
             <script src='<%: ResolveClientUrl("~/signalr/hubs") %>'></script>
+            <script src="Client/AudioManager.js"></script>
+            <script src="Client/FrameRateCounter.js"></script>
+            <script src="Client/Rectangle.js"></script>
+            <script src="Client/Viewport.js"></script>
+            <script src="Client/GameScreen.js"></script>
+            <script src="Client/Point.js"></script>
             <script src="Client/Vector2.js"></script>
-            <script src="Client/Graphics.js"></script>
-            <script src="Client/Mouse.js"></script>
-            <script src="Client/Timer.js"></script>
+            <script src="Client/GraphicsManager.js"></script>
+            <script src="Client/InputManager.js"></script>
+            <script src="Client/GameTime.js"></script>
             <script src="Client/Board.js"></script>
             <script src="Client/Block.js"></script>
+            <script src="Client/TimeSpan.js"></script>
+            <script src="Client/SplashScreen.js"></script>
+            <script src="Client/ScreenManager.js"></script>
             <script src="Client/Game.js"></script>
             <script src="Client/Main.js"></script>
         </form>

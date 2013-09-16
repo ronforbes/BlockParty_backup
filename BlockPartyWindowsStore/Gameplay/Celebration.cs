@@ -10,12 +10,14 @@ namespace BlockPartyWindowsStore
 {
     class Celebration
     {
+        public bool Active = true;
+
         Board board;
         string text; // Text to display in the celebration
         Rectangle position;
         TimeSpan timeElapsed = TimeSpan.Zero; // Amount of time the celebration has been active
         readonly TimeSpan duration = TimeSpan.FromSeconds(1); // Duration of the celebration
-        public bool Active = true;
+        Texture2D texture;
 
         public Celebration(Board board, string text, int row, int column)
         {
@@ -23,6 +25,7 @@ namespace BlockPartyWindowsStore
             this.text = text;
             position = new Rectangle(column * board.Blocks[0, 0].Renderer.Width, row * board.Blocks[0, 0].Renderer.Height, board.Blocks[0, 0].Renderer.Width, board.Blocks[0, 0].Renderer.Height);
             board.ParticleEmitters.Add(new ParticleEmitter(board.Screen, 50, new Rectangle(board.Blocks[row, column].Renderer.Rectangle.X + board.Blocks[0, 0].Renderer.Width / 2, board.Blocks[row, column].Renderer.Rectangle.Y + board.Blocks[0, 0].Renderer.Height / 2, 25, 25), new Vector2(-100f, -100f), new Vector2(100f, 100f), Vector2.Zero, Color.Black, Color.White, TimeSpan.FromSeconds(3)));
+            texture = board.Screen.ContentManager.Load<Texture2D>("Button");
         }
 
         public void Update(GameTime gameTime)
@@ -55,10 +58,10 @@ namespace BlockPartyWindowsStore
                 // Adjust vertical position based on the board's raising state
                 y -= (int)Tween.Linear(board.RaiseTimeElapsed.TotalMilliseconds, 0, board.Blocks[0, 0].Renderer.Height, board.RaiseDuration.TotalMilliseconds);
 
-                board.Screen.ScreenManager.GraphicsManager.SpriteBatch.Draw(board.Screen.ScreenManager.GraphicsManager.BlankTexture, new Rectangle(board.Renderer.Rectangle.X + position.X, board.Renderer.Rectangle.Y + position.Y + y, position.Width, position.Height), null, new Color(rectangleR, rectangleG, rectangleB, rectangleA), 0f, Vector2.Zero, SpriteEffects.None, 0f);
+                board.Screen.ScreenManager.Game.GraphicsManager.SpriteBatch.Draw(texture, new Rectangle(board.Renderer.Rectangle.X + position.X, board.Renderer.Rectangle.Y + position.Y + y, position.Width, position.Height), null, new Color(rectangleR, rectangleG, rectangleB, rectangleA), 0f, Vector2.Zero, SpriteEffects.None, 0f);
 
-                Vector2 origin = board.Screen.ScreenManager.GraphicsManager.SpriteFont.MeasureString(text) / 2;
-                board.Screen.ScreenManager.GraphicsManager.SpriteBatch.DrawString(board.Screen.ScreenManager.GraphicsManager.SpriteFont, text, new Vector2(board.Renderer.Rectangle.X + position.X + board.Blocks[0, 0].Renderer.Width / 2, board.Renderer.Rectangle.Y + position.Y + board.Blocks[0, 0].Renderer.Height / 2 + y), new Color(textR, textG, textB, textA), 0f, origin, Vector2.One, SpriteEffects.None, 0f);
+                Vector2 origin = board.Screen.ScreenManager.Game.GraphicsManager.SpriteFont.MeasureString(text) / 2;
+                board.Screen.ScreenManager.Game.GraphicsManager.SpriteBatch.DrawString(board.Screen.ScreenManager.Game.GraphicsManager.SpriteFont, text, new Vector2(board.Renderer.Rectangle.X + position.X + board.Blocks[0, 0].Renderer.Width / 2, board.Renderer.Rectangle.Y + position.Y + board.Blocks[0, 0].Renderer.Height / 2 + y), new Color(textR, textG, textB, textA), 0f, origin, Vector2.One, SpriteEffects.None, 0f);
             }
         }
     }

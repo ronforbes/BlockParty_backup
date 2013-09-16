@@ -25,7 +25,6 @@ namespace BlockPartyWindowsStore
 
             for (int p = 0; p < particleCount; p++)
             {
-                //Vector2 velocity = new Vector2((float)random.NextDouble() * (maxVelocity.X - minVelocity.X) + minVelocity.X, (float)random.NextDouble() * (maxVelocity.Y - minVelocity.Y) + minVelocity.Y);
                 float degrees = random.Next(0, 359);
                 float speed = (float)random.Next((int)maxVelocity.X);
                 Vector2 velocity = new Vector2((float)Math.Cos(MathHelper.ToRadians(degrees)) * speed, (float)Math.Sin(MathHelper.ToRadians(degrees)) * speed);
@@ -68,16 +67,16 @@ namespace BlockPartyWindowsStore
         {
             if (Active)
             {
-                Screen.ScreenManager.GraphicsManager.SpriteBatch.End();
-                Screen.ScreenManager.GraphicsManager.SpriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Additive, null, null, null, null, Screen.ScreenManager.GraphicsManager.WorldToScreenScaleMatrix);
+                Screen.ScreenManager.Game.GraphicsManager.SpriteBatch.End();
+                Screen.ScreenManager.Game.GraphicsManager.SpriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Additive, null, null, null, null, Screen.ScreenManager.Game.GraphicsManager.WorldToScreenScaleMatrix);
 
                 foreach (Particle p in particles)
                 {
                     p.Draw(gameTime);
                 }
 
-                Screen.ScreenManager.GraphicsManager.SpriteBatch.End();
-                Screen.ScreenManager.GraphicsManager.SpriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, null, null, null, null, Screen.ScreenManager.GraphicsManager.WorldToScreenScaleMatrix);
+                Screen.ScreenManager.Game.GraphicsManager.SpriteBatch.End();
+                Screen.ScreenManager.Game.GraphicsManager.SpriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, null, null, null, null, Screen.ScreenManager.Game.GraphicsManager.WorldToScreenScaleMatrix);
             }
         }
     }

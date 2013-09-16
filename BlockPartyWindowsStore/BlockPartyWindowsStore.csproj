@@ -162,6 +162,7 @@
     <AppxManifest Include="Package.appxmanifest">
       <SubType>Designer</SubType>
     </AppxManifest>
+    <Content Include="Content\Button.xnb" />
     <None Include="BlockPartyWindowsStore_StoreKey.pfx" />
     <Content Include="Assets\WideLogo.scale-100.png" />
     <Content Include="Content\BlockPartyMainMenuTitle.xnb" />
