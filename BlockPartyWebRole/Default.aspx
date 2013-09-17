@@ -18,6 +18,7 @@
             <script src="Scripts/jquery-2.0.3.js"></script>
             <script src="Scripts/jquery.signalR-1.1.3.js"></script>
             <script src='<%: ResolveClientUrl("~/signalr/hubs") %>'></script>
+            <script src="Client/Tween.js"></script>
             <script src="Client/AudioManager.js"></script>
             <script src="Client/FrameRateCounter.js"></script>
             <script src="Client/Rectangle.js"></script>
@@ -31,6 +32,9 @@
             <script src="Client/Board.js"></script>
             <script src="Client/Block.js"></script>
             <script src="Client/TimeSpan.js"></script>
+            <script src="Client/BlockParticle.js"></script>
+            <script src="Client/BlockRain.js"></script>
+            <script src="Client/MainMenuScreen.js"></script>
             <script src="Client/SplashScreen.js"></script>
             <script src="Client/ScreenManager.js"></script>
             <script src="Client/Game.js"></script>

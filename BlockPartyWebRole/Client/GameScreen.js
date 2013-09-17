@@ -1,3 +1,4 @@
+/// <reference path="Tween.ts" />
 /// <reference path="ScreenManager.ts" />
 var ScreenState;
 (function (ScreenState) {
@@ -8,6 +9,7 @@ var ScreenState;
 
 var GameScreen = (function () {
     function GameScreen(screenManager) {
+        this.State = ScreenState.TransitioningOn;
         this.TransitionTimeElapsed = TimeSpan.Zero;
         this.TransitionDuration = TimeSpan.Zero;
         this.ScreenManager = screenManager;
@@ -55,6 +57,8 @@ var GameScreen = (function () {
     };
 
     GameScreen.prototype.DrawTransition = function () {
+        var alpha = (this.State == ScreenState.TransitioningOn) ? Tween.Linear(this.TransitionTimeElapsed.TotalMilliseconds, 0, 1, this.TransitionDuration.TotalMilliseconds) : Tween.Linear(this.TransitionTimeElapsed.TotalMilliseconds, 1, -1, this.TransitionDuration.TotalMilliseconds);
+        this.ScreenManager.Game.GraphicsManager.GlobalAlpha = alpha;
     };
     return GameScreen;
 })();

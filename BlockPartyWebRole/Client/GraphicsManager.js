@@ -111,7 +111,7 @@ var GraphicsManager = (function () {
     GraphicsManager.prototype.DrawFullscreenRectangle = function (color) {
         this.backBufferContext.save();
 
-        //this.backBufferContext.globalCompositeOperation = "lighter";
+        this.backBufferContext.globalCompositeOperation = "lighter";
         this.backBufferContext.fillStyle = color;
         this.backBufferContext.fillRect(0, 0, this.canvas.width, this.canvas.height);
 
@@ -147,9 +147,7 @@ var GraphicsManager = (function () {
         var canvasPosition = this.TransformWorldToCanvasRectangle(rectangle);
 
         this.backBufferContext.save();
-
         this.backBufferContext.drawImage(image, canvasPosition.X, canvasPosition.Y, canvasPosition.Width, canvasPosition.Height);
-
         this.backBufferContext.restore();
     };
 
@@ -177,6 +175,7 @@ var GraphicsManager = (function () {
 
     GraphicsManager.prototype.Present = function () {
         this.canvasContext.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        this.canvasContext.globalAlpha = this.GlobalAlpha;
         this.canvasContext.drawImage(this.backBuffer, 0, 0);
     };
 

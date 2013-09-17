@@ -5,6 +5,8 @@
 /// <reference path="../Scripts/typings/jquery/jquery.d.ts" />
 
 class GraphicsManager {
+    public GlobalAlpha: number;
+
     private game: Game;
     private canvas: HTMLCanvasElement;
     private canvasContext: CanvasRenderingContext2D;
@@ -121,7 +123,7 @@ class GraphicsManager {
     public DrawFullscreenRectangle(color: string) {
         this.backBufferContext.save();
 
-        //this.backBufferContext.globalCompositeOperation = "lighter";
+        this.backBufferContext.globalCompositeOperation = "lighter";
         this.backBufferContext.fillStyle = color;
         this.backBufferContext.fillRect(0, 0, this.canvas.width, this.canvas.height);
 
@@ -158,9 +160,7 @@ class GraphicsManager {
         var canvasPosition = this.TransformWorldToCanvasRectangle(rectangle);
 
         this.backBufferContext.save();
-
         this.backBufferContext.drawImage(image, canvasPosition.X, canvasPosition.Y, canvasPosition.Width, canvasPosition.Height);
-
         this.backBufferContext.restore();
     }
 
@@ -188,6 +188,7 @@ class GraphicsManager {
 
     public Present(): void {
         this.canvasContext.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        this.canvasContext.globalAlpha = this.GlobalAlpha;
         this.canvasContext.drawImage(this.backBuffer, 0, 0);
     }
 

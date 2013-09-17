@@ -107,6 +107,20 @@
       <DependentUpon>Block.ts</DependentUpon>
     </Content>
     <TypeScriptCompile Include="Client\Board.ts" />
+    <TypeScriptCompile Include="Client\BlockRain.ts" />
+    <TypeScriptCompile Include="Client\BlockParticle.ts" />
+    <Content Include="Client\BlockParticle.js">
+      <DependentUpon>BlockParticle.ts</DependentUpon>
+    </Content>
+    <Content Include="Client\BlockParticle.min.js">
+      <DependentUpon>BlockParticle.ts</DependentUpon>
+    </Content>
+    <Content Include="Client\BlockRain.js">
+      <DependentUpon>BlockRain.ts</DependentUpon>
+    </Content>
+    <Content Include="Client\BlockRain.min.js">
+      <DependentUpon>BlockRain.ts</DependentUpon>
+    </Content>
     <Content Include="Client\Board.js">
       <DependentUpon>Board.ts</DependentUpon>
     </Content>
@@ -151,6 +165,15 @@
     <Content Include="Client\GraphicsManager.min.js">
       <DependentUpon>GraphicsManager.ts</DependentUpon>
     </Content>
+    <Content Include="Client\Images\BlockBlue.png" />
+    <Content Include="Client\Images\BlockCyan.png" />
+    <Content Include="Client\Images\BlockGreen.png" />
+    <Content Include="Client\Images\BlockMagenta.png" />
+    <Content Include="Client\Images\BlockRed.png" />
+    <Content Include="Client\Images\BlockYellow.png" />
+    <Content Include="Client\Images\MainMenuBackground.png" />
+    <Content Include="Client\Images\MainMenuTitle.png" />
+    <Content Include="Client\Images\OmegaSplashScreen.png" />
     <Content Include="Client\InputManager.js">
       <DependentUpon>InputManager.ts</DependentUpon>
     </Content>
@@ -165,6 +188,13 @@
     </Content>
     <TypeScriptCompile Include="Client\GameTime.ts" />
     <TypeScriptCompile Include="Client\InputManager.ts" />
+    <TypeScriptCompile Include="Client\MainMenuScreen.ts" />
+    <Content Include="Client\MainMenuScreen.js">
+      <DependentUpon>MainMenuScreen.ts</DependentUpon>
+    </Content>
+    <Content Include="Client\MainMenuScreen.min.js">
+      <DependentUpon>MainMenuScreen.ts</DependentUpon>
+    </Content>
     <Content Include="Client\Mouse.js">
       <DependentUpon>InputManager.ts</DependentUpon>
     </Content>
@@ -220,6 +250,13 @@
     <Content Include="Client\TimeSpan.min.js">
       <DependentUpon>TimeSpan.ts</DependentUpon>
     </Content>
+    <TypeScriptCompile Include="Client\Tween.ts" />
+    <Content Include="Client\Tween.js">
+      <DependentUpon>Tween.ts</DependentUpon>
+    </Content>
+    <Content Include="Client\Tween.min.js">
+      <DependentUpon>Tween.ts</DependentUpon>
+    </Content>
     <Content Include="Client\Vector2.js">
       <DependentUpon>Vector2.ts</DependentUpon>
     </Content>
@@ -261,9 +298,7 @@
     <Compile Include="Server\GameHub.cs" />
     <Compile Include="WebRole.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Client\Images\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <Content Include="packages.config" />
     <Content Include="Scripts\jquery-2.0.3.min.map" />

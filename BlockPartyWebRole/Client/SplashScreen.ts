@@ -1,3 +1,4 @@
+/// <reference path="MainMenuScreen.ts" />
 /// <reference path="GameScreen.ts" />
 /// <reference path="TimeSpan.ts" />
 
@@ -23,12 +24,14 @@ class SplashScreen extends GameScreen {
             this.timeElapsed = new TimeSpan(this.timeElapsed.Milliseconds + gameTime.ElapsedGameTime.Milliseconds);
 
             if (this.timeElapsed.Milliseconds >= this.duration.Milliseconds) {
-                this.ScreenManager.RemoveScreen(this);
+                this.ScreenManager.LoadScreen(new MainMenuScreen(this.ScreenManager));
             }
         }
     }
 
     public Draw(gameTime: GameTime) {
         this.ScreenManager.Game.GraphicsManager.Draw(this.logoImage, new Rectangle(this.ScreenManager.Game.WorldViewport.X, this.ScreenManager.Game.WorldViewport.Y, this.ScreenManager.Game.WorldViewport.Width, this.ScreenManager.Game.WorldViewport.Height), "white");
+
+        super.Draw(gameTime);
     }
 }

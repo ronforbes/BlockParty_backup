@@ -13,7 +13,7 @@ namespace BlockPartyWindowsStore.Gameplay
         public Screen Screen;
         List<BlockParticle> blockParticles = new List<BlockParticle>();
         TimeSpan spawnDelayTimeElapsed = TimeSpan.Zero;
-        readonly TimeSpan spawnDelayDuration = TimeSpan.FromMilliseconds(1);
+        readonly TimeSpan spawnDelayDuration = TimeSpan.FromMilliseconds(0);
         public List<Texture2D> Textures = new List<Texture2D>();
         List<BlockParticle> blocksToRemove = new List<BlockParticle>();
 

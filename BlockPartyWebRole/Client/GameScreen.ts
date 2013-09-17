@@ -1,4 +1,6 @@
+/// <reference path="Tween.ts" />
 /// <reference path="ScreenManager.ts" />
+
 enum ScreenState {
     TransitioningOn,
     Active,
@@ -7,7 +9,7 @@ enum ScreenState {
 
 class GameScreen {
     public ScreenManager: ScreenManager;
-    public State: ScreenState;
+    public State: ScreenState = ScreenState.TransitioningOn;
     public TransitionTimeElapsed: TimeSpan = TimeSpan.Zero;
     public TransitionDuration: TimeSpan = TimeSpan.Zero;
 
@@ -61,6 +63,9 @@ class GameScreen {
     }
 
     private DrawTransition() {
-
+        var alpha: number = (this.State == ScreenState.TransitioningOn) ?
+            Tween.Linear(this.TransitionTimeElapsed.TotalMilliseconds, 0, 1, this.TransitionDuration.TotalMilliseconds) :
+            Tween.Linear(this.TransitionTimeElapsed.TotalMilliseconds, 1, -1, this.TransitionDuration.TotalMilliseconds);
+        this.ScreenManager.Game.GraphicsManager.GlobalAlpha = alpha;
     }
 }
