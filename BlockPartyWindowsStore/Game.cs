@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
+using Windows.ApplicationModel.Store;
 using Windows.UI.ViewManagement;
 
 namespace BlockPartyWindowsStore
