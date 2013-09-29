@@ -1,3 +1,4 @@
+/// <reference path="Color.ts" />
 /// <reference path="Rectangle.ts" />
 /// <reference path="Viewport.ts" />
 /// <reference path="ScreenManager.ts" />
@@ -74,7 +75,7 @@ var GraphicsManager = (function () {
         //this.backBufferContext.shadowBlur = 10;
         //this.backBufferContext.shadowColor = color;
         this.backBufferContext.beginPath();
-        this.backBufferContext.strokeStyle = color;
+        this.backBufferContext.strokeStyle = color.ToString();
         this.backBufferContext.lineWidth = width;
         this.backBufferContext.moveTo(canvasStartPosition.X, canvasStartPosition.Y);
         this.backBufferContext.lineTo(canvasEndPosition.X, canvasEndPosition.Y);
@@ -97,11 +98,11 @@ var GraphicsManager = (function () {
         //this.backBufferContext.shadowColor = fillColor;
         this.backBufferContext.lineWidth = lineWidth;
         if (strokeColor) {
-            this.backBufferContext.strokeStyle = strokeColor;
+            this.backBufferContext.strokeStyle = strokeColor.ToString();
             this.backBufferContext.strokeRect(canvasPosition.X, canvasPosition.Y, canvasWidth, canvasHeight);
         }
         if (fillColor) {
-            this.backBufferContext.fillStyle = fillColor;
+            this.backBufferContext.fillStyle = fillColor.ToString();
             this.backBufferContext.fillRect(canvasPosition.X, canvasPosition.Y, canvasWidth, canvasHeight);
         }
 
@@ -112,7 +113,7 @@ var GraphicsManager = (function () {
         this.backBufferContext.save();
 
         this.backBufferContext.globalCompositeOperation = "lighter";
-        this.backBufferContext.fillStyle = color;
+        this.backBufferContext.fillStyle = color.ToString();
         this.backBufferContext.fillRect(0, 0, this.canvas.width, this.canvas.height);
 
         this.backBufferContext.restore();
@@ -133,10 +134,10 @@ var GraphicsManager = (function () {
         this.backBufferContext.lineWidth = lineWidth;
         this.backBufferContext.arc(canvasPosition.X, canvasPosition.Y, canvasRadius, 0, Math.PI * 2, true);
         if (filled) {
-            this.backBufferContext.fillStyle = color;
+            this.backBufferContext.fillStyle = color.ToString();
             this.backBufferContext.fill();
         } else {
-            this.backBufferContext.strokeStyle = color;
+            this.backBufferContext.strokeStyle = color.ToString();
             this.backBufferContext.stroke();
         }
 

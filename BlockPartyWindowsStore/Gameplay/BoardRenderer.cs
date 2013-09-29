@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using BlockPartyWindowsStore.Gameplay;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
@@ -130,6 +131,21 @@ namespace BlockPartyWindowsStore
                         {
                             board.Screen.ScreenManager.Game.GraphicsManager.SpriteBatch.DrawString(board.Screen.ScreenManager.Game.GraphicsManager.SpriteFont, key.ToString(), new Vector2(board.Screen.ScreenManager.Game.WorldViewport.Width / 2 - 100, Rectangle.Y + y), Color.White, 0f, Vector2.One, Vector2.One, SpriteEffects.None, 0f);
                             board.Screen.ScreenManager.Game.GraphicsManager.SpriteBatch.DrawString(board.Screen.ScreenManager.Game.GraphicsManager.SpriteFont, board.Stats.ChainBreakdown[key].ToString(), new Vector2(board.Screen.ScreenManager.Game.WorldViewport.Width / 2 + 100, Rectangle.Y + y), Color.White, 0f, Vector2.One, Vector2.One, SpriteEffects.None, 0f);
+                            y += 20;
+                        }
+                    }
+
+                    origin = board.Screen.ScreenManager.Game.GraphicsManager.SpriteFont.MeasureString("Leaderboard") / 2;
+                    board.Screen.ScreenManager.Game.GraphicsManager.SpriteBatch.DrawString(board.Screen.ScreenManager.Game.GraphicsManager.SpriteFont, "Leaderboard", new Vector2(board.Screen.ScreenManager.Game.WorldViewport.Width / 2, Rectangle.Y + y + 40), Color.White, 0f, origin, Vector2.One, SpriteEffects.None, 0f);
+
+                    y += 40;
+                    if (board.OrderedScores != null)
+                    {
+                        foreach (Score score in board.OrderedScores)
+                        {
+                            string userId = score.UserId != null ? score.UserId : "";
+                            board.Screen.ScreenManager.Game.GraphicsManager.SpriteBatch.DrawString(board.Screen.ScreenManager.Game.GraphicsManager.SpriteFont, userId, new Vector2(board.Screen.ScreenManager.Game.WorldViewport.Width / 2 - 100, Rectangle.Y + y), Color.White, 0f, Vector2.One, Vector2.One, SpriteEffects.None, 0f);
+                            board.Screen.ScreenManager.Game.GraphicsManager.SpriteBatch.DrawString(board.Screen.ScreenManager.Game.GraphicsManager.SpriteFont, score.Value.ToString(), new Vector2(board.Screen.ScreenManager.Game.WorldViewport.Width / 2 + 100, Rectangle.Y + y), Color.White, 0f, Vector2.One, Vector2.One, SpriteEffects.None, 0f);
                             y += 20;
                         }
                     }

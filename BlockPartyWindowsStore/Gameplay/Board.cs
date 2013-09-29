@@ -1,5 +1,6 @@
 ﻿using BlockPartyWindowsStore.Gameplay;
 using BlockPartyWindowsStore.ScreenManagement;
+using Microsoft.WindowsAzure.MobileServices;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -64,6 +65,7 @@ namespace BlockPartyWindowsStore
         public BoardRenderer Renderer;
         BoardController controller;
         public BoardStats Stats;
+        public IOrderedEnumerable<Score> OrderedScores;
 
         Button retryButton;
         Button doneButton;
@@ -615,12 +617,39 @@ namespace BlockPartyWindowsStore
                 if (GameOverDelayTimeElapsed >= GameOverDelayDuration)
                 {
                     State = BoardState.GameOver;
+                    LogScore();
+                    GetLeaderboard();
                 }
             }
             else
             {
                 GameOverDelayTimeElapsed = TimeSpan.Zero;
             }
+        }
+
+        async void LogScore()
+        {
+            IMobileServiceTable<Score> scoresTable = Screen.ScreenManager.Game.MobileServiceClient.GetTable<Score>();
+            Score score = new Score()
+            {
+                Value = Stats.Score,
+                UserId = Screen.ScreenManager.Game.FacebookId,
+                Timestamp = DateTime.Now
+            };
+            await scoresTable.InsertAsync(score);
+        }
+
+        async void GetLeaderboard()
+        {
+            IMobileServiceTable<Score> scoresTable = Screen.ScreenManager.Game.MobileServiceClient.GetTable<Score>();
+            List<Score> scoreList = await scoresTable.ToListAsync();
+            scoreList.Add(new Score()
+            {
+                Value = Stats.Score,
+                UserId = Screen.ScreenManager.Game.FacebookId,
+                Timestamp = DateTime.Now
+            });
+            OrderedScores = scoreList.OrderByDescending(score => score.Value);
         }
 
         void UpdateGo(GameTime gameTime)

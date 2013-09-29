@@ -213,15 +213,18 @@ namespace BlockPartyWindowsStore
 
                     if (FallTimeElapsed >= FallDuration)
                     {
-                        FallTarget.State = BlockState.Falling;
-                        FallTarget.Type = Type;
-                        FallTarget.ChainEligible = ChainEligible;
-                        FallTarget.JustFell = true;
-                        FallTarget.Renderer.Color = Renderer.Color;
+                        if (FallTarget != null)
+                        {
+                            FallTarget.State = BlockState.Falling;
+                            FallTarget.Type = Type;
+                            FallTarget.ChainEligible = ChainEligible;
+                            FallTarget.JustFell = true;
+                            FallTarget.Renderer.Color = Renderer.Color;
 
-                        State = BlockState.Empty;
-                        Type = -1;
-                        ChainEligible = false;
+                            State = BlockState.Empty;
+                            Type = -1;
+                            ChainEligible = false;
+                        }
                     }
                     break;
 

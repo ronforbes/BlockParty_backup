@@ -1,3 +1,4 @@
+/// <reference path="Color.ts" />
 /// <reference path="Rectangle.ts" />
 /// <reference path="Viewport.ts" />
 /// <reference path="ScreenManager.ts" />
@@ -74,7 +75,7 @@ class GraphicsManager {
         this.canvas.style.top = (window.innerHeight - this.canvas.height) / 2 + "px";
     }
 
-    public DrawLine(startPosition: Vector2, endPosition: Vector2, width: number, color: string): void {
+    public DrawLine(startPosition: Vector2, endPosition: Vector2, width: number, color: Color): void {
         var canvasStartPosition: Vector2 = this.TransformWorldToCanvas(startPosition);
         var canvasEndPosition: Vector2 = this.TransformWorldToCanvas(endPosition);
 
@@ -86,7 +87,7 @@ class GraphicsManager {
         //this.backBufferContext.shadowBlur = 10;
         //this.backBufferContext.shadowColor = color;
         this.backBufferContext.beginPath();
-        this.backBufferContext.strokeStyle = color;
+        this.backBufferContext.strokeStyle = color.ToString();
         this.backBufferContext.lineWidth = width;
         this.backBufferContext.moveTo(canvasStartPosition.X, canvasStartPosition.Y);
         this.backBufferContext.lineTo(canvasEndPosition.X, canvasEndPosition.Y);
@@ -95,7 +96,7 @@ class GraphicsManager {
         this.backBufferContext.restore();
     }
 
-    public DrawRectangle(position: Vector2, width: number, height: number, lineWidth: number, strokeColor: string, fillColor: string) {
+    public DrawRectangle(position: Vector2, width: number, height: number, lineWidth: number, strokeColor: Color, fillColor: Color) {
         var canvasPosition: Vector2 = this.TransformWorldToCanvas(position);
         var canvasWidth: number = this.TransformWorldToCanvasX(width);
         var canvasHeight: number = this.TransformWorldToCanvasY(height);
@@ -109,28 +110,28 @@ class GraphicsManager {
         //this.backBufferContext.shadowColor = fillColor;
         this.backBufferContext.lineWidth = lineWidth;
         if (strokeColor) {
-            this.backBufferContext.strokeStyle = strokeColor;
+            this.backBufferContext.strokeStyle = strokeColor.ToString();
             this.backBufferContext.strokeRect(canvasPosition.X, canvasPosition.Y, canvasWidth, canvasHeight);
         }
         if (fillColor) {
-            this.backBufferContext.fillStyle = fillColor;
+            this.backBufferContext.fillStyle = fillColor.ToString();
             this.backBufferContext.fillRect(canvasPosition.X, canvasPosition.Y, canvasWidth, canvasHeight);
         }
 
         this.backBufferContext.restore();
     }
 
-    public DrawFullscreenRectangle(color: string) {
+    public DrawFullscreenRectangle(color: Color) {
         this.backBufferContext.save();
 
         this.backBufferContext.globalCompositeOperation = "lighter";
-        this.backBufferContext.fillStyle = color;
+        this.backBufferContext.fillStyle = color.ToString();
         this.backBufferContext.fillRect(0, 0, this.canvas.width, this.canvas.height);
 
         this.backBufferContext.restore();
     }
 
-    public DrawCircle(position: Vector2, radius: number, lineWidth: number, color: string, filled: boolean): void {
+    public DrawCircle(position: Vector2, radius: number, lineWidth: number, color: Color, filled: boolean): void {
         var canvasPosition = this.TransformWorldToCanvas(position);
         var canvasRadius = this.TransformWorldToCanvasX(radius);
 
@@ -145,18 +146,18 @@ class GraphicsManager {
         this.backBufferContext.lineWidth = lineWidth;
         this.backBufferContext.arc(canvasPosition.X, canvasPosition.Y, canvasRadius, 0, Math.PI * 2, true);
         if (filled) {
-            this.backBufferContext.fillStyle = color;
+            this.backBufferContext.fillStyle = color.ToString();
             this.backBufferContext.fill();
         }
         else {
-            this.backBufferContext.strokeStyle = color;
+            this.backBufferContext.strokeStyle = color.ToString();
             this.backBufferContext.stroke();
         }
 
         this.backBufferContext.restore();
     }
 
-    public Draw(image: HTMLImageElement, rectangle: Rectangle, color: string) {
+    public Draw(image: HTMLImageElement, rectangle: Rectangle, color: Color) {
         var canvasPosition = this.TransformWorldToCanvasRectangle(rectangle);
 
         this.backBufferContext.save();

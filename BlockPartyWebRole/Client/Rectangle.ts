@@ -10,4 +10,16 @@ class Rectangle {
         this.Width = width;
         this.Height = height;
     }
+
+    public Contains(x: number, y: number): boolean {
+        if (x >= this.X &&
+            x <= this.X + this.Width &&
+            y >= this.Y &&
+            y <= this.Y + this.Height) {
+                return true;
+        }
+        else {
+            return false;
+        }
+    }
 }

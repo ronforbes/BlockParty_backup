@@ -9,5 +9,12 @@ var Rectangle = (function () {
         this.Width = width;
         this.Height = height;
     }
+    Rectangle.prototype.Contains = function (x, y) {
+        if (x >= this.X && x <= this.X + this.Width && y >= this.Y && y <= this.Y + this.Height) {
+            return true;
+        } else {
+            return false;
+        }
+    };
     return Rectangle;
 })();

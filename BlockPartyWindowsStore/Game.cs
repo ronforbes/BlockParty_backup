@@ -1,4 +1,7 @@
 ﻿using BlockPartyWindowsStore.Utilities;
+using Facebook;
+using Facebook.Client;
+using Microsoft.WindowsAzure.MobileServices;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
@@ -17,6 +20,17 @@ namespace BlockPartyWindowsStore
         public InputManager InputManager;
         public AudioManager AudioManager;
         public ApplicationViewState ApplicationViewState;
+        
+        // Note to self: you should refactor this into a nice, cute, dedicated class...
+        public readonly string FacebookAppId = "204271149744200";
+        public string FacebookAccessToken;
+        public string FacebookId;
+        public bool IsLoggedIn;
+        public FacebookSessionClient FacebookSessionClient;
+        public FacebookSession FacebookSession;
+        public FacebookClient FacebookClient;
+
+        public MobileServiceClient MobileServiceClient = new MobileServiceClient("https://blockparty.azure-mobile.net/", "wyrTrwLleymSiGlTYBSrKtVQXIBNHI92");
 
         GraphicsDeviceManager graphicsDeviceManager;
         ScreenManager screenManager;
@@ -29,7 +43,7 @@ namespace BlockPartyWindowsStore
             // initialize the graphics device manager and setup the depth stencil buffer format
             graphicsDeviceManager = new GraphicsDeviceManager(this);
             graphicsDeviceManager.PreferredDepthStencilFormat = DepthFormat.Depth24Stencil8;
-
+            
             Content.RootDirectory = "Content";
 
             // Setup the world viewport
@@ -37,6 +51,8 @@ namespace BlockPartyWindowsStore
 
             // Handle view state (snap, fill, full) changes
             ApplicationViewChanged += OnApplicationViewChanged;
+
+            FacebookSessionClient = new FacebookSessionClient(FacebookAppId);
         }
 
         void OnApplicationViewChanged(object sender, ViewStateChangedEventArgs e)
